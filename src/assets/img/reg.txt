@@ -1,0 +1,675 @@
+import React, { useRef, useState, useEffect } from 'react';
+import { View, TextInput, StyleSheet, ScrollView, Text, KeyboardAvoidingView, TouchableOpacity, Dimensions, Alert, Image, StatusBar, Linking, Platform } from 'react-native';
+import { CheckBox } from 'react-native-elements';
+import RNPickerSelect from 'react-native-picker-select';
+import pointer from '../assets/img/pointer.png';
+import userb from '../assets/img/userb.png';
+import lock from '../assets/img/lock.png';
+import mailb from '../assets/img/mailb.png';
+import title from '../assets/img/title.png';
+import organization from '../assets/img//organization.png';
+import gps from '../assets/img/gps.png';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+const { width } = Dimensions.get('window');
+
+const RegistrationForm = ({ navigation }) => {
+const [form, setForm] = useState({
+firstName: '',
+surname: '',
+email: '',
+password: '',
+confirmPassword: '',
+title: '',
+organization: '',
+country: '',
+state: '',
+profession: '',
+shareData: false,
+});
+
+const [passwordVisible, setPasswordVisible] = useState(false);
+const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+const [showFirstNameWarning, setShowFirstNameWarning] = useState(false);
+const [showSurnameWarning, setShowSurnameWarning] = useState(false);
+const [showEmailWarning, setShowEmailWarning] = useState(false);
+const [showPasswordWarning, setShowPasswordWarning] = useState(false);
+const [showConfirmPasswordWarning, setShowConfirmPasswordWarning] = useState(false);
+const [showtitleWarning, setShowtitleWarning] = useState(false);
+const [showorganizationWarning, setShoworganizationWarning] = useState(false);
+const [showprofessionWarning, setShowprofessionWarning] = useState(false);
+
+
+
+const surnameRef = useRef(null);
+const emailRef = useRef(null);
+const passwordRef = useRef(null);
+const confirmPasswordRef = useRef(null);
+const titleRef = useRef(null);
+const organizationRef = useRef(null);
+const professionRef = useRef(null);
+const scrollViewRef = useRef();
+useEffect(() => {
+setIsButtonEnabled(validateForm() && form.shareData);
+}, [form]);
+
+const validateEmail = (email) => {
+// Basic email regex with domain validation
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const validDomainRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+return emailRegex.test(email) && validDomainRegex.test(email.split('@')[1]);
+};
+const validateForm = () => {
+const { firstName, surname, email, password, confirmPassword, title, organization, profession, country, state } = form;
+
+const isValid =
+firstName.length && /^[A-Za-z]+$/.test(firstName) && firstName.length <= 30 &&
+surname.length && /^[A-Za-z]+$/.test(surname) && surname.length <= 30 &&
+/^\S+@\S+$/.test(email) && email.length <= 50 &&
+password.length >= 8 && password.length <= 30 && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(password) &&
+confirmPassword === password &&
+title.length > 0 &&
+organization.length > 0 &&
+country.length > 0 &&
+state.length > 0 &&
+profession.length > 0 ;
+setIsButtonEnabled(isValid);
+return isValid;
+};
+
+const handleChange = (name, value) => {
+if (name === 'password' || name === 'confirmPassword' || name === 'email') {
+value = value.replace(/\s/g, '');
+} else if (name === 'firstName' || name === 'surname') {
+value = value.replace(/[^A-Za-z]/g, '');
+}
+
+setForm({
+...form,
+[name]: value,
+});
+if (name === 'firstName') {
+setShowFirstNameWarning( !/^[A-Za-z]+$/.test(value));
+}
+
+if (name === 'surname') {
+setShowSurnameWarning( !/^[A-Za-z]+$/.test(value));
+}
+
+if (name === 'email') {
+setShowEmailWarning(value.length > 0 && (!validateEmail(value) || value.length > 50));
+}
+
+if (name === 'password') {
+setShowPasswordWarning(value.length > 0 && (value.length < 8 || value.length > 30 || !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value)));
+}
+
+if (name === 'confirmPassword') {
+setShowConfirmPasswordWarning(value.length > 0 && value !== form.password);
+}
+if (name === 'title') {
+setShowtitleWarning(value.length > 0 && (value.length < 2 || value.length > 30 || !/^[A-Za-z]+$/.test(value)));
+}
+if (name === 'organization') {
+setShoworganizationWarning(value.length > 0 && (value.length < 2 || value.length > 30 || !/^[A-Za-z]+$/.test(value)));
+}
+if (name === 'profession') {
+setShowprofessionWarning(value.length > 0 && (value.length < 2 || value.length > 30 || !/^[A-Za-z]+$/.test(value)));
+}
+
+
+validateForm();
+};
+
+const handleFocus = (name) => {
+if (name === 'firstName') setShowFirstNameWarning(false);
+if (name === 'surname') setShowSurnameWarning(false);
+if (name === 'email') setShowEmailWarning(false);
+if (name === 'password') setShowPasswordWarning(false);
+if (name === 'confirmPassword') setShowConfirmPasswordWarning(false);
+if (name === 'title') setShowtitleWarning(false);
+if (name === 'organization') setShoworganizationWarning(false);
+if (name === 'profession') setShowprofessionWarning(false);
+};
+
+
+const handleRegister = async () => {
+if (!validateForm()) {
+Alert.alert('Validation Error', 'Please check your inputs and try again.');
+return;
+}
+
+try {
+// Simulating an API call
+const response = await fetch('https://your-api-url.com/register', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify(form),
+});
+const data = await response.json();
+
+if (response.ok) {
+Alert.alert('Success', 'Registration successful!');
+} else {
+Alert.alert('Error', data.message || 'Something went wrong.');
+}
+} catch (error) {
+Alert.alert('Error', 'Network error. Please try again later.');
+}
+};
+
+
+
+return (
+<KeyboardAvoidingView
+style={styles.container}
+behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+>
+<ScrollView
+contentContainerStyle={styles.scrollViewContent}
+ref={scrollViewRef}
+keyboardShouldPersistTaps='handled'
+showsVerticalScrollIndicator={false}
+>
+<StatusBar barStyle="light-content" backgroundColor="#9d0808" />
+<View style={styles.headerContainer}>
+<TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+<Image source={pointer} style={styles.backIcon} resizeMode="cover" />
+</TouchableOpacity>
+<Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Welcome</Text>
+</View>
+<View>
+<Text style={styles.trial}> Sign up to start your 1 month free trial </Text>
+</View>
+<View style={styles.inputContainer}>
+<Image source={userb} style={styles.icon} />
+<TextInput
+style={styles.input}
+placeholder="First Name"
+placeholderTextColor="#aaa"
+value={form.firstName}
+onChangeText={(value) => handleChange('firstName', value)}
+onFocus={() => handleFocus('firstName')}
+onSubmitEditing={() => surnameRef.current.focus()}
+autoCapitalize="none"
+returnKeyType="next"
+blurOnSubmit={false}
+maxLength={30}
+/>
+
+</View>
+<View style={styles.warning}>
+{ showFirstNameWarning &&
+<Text style={styles.warningtext}>This field can not be empty.</Text>}
+</View>
+<View style={styles.inputContainer}>
+<Image source={userb} style={styles.icon} />
+<TextInput
+ref={surnameRef}
+style={styles.input}
+placeholder="Surname"
+placeholderTextColor="#aaa"
+value={form.surname}
+onChangeText={(value) => handleChange('surname', value)}
+onFocus={() => handleFocus('surname')}
+onSubmitEditing={() => emailRef.current.focus()}
+autoCapitalize="none"
+returnKeyType="next"
+blurOnSubmit={false}
+/>
+</View>
+<View style={styles.warning}>
+{ showSurnameWarning &&
+<Text style={styles.warningtext}>This field can not be empty.</Text>}
+</View>
+<View style={styles.inputContainer}>
+<Image source={mailb} style={styles.icon} />
+<TextInput
+ref={emailRef}
+style={styles.input}
+placeholder="Email Address"
+placeholderTextColor="#aaa"
+value={form.email}
+onChangeText={(value) => handleChange('email', value)}
+onFocus={() => handleFocus('email')}
+onSubmitEditing={() => passwordRef.current.focus()}
+keyboardType="email-address"
+autoCapitalize="none"
+returnKeyType="next"
+blurOnSubmit={false}
+/>
+</View>
+<View style={styles.warning}>
+{ showEmailWarning &&
+<Text style={styles.warningtext}>Enter valid email id.</Text>}
+</View>
+<View style={styles.inputContainer}>
+<Image source={lock} style={styles.icon} />
+<TextInput
+ref={passwordRef}
+style={styles.input}
+placeholder="Password"
+placeholderTextColor="#aaa"
+value={form.password}
+onChangeText={(value) => handleChange('password', value)}
+onFocus={() => handleFocus('password')}
+autoCapitalize="none"
+onSubmitEditing={() => confirmPasswordRef.current.focus()}
+secureTextEntry={!passwordVisible}
+returnKeyType="next"
+blurOnSubmit={false}
+
+/>
+<TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+<Icon name={passwordVisible ? "eye" : "eye-slash"} size={20} color="#800000" />
+</TouchableOpacity>
+</View>
+<View style={styles.warning}>
+{ showPasswordWarning &&
+<Text style={styles.warningtext}>Enter minimum 8 digit.{'\n'}
+Password must be between 8 to 30 characters.{'\n'}
+including one letter, one number, and one special character from [@$!%*#?&].</Text>}
+</View>
+<View style={styles.inputContainer}>
+<Image source={lock} style={styles.icon} />
+<TextInput
+ref={confirmPasswordRef}
+style={styles.input}
+placeholder="Re-enter Password"
+placeholderTextColor="#aaa"
+value={form.confirmPassword}
+onChangeText={(value) => handleChange('confirmPassword', value)}
+onFocus={() => handleFocus('confirmPassword')}
+autoCapitalize="none"
+onSubmitEditing={() => titleRef.current.focus()}
+secureTextEntry={!confirmPasswordVisible}
+returnKeyType="next"
+blurOnSubmit={false}
+/>
+<TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}>
+<Icon name={confirmPasswordVisible ? "eye" : "eye-slash"} size={20} color="#800000" />
+</TouchableOpacity>
+</View>
+<View style={styles.warning}>
+{ showConfirmPasswordWarning &&
+
+<Text style={styles.warningtext}>Confirm password must match the password.</Text>}
+</View>
+<View style={styles.inputContainer}>
+
+<Image source={title} style={styles.icon} />
+<TextInput
+ref={titleRef}
+style={styles.input}
+placeholder="Title"
+placeholderTextColor="#aaa"
+value={form.title}
+onChangeText={(value) => handleChange('title', value)}
+onFocus={() => handleFocus('title')}
+onSubmitEditing={() => organizationRef.current.focus()}
+autoCapitalize="none"
+returnKeyType="next"
+blurOnSubmit={false}
+/>
+</View>
+<View style={styles.warning}>
+{ showtitleWarning &&
+<Text style={styles.warningtext}>This field can not be empty.</Text>}
+</View>
+
+<View style={styles.inputContainer}>
+<Image source={organization} style={styles.icon}/>
+<TextInput
+ref={organizationRef}
+style={styles.input}
+placeholder="Organization"
+placeholderTextColor="#aaa"
+value={form.organization}
+onChangeText={(value) => handleChange('organization', value)}
+onSubmitEditing={() => professionRef.current.focus()}
+autoCapitalize="none"
+returnKeyType="next"
+blurOnSubmit={false}
+/>
+</View>
+<View style={styles.warning}>
+{ showorganizationWarning &&
+<Text style={styles.warningtext}>This field can not be empty.</Text>}
+</View>
+
+<View style={styles.inputContainer}>
+<Image source={gps} style={styles.icon} />
+<RNPickerSelect
+onValueChange={(value) => handleChange('country', value)}
+items={[
+{ label: 'United States', value: 'United States' },
+{ label: 'Canada', value: 'Canada' },
+{ label: 'United Kingdom', value: 'United Kingdom' },
+{ label: 'Australia', value: 'Australia' },
+{ label: 'India', value: 'India' },
+// Add more countries here
+]}
+style={pickerSelectStyles}
+placeholder={{ label: 'Country', value: null }}
+value={form.country}
+onFocus={() => handleFocus('country')}
+/>
+</View>
+<View style={styles.warning}></View>
+<View style={styles.inputContainer}>
+<Image source={organization} style={styles.icon}/>
+<RNPickerSelect
+onValueChange={(value) => handleChange('state', value)}
+items={[
+{ label: 'California', value: 'California' },
+{ label: 'New York', value: 'New York' },
+// Add more states here
+]}
+style={pickerSelectStyles}
+placeholder={{ label: 'State', value: null }}
+value={form.state}
+/>
+</View>
+<View style={styles.warning}></View>
+<View style={styles.inputContainer}>
+<Image source={title} style={styles.icon} />
+<TextInput
+ref={professionRef}
+style={styles.input}
+placeholder="Profession"
+placeholderTextColor="#aaa"
+value={form.profession}
+onChangeText={(value) => handleChange('profession', value)}
+autoCapitalize="none"
+returnKeyType="done"
+
+/>
+</View>
+<View style={styles.warning}>
+{ showprofessionWarning &&
+<Text style={styles.warningtext}>This field can not be empty.</Text>}
+</View>
+
+<CheckBox
+title="Share Data"
+checked={form.shareData}
+onPress={() => handleChange('shareData', !form.shareData)}
+containerStyle={styles.checkbox}
+checkedIcon={<Icon name="check-square" size={24} color="green" />}
+uncheckedIcon={<Icon name="square-o" size={24} color="grey" />}
+/>
+<Text style={styles.agreementText}>
+By clicking <Text style={styles.bold}>Register</Text> you are agree to the
+<Text style={styles.link} onPress={() => Linking.openURL('https://aggressionmanagement.com/Privacy%20Policy%20of%20CAPS.html')}> Privacy Policy and conditions</Text>
+</Text>
+<TouchableOpacity
+style={[styles.registrationButton, !isButtonEnabled && styles.registrationButtonDisabled]}
+disabled={!isButtonEnabled}
+onPress={handleRegister}
+>
+<Text style={styles.registrationButtonText}>NEXT</Text>
+</TouchableOpacity>
+</ScrollView>
+</KeyboardAvoidingView>
+);
+};
+const styles = StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: 'white',
+},
+headerContainer: {
+backgroundColor: '#9d0808',
+padding: 15,
+width: '100%',
+flexDirection: 'row',
+},
+imageButton: {
+marginRight: 10,
+color: 'white',
+},
+registrationButtonDisabled: {
+backgroundColor: '#9d0808',
+opacity: 0.5,
+},
+backIcon: {
+width: 30,
+height: 30,
+padding: 10,
+tintColor: 'white'
+},
+warning:{
+flexDirection: 'row',
+marginBottom: 20,
+},
+
+warningtext:{
+color:'red',
+marginLeft:'5%',
+marginBottom:15,
+
+
+},
+headerTitle: {
+fontSize: 22,
+fontWeight: 'bold',
+color: '#fff',
+textAlign: 'center',
+},
+backButton: {
+flexDirection: 'row',
+alignItems: 'center',
+},
+image: {
+width: 24,
+height: 24,
+tintColor: 'white',
+marginLeft: 10,
+},
+headerText: {
+fontSize: 22,
+fontWeight: 'bold',
+color: '#fff',
+textAlign: 'center',
+},
+trial: {
+fontSize: 22,
+marginTop: 15,
+marginBottom: 15,
+color: 'black',
+textAlign: 'center',
+fontWeight:'600'
+},
+inputContainer: {
+flexDirection: 'row',
+alignItems: 'center',
+width: '95%',
+
+marginLeft:15,
+marginRight:15,
+borderColor: '#ccc',
+borderWidth: 2,
+
+paddingHorizontal: 10,
+alignSelf: 'center',
+height:'4.5%',
+},
+icon: {
+width: 20,
+height: 20,
+marginRight: 10,
+tintColor: '#800000',
+},
+input: {
+flex: 1,
+height: 50,
+paddingHorizontal: 10,
+backgroundColor: 'rgba(255, 255, 255, 0)',
+color: 'black',
+},
+label: {
+fontSize: 16,
+color: '#aaa',
+marginRight: 10,
+},
+checkbox: {
+width: '95%',
+marginBottom: 15,
+marginTop: 15,
+alignSelf: 'center',
+backgroundColor: 'white',
+borderWidth: 2,
+borderColor:'#ccc'
+},
+agreementText: {
+textAlign: 'center',
+marginLeft:10,
+marginRight:10,
+fontSize: 18,
+color: 'black',
+marginTop: 5,
+marginBottom:25,
+
+},
+link: {
+color: '#800000',
+},
+bold:{
+color:'black',
+fontSize: 18,
+fontWeight:'700'
+},
+registrationButton: {
+backgroundColor: '#9d0808', // Customize the background color of the button
+padding: 15,
+
+alignContent:'center',
+borderRadius: 5,
+alignItems: 'center',
+width:'35%',
+marginLeft:'35%',
+
+
+
+},
+registrationButtonText: {
+color: 'white',
+fontSize: 20,
+fontWeight:'bold',
+
+},
+});
+
+const pickerSelectStyles = StyleSheet.create({
+inputIOS: {
+fontSize: 16,
+paddingVertical: 12,
+paddingHorizontal: 10,
+borderWidth: 1,
+borderColor: 'gray',
+borderRadius: 4,
+color: 'black',
+paddingRight: 30,
+flex: 1,
+height: 42,
+},
+inputAndroid: {
+fontSize: 16,
+paddingHorizontal: 10,
+paddingVertical: 8,
+borderWidth: 0.5,
+borderColor: 'purple',
+borderRadius: 8,
+color: 'black',
+paddingLeft: 280,
+flex: 1,
+height: 42,
+},
+});
+
+export default RegistrationForm;
+
+LOG Running "CapsNew" with {"rootTag":11}
+ERROR Warning: TextElement: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.
+in TextElement
+in Themed.Text (created by CheckBox)
+in RCTView (created by View)
+in View (created by CheckBox)
+in RCTView (created by View)
+in View (created by Animated(View))
+in Animated(View) (created by TouchableOpacity)
+in TouchableOpacity (created by TouchableOpacity)
+in TouchableOpacity (created by CheckBox)
+in CheckBox
+in Themed.CheckBox (created by RegistrationForm)
+in RCTView (created by View)
+in View (created by ScrollView)
+in RCTScrollView (created by ScrollView)
+in ScrollView (created by ScrollView)
+in ScrollView (created by RegistrationForm)
+in RCTView (created by View)
+in View (created by KeyboardAvoidingView)
+in KeyboardAvoidingView (created by RegistrationForm)
+in RegistrationForm (created by SceneView)
+in StaticContainer
+in EnsureSingleNavigator (created by SceneView)
+in SceneView (created by CardContainer)
+in RCTView (created by View)
+in View (created by CardContainer)
+in RCTView (created by View)
+in View (created by CardContainer)
+in RCTView (created by View)
+in View
+in CardSheet (created by Card)
+in RCTView (created by View)
+in View (created by Animated(View))
+in Animated(View) (created by PanGestureHandler)
+in PanGestureHandler (created by PanGestureHandler)
+in PanGestureHandler (created by Card)
+in RCTView (created by View)
+in View (created by Animated(View))
+in Animated(View) (created by Card)
+in RCTView (created by View)
+in View (created by Card)
+in Card (created by CardContainer)
+in CardContainer (created by CardStack)
+in RNSScreen (created by Animated(Anonymous))
+in Animated(Anonymous)
+in Suspender (created by Freeze)
+in Suspense (created by Freeze)
+in Freeze (created by DelayedFreeze)
+in DelayedFreeze
+in InnerScreen (created by Screen)
+in Screen (created by MaybeScreen)
+in MaybeScreen (created by CardStack)
+in RNSScreenContainer (created by ScreenContainer)
+in ScreenContainer (created by MaybeScreenContainer)
+in MaybeScreenContainer (created by CardStack)
+in RCTView (created by View)
+in View (created by Background)
+in Background (created by CardStack)
+in CardStack (created by HeaderShownContext)
+in RNCSafeAreaProvider (created by SafeAreaProvider)
+in SafeAreaProvider (created by SafeAreaProviderCompat)
+in SafeAreaProviderCompat (created by StackView)
+in RNGestureHandlerRootView (created by GestureHandlerRootView)
+in GestureHandlerRootView (created by StackView)
+in StackView (created by StackNavigator)
+in PreventRemoveProvider (created by NavigationContent)
+in NavigationContent
+in Unknown (created by StackNavigator)
+in StackNavigator (created by App)
+in EnsureSingleNavigator
+in BaseNavigationContainer
+in ThemeProvider
+in NavigationContainerInner (created by App)
+in App
+in RCTView (created by View)
+in View (created by AppContainer)
+in RCTView (created by View)
+in View (created by AppContainer)
+in AppContainer
+in CapsNew(RootComponent)

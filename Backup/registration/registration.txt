@@ -1,0 +1,357 @@
+import React, { Component } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { CheckBox } from 'react-native-elements';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import CountryProvider from '../providers/country/country';
+import User from '../providers/user/User';
+import { Api } from '../providers/api/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const api = new Api();
+const countryProvider = new CountryProvider(api);
+const userProvider = new User(api, AsyncStorage);
+
+const PasswordValidationSchema = Yup.object().shape({
+  password: Yup.string()
+    .required('Required')
+    .min(8, 'Too Short!')
+    .max(30, 'Too Long!')
+    .matches(/(?=.*[a-z])(?=.*[0-9])(?=.*[$@$#!%*?&])/, 'Password must contain at least one lowercase letter, one number, and one special character.'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('Required'),
+});
+
+class RegistrationForm extends Component {
+  state = {
+    passwordVisible: false,
+    confirmPasswordVisible: false,
+    countries: [],
+    states: [],
+    isEnabled: true,
+    share: false,
+  };
+
+  componentDidMount() {
+    this.loadCountries();
+  }
+
+  loadCountries = async () => {
+    try {
+      const response = await countryProvider.country();
+      // Assuming response.data is an array of country objects
+      const countries = response.data.map(country => ({
+        id: country.country_id,
+        name: country.country_name,
+      }));
+      console.log('Countries loaded:', countries);
+      this.setState({ countries });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  handleCountryChange = async (selectedItem) => {
+    try {
+      const response = await countryProvider.state(selectedItem.id);
+      // Assuming response.data is an array of state objects
+      const states = response.data.map(state => ({
+        id: state.state_id,
+        name: state.state_name,
+      }));
+      console.log('States loaded for country:', selectedItem, states);
+      this.setState({ states, isEnabled: false });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  handleSignup = async (values) => {
+    try {
+      const response = await userProvider.check_email(values.email);
+      if (response.data.result === 'success') {
+        const account = {
+          firstname: values.fname,
+          surname: values.lname,
+          email: values.email,
+          password: values.confirmPassword,
+          title: values.title,
+          organization: values.organization,
+          state: values.state.id,
+          country: values.country.id,
+          profession: values.profession,
+          share_data: values.share ? '1' : '0',
+        };
+        this.props.navigation.navigate('CreditCardScanPage', { account });
+      } else {
+        Alert.alert(response.data.result, response.data.msg);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  openTermsConditions = async () => {
+    try {
+      const response = await api.get('terms_conditions');
+      const url = response.data.terms_and_conditions;
+      if (await InAppBrowser.isAvailable()) {
+        InAppBrowser.open(url, {
+          dismissButtonStyle: 'close',
+          preferredBarTintColor: '#453AA4',
+          preferredControlTintColor: 'white',
+          readerMode: false,
+          animated: true,
+          modalPresentationStyle: 'fullScreen',
+          modalTransitionStyle: 'coverVertical',
+          modalEnabled: true,
+          enableBarCollapsing: false,
+          showTitle: true,
+          toolbarColor: '#6200EE',
+          secondaryToolbarColor: 'black',
+          navigationBarColor: 'black',
+          navigationBarDividerColor: 'white',
+          enableDefaultShare: true,
+          forceCloseOnRedirection: false,
+          animations: {
+            startEnter: 'slide_in_right',
+            startExit: 'slide_out_left',
+            endEnter: 'slide_in_left',
+            endExit: 'slide_out_right',
+          },
+          headers: {
+            'my-custom-header': 'my custom header value',
+          },
+        });
+      } else {
+        Alert.alert('Error', 'Browser is not available.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  togglePasswordVisibility = () => {
+    this.setState(prevState => ({
+      passwordVisible: !prevState.passwordVisible,
+    }));
+  };
+
+  toggleConfirmPasswordVisibility = () => {
+    this.setState(prevState => ({
+      confirmPasswordVisible: !prevState.confirmPasswordVisible,
+    }));
+  };
+
+  render() {
+    console.log('Component state:', this.state);
+    return (
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 20 }}>
+        <Formik
+          initialValues={{
+            fname: '',
+            lname: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            title: '',
+            organization: '',
+            state: '',
+            country: '',
+            share: false,
+            profession: '',
+          }}
+          validationSchema={Yup.object().shape({
+            fname: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+            lname: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+            email: Yup.string()
+              .required('Required')
+              .min(5, 'Too Short!')
+              .max(50, 'Too Long!')
+              .email('Invalid email address'),
+            password: Yup.string()
+              .required('Required')
+              .min(8, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/(?=.*[a-z])(?=.*[0-9])(?=.*[$@$#!%*?&])/, 'Password must contain at least one lowercase letter, one number, and one special character.'),
+            confirmPassword: Yup.string()
+              .oneOf([Yup.ref('password'), null], 'Passwords must match')
+              .required('Required'),
+            title: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+            organization: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+            country: Yup.object().required('Required'),
+            state: Yup.object().required('Required'),
+            profession: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+          })}
+          onSubmit={this.handleSignup}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+            setFieldValue,
+          }) => (
+            <View>
+              <Text>First Name</Text>
+              <TextInput
+                style={{ borderBottomWidth: 1, marginBottom: 10 }}
+                onChangeText={handleChange('fname')}
+                onBlur={handleBlur('fname')}
+                value={values.fname}
+              />
+              {touched.fname && errors.fname && <Text style={{ color: 'red' }}>{errors.fname}</Text>}
+
+              <Text>Last Name</Text>
+              <TextInput
+                style={{ borderBottomWidth: 1, marginBottom: 10 }}
+                onChangeText={handleChange('lname')}
+                onBlur={handleBlur('lname')}
+                value={values.lname}
+              />
+              {touched.lname && errors.lname && <Text style={{ color: 'red' }}>{errors.lname}</Text>}
+
+              <Text>Email</Text>
+              <TextInput
+                style={{ borderBottomWidth: 1, marginBottom: 10 }}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+                value={values.email}
+              />
+              {touched.email && errors.email && <Text style={{ color: 'red' }}>{errors.email}</Text>}
+
+              <Text>Password</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, marginBottom: 10 }}>
+                <TextInput
+                  style={{ flex: 1 }}
+                  secureTextEntry={!this.state.passwordVisible}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
+                />
+                <TouchableOpacity onPress={this.togglePasswordVisibility}>
+                  <Text>{this.state.passwordVisible ? 'Hide' : 'Show'}</Text>
+                </TouchableOpacity>
+              </View>
+              {touched.password && errors.password && <Text style={{ color: 'red' }}>{errors.password}</Text>}
+
+              <Text>Confirm Password</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, marginBottom: 10 }}>
+                <TextInput
+                  style={{ flex: 1 }}
+                  secureTextEntry={!this.state.confirmPasswordVisible}
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  value={values.confirmPassword}
+                />
+                <TouchableOpacity onPress={this.toggleConfirmPasswordVisibility}>
+                  <Text>{this.state.confirmPasswordVisible ? 'Hide' : 'Show'}</Text>
+                </TouchableOpacity>
+              </View>
+              {touched.confirmPassword && errors.confirmPassword && <Text style={{ color: 'red' }}>{errors.confirmPassword}</Text>}
+
+              <Text>Title</Text>
+              <TextInput
+                style={{ borderBottomWidth: 1, marginBottom: 10 }}
+                onChangeText={handleChange('title')}
+                onBlur={handleBlur('title')}
+                value={values.title}
+              />
+              {touched.title && errors.title && <Text style={{ color: 'red' }}>{errors.title}</Text>}
+
+              <Text>Organization</Text>
+              <TextInput
+                style={{ borderBottomWidth: 1, marginBottom: 10 }}
+                onChangeText={handleChange('organization')}
+                onBlur={handleBlur('organization')}
+                value={values.organization}
+              />
+              {touched.organization && errors.organization && <Text style={{ color: 'red' }}>{errors.organization}</Text>}
+
+              <Text>Country</Text>
+              <Picker
+                selectedValue={values.country ? values.country.id : ''}
+                style={{ height: 50, width: 150 }}
+                onValueChange={(itemValue) => {
+                  const selectedCountry = this.state.countries.find(country => country.id === itemValue);
+                  setFieldValue('country', selectedCountry);
+                  this.handleCountryChange(selectedCountry);
+                }}
+              >
+                <Picker.Item label="Select Country" value="" />
+                {this.state.countries.map((country) => (
+                  <Picker.Item label={country.name} value={country.id} key={country.id} />
+                ))}
+              </Picker>
+
+              <Text>State</Text>
+              <Picker
+                selectedValue={values.state ? values.state.id : ''}
+                style={{ height: 50, width: 150 }}
+                onValueChange={(itemValue) => {
+                  const selectedState = this.state.states.find(state => state.id === itemValue);
+                  setFieldValue('state', selectedState);
+                }}
+                enabled={!this.state.isEnabled}
+              >
+                <Picker.Item label="Select State" value="" />
+                {this.state.states.map((state) => (
+                  <Picker.Item label={state.name} value={state.id} key={state.id} />
+                ))}
+              </Picker>
+
+              <Text>Profession</Text>
+              <TextInput
+                style={{ borderBottomWidth: 1, marginBottom: 10 }}
+                onChangeText={handleChange('profession')}
+                onBlur={handleBlur('profession')}
+                value={values.profession}
+              />
+              {touched.profession && errors.profession && <Text style={{ color: 'red' }}>{errors.profession}</Text>}
+
+              <CheckBox
+                title="Share Data"
+                checked={values.share}
+                onPress={() => setFieldValue('share', !values.share)}
+              />
+
+              <TouchableOpacity onPress={this.openTermsConditions}>
+                <Text>Terms and Conditions</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={handleSubmit}>
+                <Text>Submit</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Formik>
+      </ScrollView>
+    );
+  }
+}
+
+export default RegistrationForm;

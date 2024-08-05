@@ -1,0 +1,228 @@
+// src/screens/ForgotPasswordScreen.tsx
+import React from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, StatusBar, Modal, Image } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { forgotPassword } from '../providers/forgotpassword/forgotpassword';
+import { useNavigation } from '@react-navigation/native';
+// Validation schema
+const schema = yup.object().shape({
+  email: yup.string()
+    .required('Email is required')
+    .email('Invalid email format')
+    .max(50, 'Email must be less than 50 characters')
+    .min(5, 'Email must be at least 5 characters'),
+});
+
+const ForgotPasswordScreen = () => {
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
+  });
+  const navigation = useNavigation();
+  const [loading, setLoading] = React.useState(false);
+  const [modalVisible, setModalVisible] = React.useState(false);
+
+  const onSubmit = async (data: { email: string }) => {
+    setLoading(true);
+    try {
+      const response = await forgotPassword({ emailid: data.email });
+      setLoading(false);
+      if (response.data.result === 'failed') {
+        showAlert(response.data.result, response.data.msg);
+      } else {
+        setModalVisible(true);
+      }
+    } catch (error) {
+      setLoading(false);
+      Alert.alert('Error', 'An error occurred. Please try again.');
+    }
+  };
+
+  const showAlert = (result: string, msg: string) => {
+    Alert.alert(result, msg, [{ text: 'OK' }]);
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
+      <View style={styles.header}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Image source={require('../assets/img/pointer.png')} style={styles.backIcon} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Welcome</Text>
+      </View>
+      <Text style={styles.welcomeText}>An email will be sent to your registered email id to reset your password</Text>
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <View style={styles.inputContainer}>
+            <Image source={require('../assets/img/mail.png')} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+        )}
+      />
+      {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+      <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Reset Password</Text>}
+      </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Success</Text>
+            <Text style={styles.modalMessage}>Password reset link sent to your email</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    backgroundColor: '#fff',
+  },
+  header: {
+    backgroundColor: '#9d0808',
+    padding: 10,
+    width: '100%',
+    flexDirection: 'row',
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 22,
+    flex: 1,
+    textAlign: 'center',
+  },
+  backIcon: {
+    width: 25,
+    height: 25,
+    padding: 10,
+    tintColor: 'white',
+  },
+  welcomeText: {
+    fontFamily: 'robotoblack',
+    color: 'black',
+    fontSize: 18,
+    marginBottom: 5,
+    marginTop: 15,
+    textAlign: 'center',
+    marginLeft: 15,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#cccccc',
+    borderWidth: 2,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 15,
+    borderRadius: 4,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    height: 50,
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+  },
+  inputIcon: {
+    width: 15,
+    height: 15,
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    paddingHorizontal: 10,
+    fontSize: 14,
+    color: 'black',
+  },
+  button: {
+    backgroundColor: 'rgba(157, 8, 8, 0.9)',
+    padding: 13,
+    borderRadius: 7,
+    alignItems: 'center',
+    width: '60%',
+    height: 4.5 * 12,
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    width: 300,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: 'black',
+  },
+  modalMessage: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#9d0808',
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 20,
+    marginLeft: 15,
+    fontSize: 14,
+  },
+});
+
+export default ForgotPasswordScreen;

@@ -1,0 +1,281 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Image,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  StatusBar,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useStripe } from '@stripe/stripe-react-native';
+
+
+// Mock API functions
+const userInformation = async () => {
+  // Mock implementation
+  return { token: 'mockToken', user_id: 'mockUserId' };
+};
+
+const signup = async (value: any) => {
+  // Mock implementation
+  return { request: 'success', msg: 'Thanks for Signing Up!' };
+};
+
+const payment = async (payment: any) => {
+  // Mock implementation
+  return { result: 'success', msg: 'Payment successful' };
+};
+
+const addSubscription = async (subs: any) => {
+  // Mock implementation
+  return { success: true };
+};
+
+const CreditCardScan = () => {
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [validCardNumber, setValidCardNumber] = useState(false);
+  const [validExpiryDate, setValidExpiryDate] = useState(false);
+  const [validCvv, setValidCvv] = useState(false);
+  const [buttonName, setButtonName] = useState('Register');
+  const [showRegister, setShowRegister] = useState(true);
+
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { stripe } = useStripe();
+  const handleRegister = () => {
+    navigation.navigate('Login');
+  };
+
+  // Initialize values from route params
+  useEffect(() => {
+    const params = route.params || {};
+    if (params.sub) {
+      setButtonName('Subscription');
+      setShowRegister(false);
+    }
+
+    if (params._card) {
+      const cardDetails = params._card;
+      setCardNumber(cardDetails.card_number.replace(/\s/g, ''));
+      setExpiryDate(`${cardDetails.expiry_month}`);
+      setCvv(cardDetails.cvv);
+    }
+  }, [route.params]);
+
+  const validateCard = async () => {
+    // Validation logic for card
+    try {
+      const cardValid = await stripe.validateCardNumber(cardNumber);
+      if (cardValid === 'OK') setValidCardNumber(false);
+      else setValidCardNumber(true);
+
+      // More validation logic here
+      // ...
+
+      // Perform registration or subscription
+      if (buttonName === 'Register') {
+        const userInfo = await userInformation();
+        const response = await signup({
+          card_number: cardNumber,
+          expiry_date: expiryDate,
+          cvv: cvv,
+          // other details
+        });
+        if (response.request === 'success') {
+          Alert.alert('Success', response.msg);
+          navigation.navigate('LoginPage');
+        } else {
+          Alert.alert('Error', response.msg);
+        }
+      } else {
+        // Handle subscription
+        const paymentResponse = await payment({
+          token: 'token',
+          user_id: 'user_id',
+          card_number: cardNumber,
+          cvv: cvv,
+          expiry_date: expiryDate,
+        });
+
+        if (paymentResponse.result === 'success') {
+          await addSubscription({
+            token: 'token',
+            user_id: 'user_id',
+            subscription_id: 'subscription_id',
+          });
+          Alert.alert('Success', paymentResponse.msg);
+          navigation.navigate('TabsPage', { sub_hide: true });
+        } else {
+          Alert.alert('Error', paymentResponse.msg);
+          navigation.navigate('SubscriptionPage');
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Image source={require('../assets/img/pointer.png')} style={styles.backIcon} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Credit Card Scan</Text>
+      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContainer}
+          style={styles.scrollView}
+        >
+          <View style={styles.extraScrollArea} />
+          <Image source={require('../assets/img/creditcard.png')} style={styles.cardImage} />
+          <Text style={styles.title}>Set up your payment</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Card number"
+            keyboardType="numeric"
+            value={cardNumber}
+            onChangeText={setCardNumber}
+          />
+          {validCardNumber && <Text style={styles.error}>Invalid card number</Text>}
+
+          <TextInput
+            style={styles.input}
+            placeholder="Expiry Date (MM/YY)"
+            value={expiryDate}
+            onChangeText={setExpiryDate}
+          />
+          {validExpiryDate && <Text style={styles.error}>Invalid expiry date</Text>}
+
+          <TextInput
+            style={styles.input}
+            placeholder="CVV"
+            keyboardType="numeric"
+            value={cvv}
+            onChangeText={setCvv}
+          />
+          {validCvv && <Text style={styles.error}>Invalid CVV</Text>}
+
+          <TouchableOpacity onPress={handleRegister} style={styles.button}>
+            <Text style={styles.buttonText}>{showRegister ? 'Register' : 'Subscription'}</Text>
+          </TouchableOpacity>
+          {showRegister && (
+            <Text style={styles.note}>
+              Note: You will be charged after your 1 free month
+            </Text>
+          )}
+          <View style={styles.extraScrollArea} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#9d0808',
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 1, // Ensure header stays above other content
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+     // Height of the header
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContainer: {
+    flexGrow: 1,
+  },
+  extraScrollArea: {
+    height: 60, // Adjust the height as needed
+  },
+  button: {
+      position: 'relative',
+    width: '35%',
+    borderRadius: 7,
+    height: 50,
+    backgroundColor: '#9d0808',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: '30%',
+    marginTop:10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 17,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 22,
+    flex: 1,
+    textAlign: 'center',
+  },
+  backIcon: {
+    width: 25,
+    height: 25,
+    padding: 10,
+    tintColor: 'white',
+  },
+  cardImage: {
+    width: '95%',
+    height: 250, // Fixed height
+    resizeMode: 'contain', // Ensure image maintains aspect ratio
+    margin: 15,
+  },
+  title: {
+    fontSize: 18,
+    marginVertical: 10,
+    textAlign: 'center',
+    color: 'black',
+  },
+  input: {
+    width: '92%',
+    height: 50,
+    borderColor: '#cccccc',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    margin: 10,
+    marginLeft: 15,
+  },
+  error: {
+    color: '#ed1c24',
+    fontSize: 12,
+    paddingVertical: 2,
+  },
+  note: {
+    textAlign: 'center',
+    marginTop: 16,
+  },
+});
+
+export default CreditCardScan;
