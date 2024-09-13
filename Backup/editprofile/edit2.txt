@@ -1,0 +1,378 @@
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  Button,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { Picker } from '@react-native-picker/picker';
+import ImagePicker from 'react-native-image-picker';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Api } from '../providers/api/api';
+import ProfileProvider from '../providers/profile/profile';
+import CountryProvider from '../providers/country/country';
+
+const API_URL = 'http://aggressionmanagement.com/api';
+
+const api = new Api(API_URL);
+const profileProvider = new ProfileProvider(api);
+const countryProvider = new CountryProvider(api);
+
+const EditProfileScreen = () => {
+  const { control, handleSubmit, setValue, getValues } = useForm();
+  const [loading, setLoading] = useState(false);
+  const [userInformation, setUserInformation] = useState(null);
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    fetchUserInfo();
+    loadCountries();
+  }, []);
+
+  const fetchUserInfo = async () => {
+    setLoading(true);
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      const { user_id, token } = userData ? JSON.parse(userData) : {};
+
+      if (!user_id || !token) {
+        Alert.alert('Error', 'User not authenticated.');
+        return;
+      }
+
+      const response = await profileProvider.user_info({ user_id, token });
+      const userDataResponse = response.data;
+
+      setUserInformation(userDataResponse);
+      setValue('fname', userDataResponse.firstname);
+      setValue('lname', userDataResponse.surname);
+      setValue('email', userDataResponse.email);
+      setValue('title', userDataResponse.title);
+      setValue('Organization', userDataResponse.organization);
+      setValue('Profession', userDataResponse.profession);
+      setValue('country', userDataResponse.country);
+      setValue('state', userDataResponse.state);
+      setValue('subscriptionEndDate', userDataResponse.subscriptionEnd_date);
+
+      if (userDataResponse.country) {
+        const country = countries.find(c => c.name === userDataResponse.country);
+        if (country) {
+          handleCountryChange(country);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      Alert.alert('Error', 'Failed to fetch user information.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCountries = async () => {
+    try {
+      const response = await countryProvider.country();
+      const countriesData = response.data.map((country) => ({
+        id: country.country_id,
+        name: country.country_name,
+      }));
+      setCountries(countriesData);
+    } catch (error) {
+      console.error('Error loading countries:', error);
+      Alert.alert('Error', 'Failed to load countries.');
+    }
+  };
+
+  const loadStates = async (countryId) => {
+    try {
+      const response = await countryProvider.state(countryId);
+      const statesData = response.data.map((state) => ({
+        id: state.state_id,
+        name: state.state_name,
+      }));
+      setStates(statesData);
+      setIsEnabled(true);
+    } catch (error) {
+      console.error('Error loading states:', error);
+      Alert.alert('Error', 'Failed to load states.');
+    }
+  };
+
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    loadStates(country.id);
+    setValue('country', country.name); // Store the country name in the form
+  };
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      const { user_id, token } = userData ? JSON.parse(userData) : {};
+      if (!user_id || !token) {
+        Alert.alert('Error', 'User not authenticated.');
+        return;
+      }
+
+      const updatedData = {
+        ...data,
+        country: selectedCountry?.id ?? userInformation.country,
+        state: selectedState?.id ?? userInformation.state,
+      };
+
+      await profileProvider.edit_info({ user_id, token, ...updatedData });
+      Alert.alert('Success', 'Profile updated successfully.');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      Alert.alert('Error', 'Failed to update profile.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImagePick = () => {
+    ImagePicker.launchImageLibrary({}, (response) => {
+      if (response.error) {
+        Alert.alert('Error', 'Image selection failed.');
+      } else if (!response.didCancel) {
+        setValue('profilePic', response.uri);
+      }
+    });
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  return (
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.profileImageWrapper}>
+        <TouchableOpacity onPress={handleImagePick}>
+          {getValues('profilePic') ? (
+            <Image source={{ uri: getValues('profilePic') }} style={styles.profileImage} />
+          ) : (
+            <View style={styles.profileImagePlaceholder}>
+              {/* Add icon or placeholder */}
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
+      <View style={styles.formContainer}>
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <View style={styles.item}>
+              <Text style={styles.subTitle}>E-mail</Text>
+              <TextInput
+                style={styles.textInput}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                editable={false}
+              />
+            </View>
+          )}
+        />
+        <Controller
+control={control}
+name="fname"
+render={({ field: { onChange, onBlur, value } }) => (
+<View style={styles.item}>
+<Text style={styles.subTitle}>First Name</Text>
+<TextInput
+style={styles.textInput}
+onBlur={onBlur}
+onChangeText={onChange}
+value={value}
+/>
+</View>
+)}
+/>
+<Controller
+control={control}
+name="lname"
+render={({ field: { onChange, onBlur, value } }) => (
+<View style={styles.item}>
+<Text style={styles.subTitle}>Last Name</Text>
+<TextInput
+style={styles.textInput}
+onBlur={onBlur}
+onChangeText={onChange}
+value={value}
+/>
+</View>
+)}
+/>
+<Controller
+control={control}
+name="title"
+render={({ field: { onChange, onBlur, value } }) => (
+<View style={styles.item}>
+<Text style={styles.subTitle}>Title</Text>
+<TextInput
+style={styles.textInput}
+onBlur={onBlur}
+onChangeText={onChange}
+value={value}
+/>
+</View>
+)}
+/>
+<Controller
+control={control}
+name="Organization"
+render={({ field: { onChange, onBlur, value } }) => (
+<View style={styles.item}>
+<Text style={styles.subTitle}>Organization</Text>
+<TextInput
+style={styles.textInput}
+onBlur={onBlur}
+onChangeText={onChange}
+value={value}
+/>
+</View>
+)}
+/>
+<Controller
+control={control}
+name="Profession"
+render={({ field: { onChange, onBlur, value } }) => (
+<View style={styles.item}>
+<Text style={styles.subTitle}>Profession</Text>
+<TextInput
+style={styles.textInput}
+onBlur={onBlur}
+onChangeText={onChange}
+value={value}
+/>
+</View>
+)}
+/>
+        <View style={styles.item}>
+          <Text style={styles.subTitle}>Country</Text>
+          <Controller
+            control={control}
+            name="country"
+            render={({ field: { onChange, value } }) => (
+              <>
+                <TextInput
+                  style={styles.textInput}
+                  value={value}
+                  editable={false}
+                />
+                <Picker
+                  selectedValue={selectedCountry?.id} // Use country ID here
+                  onValueChange={(itemValue) => {
+                    const country = countries.find((c) => c.id === itemValue);
+                    onChange(itemValue); // Update form value
+                    handleCountryChange(country); // Load states when country changes
+                  }}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select Country" value="" />
+                  {countries.map((country) => (
+                    <Picker.Item key={country.id} label={country.name} value={country.id} /> // Change value to country ID
+                  ))}
+                </Picker>
+              </>
+            )}
+          />
+        </View>
+        <View style={styles.item}>
+          <Text style={styles.subTitle}>State</Text>
+          <Controller
+            control={control}
+            name="state"
+            render={({ field: { onChange, value } }) => (
+              <>
+                <TextInput
+                  style={styles.textInput}
+                  value={value}
+                  editable={false}
+                />
+                <Picker
+                  selectedValue={selectedState?.id} // Use state ID here
+                  onValueChange={(itemValue) => {
+                    const state = states.find((s) => s.id === itemValue);
+                    onChange(itemValue); // Update form value
+                    setSelectedState(state); // Update selected state
+                  }}
+                  style={styles.picker}
+                  enabled={isEnabled}
+                >
+                  <Picker.Item label="Select State" value="" />
+                  {states.map((state) => (
+                    <Picker.Item key={state.id} label={state.name} value={state.name} /> // Change value to state ID
+                  ))}
+                </Picker>
+              </>
+            )}
+          />
+        </View>
+        <View style={styles.item}>
+          <Button title="Update Profile" onPress={handleSubmit(onSubmit)} />
+        </View>
+      </View>
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 20,
+  },
+  profileImageWrapper: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  profileImagePlaceholder: {
+    width: 100,
+    height: 100,
+    backgroundColor: '#ccc',
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  formContainer: {
+    marginTop: 20,
+  },
+  item: {
+    marginBottom: 20,
+  },
+  subTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  textInput: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 5,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+});
+
+export default EditProfileScreen;

@@ -1,59 +1,73 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Api } from '../api/api';
 
+import { Api } from '../api/api'; // Import the Api class
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage for token management
 
-/*
-  Generated class for the CaseProvider provider.
+class CaseProvider {
+  private api: Api;
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-@Injectable()
-export class CaseProvider {
-
-  constructor(public http: HttpClient, public api: Api) {
-   
+  constructor(api: Api) {
+    this.api = api; // Initialize the Api instance
   }
-  my_cases(token) {
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // let headerOptions: any = { 'Content-Type': 'application/json' };
 
-
-    return this.api.post('user_created_cases', JSON.stringify(token), { headers: headers }).timeout(10000);
-
+  // Retrieve token from AsyncStorage and include it in headers
+  private async getHeaders() {
+    const token = await AsyncStorage.getItem('user'); // Retrieve the token
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+    };
   }
-  shared_cases(user_info) {
-   
-      var headers = new Headers();
-      headers.append('Content-Type', 'application/json');
-      // let headerOptions: any = { 'Content-Type': 'application/json' };
 
-
-      return this.api.post('shared_cases', JSON.stringify(user_info), { headers: headers }).timeout(10000);
+  // Fetch user-created cases with authentication token
+  async myCases(userInfo: any, token: any): Promise<any> {
+    const headers = await this.getHeaders(); // Get headers with token
+    try {
+      const response = await this.api.post('user_created_cases', userInfo, { headers });
+      console.log('myCases response:', response.data); // Log response data
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user-created cases:', error);
+      throw error;
+    }
+  }
   
-
+  async sharedCases(params: any): Promise<any> {
+    const headers = await this.getHeaders(); // Get headers with token
+    try {
+      const response = await this.api.post('shared_cases', params, { headers });
+      console.log('sharedCases response:', response.data); // Log response data
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching shared cases:', error);
+      throw error;
+    }
   }
 
-
-  nocaps_shareCase(user_info){
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // let headerOptions: any = { 'Content-Type': 'application/json' };
-
-
-    return this.api.post('shareCase_byEmail', JSON.stringify(user_info), { headers: headers }).timeout(10000);
+  // Share case via email with authentication token
+  async nocapsShareCase(userInfo: any): Promise<any> {
+    const headers = await this.getHeaders(); // Get headers with token
+    try {
+      const response = await this.api.post('shareCase_byEmail', userInfo, { headers });
+      console.log('nocapsShareCase response:', response.data); // Log response data
+      return response.data;
+    } catch (error) {
+      console.error('Error sharing case via email:', error);
+      throw error;
+    }
   }
 
-  shareCase_contact_details(user_info){
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // let headerOptions: any = { 'Content-Type': 'application/json' };
-
-
-    return this.api.post('shareCase_contact_details', JSON.stringify(user_info), { headers: headers }).timeout(10000);
+  // Share case contact details with authentication token
+  async shareCaseContactDetails(userInfo: any): Promise<any> {
+    const headers = await this.getHeaders(); // Get headers with token
+    try {
+      const response = await this.api.post('shareCase_contact_details', userInfo, { headers });
+      console.log('shareCaseContactDetails response:', response.data); // Log response data
+      return response.data;
+    } catch (error) {
+      console.error('Error sharing case contact details:', error);
+      throw error;
+    }
   }
-
-
 }
+
+export default CaseProvider;

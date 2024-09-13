@@ -1,0 +1,172 @@
+import React, { Component } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, StyleSheet } from 'react-native';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import User from '../providers/user/User';
+import { Api } from '../providers/api/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const api = new Api();
+const userProvider = new User(api, AsyncStorage);
+
+const CreditCardValidationSchema = Yup.object().shape({
+  cardNumber: Yup.string()
+    .required('Required')
+    .matches(/^\d{16}$/, 'Card number is not valid'),
+  expiryDate: Yup.string()
+    .required('Required')
+    .matches(/^\d{2}\/\d{2}$/, 'Expiry date is not valid (MM/YY)'),
+  cvv: Yup.string()
+    .required('Required')
+    .matches(/^\d{3}$/, 'CVV is not valid'),
+});
+
+class CreditCardScan extends Component {
+  handlePayment = async (values) => {
+    const account = this.props.route.params.account;
+  
+    try {
+      const userResponse = await userProvider.signup(account);
+      if (userResponse.data.result === 'success') {
+        const paymentInfo = {
+          cardNumber: values.cardNumber,
+          expiryDate: values.expiryDate,
+          cvv: values.cvv,
+        };
+  
+        const paymentResponse = await api.post('charge_credit_card', JSON.stringify(paymentInfo), {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (paymentResponse.data.result === 'success') {
+          Alert.alert('Success', 'User account created and payment successful');
+          this.props.navigation.navigate('Home'); // Navigate to home page or another screen after successful registration
+        } else {
+          Alert.alert('Payment failed', paymentResponse.data.msg);
+        }
+      } else {
+        Alert.alert('Registration failed', userResponse.data.msg);
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'An error occurred during the registration process');
+    }
+  };
+
+  render() {
+    return (
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <Formik
+          initialValues={{
+            cardNumber: '',
+            expiryDate: '',
+            cvv: '',
+          }}
+          validationSchema={CreditCardValidationSchema}
+          onSubmit={this.handlePayment}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
+            <View>
+              <Text style={styles.label}>Card Number</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('cardNumber')}
+                  onBlur={handleBlur('cardNumber')}
+                  value={values.cardNumber}
+                  keyboardType="numeric"
+                  placeholder="1234 5678 9012 3456"
+                />
+              </View>
+              {touched.cardNumber && errors.cardNumber && <Text style={styles.warningtext}>{errors.cardNumber}</Text>}
+
+              <Text style={styles.label}>Expiry Date</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('expiryDate')}
+                  onBlur={handleBlur('expiryDate')}
+                  value={values.expiryDate}
+                  keyboardType="numeric"
+                  placeholder="MM/YY"
+                />
+              </View>
+              {touched.expiryDate && errors.expiryDate && <Text style={styles.warningtext}>{errors.expiryDate}</Text>}
+
+              <Text style={styles.label}>CVV</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={handleChange('cvv')}
+                  onBlur={handleBlur('cvv')}
+                  value={values.cvv}
+                  keyboardType="numeric"
+                  placeholder="123"
+                />
+              </View>
+              {touched.cvv && errors.cvv && <Text style={styles.warningtext}>{errors.cvv}</Text>}
+
+              <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+                <Text style={styles.buttonText}>Register</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Formik>
+      </ScrollView>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  scrollView: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: '#f8f8f8',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    fontSize: 16,
+    padding: 8,
+  },
+  warningtext: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 8,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+
+export default CreditCardScan;

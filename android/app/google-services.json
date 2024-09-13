@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "204168308393",
+    "project_id": "capsnew-c53e4",
+    "storage_bucket": "capsnew-c53e4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204168308393:android:2e3bb87c122e226ad6abb8",
+        "android_client_info": {
+          "package_name": "com.rsl.capsnew"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtTF0t26Aj4SIBd-IVH2bxWpOr3kXrq2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

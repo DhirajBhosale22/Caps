@@ -1,0 +1,460 @@
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Geolocation from '@react-native-community/geolocation';
+import { NativeGeocoder, NativeGeocoderOptions, NativeGeocoderResult } from 'react-native-geocoding';
+import { Api } from '../providers/api/api';
+import { CreateCaseProvider } from '../providers/createcase/createcase';
+import { useLoader } from '../providers/loader/loader';
+import { InterneterrorProvider } from '../providers/interneterror/InternetErrorProvider';
+
+const CreateCaseScreen = () => {
+  const [knowPerson, setKnowPerson] = useState(false);
+  const [unknowPerson, setUnknowPerson] = useState(false);
+  const [visibleMark, setVisibleMark] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [lat, setLat] = useState<number | null>(null);
+  const [long, setLong] = useState<number | null>(null);
+  const [currentAddress, setCurrentAddress] = useState<string | null>(null);
+  const navigation = useNavigation();
+  const { showLoader, hideLoader } = useLoader();
+  const internetErrorProvider = new InterneterrorProvider();
+  const api = new Api();
+  const createCaseProvider = new CreateCaseProvider(api);
+
+  const heightOptions = Array.from({ length: 11 }, (_, i) => ({ height: i + 1 }));
+  const inchOptions = Array.from({ length: 11 }, (_, i) => ({ inch: i + 1 }));
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      const user = await AsyncStorage.getItem('user');
+      if (user) {
+        const userObj = JSON.parse(user);
+        setUserId(userObj.user_id);
+        setToken(userObj.token);
+      }
+    };
+    const loadClientId = async () => {
+      const client_id = await AsyncStorage.getItem('client_id');
+      setClientId(client_id);
+    };
+
+    loadUserData();
+    loadClientId();
+    loadMap();
+  }, []);
+
+  const loadMap = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        setLat(position.coords.latitude);
+        setLong(position.coords.longitude);
+        getCurrentAddress(position.coords.latitude, position.coords.longitude);
+      },
+      (error) => console.log(error),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
+
+  const getCurrentAddress = (latitude: number, longitude: number) => {
+    const options: NativeGeocoderOptions = {
+      useLocale: true,
+      maxResults: 5,
+    };
+
+    NativeGeocoder.reverseGeocode(latitude, longitude, options)
+      .then((results: NativeGeocoderResult[]) => {
+        setCurrentAddress(results[0].locality);
+      })
+      .catch((error: any) => console.log(error));
+  };
+
+  const current_date = () => {
+    const today = new Date();
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    const time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
+    return date + ' ' + time;
+  };
+
+  const showAlert = (result: string, msg: string) => {
+    Alert.alert(result, msg, [{ text: 'OK' }]);
+  };
+
+  const handleSubmitKnown = (values: any) => {
+    const suspect_info = {
+      suspect_name: values.suspect_name,
+      last_name: values.subject_last_name,
+      known: 1,
+      gender: '',
+      token: token,
+      race: '',
+      height: '',
+      weight: '',
+      age: '',
+      visible_marks: '',
+      hair_color: '',
+      eye_color: '',
+      place_of_incident: currentAddress,
+      distinguishing_clothing: '',
+      accent: '',
+      additional_info: '',
+      date: current_date(),
+      client_id: clientId,
+      user_id: userId,
+      lat: lat,
+      long: long,
+    };
+
+    showLoader();
+    createCaseProvider.createCase(suspect_info)
+      .then((res: any) => {
+        hideLoader();
+        if (res === null || res === undefined || res.result === 'failed') {
+          if (res.msg === 'Your account is deactivated, please contact support.' || res.msg === 'Case not created') {
+            AsyncStorage.setItem('user', '');
+            navigation.reset({ index: 0, routes: [{ name: 'LoginPage' }] });
+          } else {
+            showAlert(res.result, res.msg);
+          }
+        } else if (res.msg === 'Case created successfully.') {
+          const suspect_info = {
+            suspect_name: res.suspect_name,
+            case_id: res.case_id,
+            last_name: res.last_name,
+          };
+          navigation.reset({ index: 0, routes: [{ name: 'AggressionmeterPage', params: { suspect_info } }] });
+        }
+      })
+      .catch((err) => {
+        hideLoader();
+        internetErrorProvider.error();
+      });
+  };
+
+  const handleSubmitUnknown = (values: any) => {
+    const height = values.height[0];
+    const inch = values.inch[0];
+    const height_info = `${height},${inch}`;
+
+    const suspect_info = {
+      known: 0,
+      gender: values.gender,
+      token: token,
+      race: values.Race,
+      height: height_info,
+      weight: values.weight,
+      age: values.age,
+      visible_marks: visibleMark ? 1 : 0,
+      place_of_incident: currentAddress,
+      distinguishing_clothing: values.cloth,
+      accent: values.Accent,
+      additional_info: values.additional_info,
+      date: current_date(),
+      client_id: clientId,
+      user_id: userId,
+      visible_marks_desc: values.marks_desc,
+      lat: lat,
+      long: long,
+      eye_color: values.eye_color,
+      hair_color: values.hair_color,
+    };
+
+    showLoader();
+    createCaseProvider.createCase(suspect_info)
+      .then((res: any) => {
+        hideLoader();
+        if (res === null || res === undefined || res.result === 'failed') {
+          if (res.msg === 'Your account is deactivated, please contact support.' || res.msg === 'Case not created') {
+            AsyncStorage.setItem('user', '');
+            navigation.reset({ index: 0, routes: [{ name: 'LoginPage' }] });
+          } else {
+            showAlert(res.result, res.msg);
+          }
+        } else if (res.msg === 'Case created successfully.') {
+          showAlert(res.result, res.msg);
+          const suspect_info = {
+            suspect_name: res.suspect_name,
+            case_id: res.case_id,
+          };
+          navigation.reset({ index: 0, routes: [{ name: 'AggressionmeterPage', params: { suspect_info } }] });
+        }
+      })
+      .catch((err) => {
+        hideLoader();
+        internetErrorProvider.error();
+      });
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Formik
+        initialValues={{
+          suspect_name: '',
+          subject_last_name: '',
+          gender: '',
+          Race: '',
+          height: '',
+          inch: '',
+          weight: '',
+          age: '',
+          Place: '',
+          cloth: '',
+          Accent: '',
+          marks: false,
+          marks_desc: '',
+          additional_info: '',
+          hair_color: '',
+          eye_color: '',
+        }}
+        validationSchema={Yup.object().shape({
+          suspect_name: Yup.string().required('Required').matches(/^[a-zA-Z -]*$/, 'Invalid name'),
+          subject_last_name: Yup.string().required('Required').matches(/^[a-zA-Z -]*$/, 'Invalid last name'),
+        })}
+        onSubmit={(values) => knowPerson ? handleSubmitKnown(values) : handleSubmitUnknown(values)}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
+          <View>
+            {knowPerson && (
+              <View>
+                <TextInput
+                  placeholder="Suspect Name"
+                  onChangeText={handleChange('suspect_name')}
+                  onBlur={handleBlur('suspect_name')}
+                  value={values.suspect_name}
+                  style={styles.input}
+                />
+                <TextInput
+                  placeholder="Last Name"
+                  onChangeText={handleChange('subject_last_name')}
+                  onBlur={handleBlur('subject_last_name')}
+                  value={values.subject_last_name}
+                  style={styles.input}
+                />
+              </View>
+            )}
+            {unknowPerson && (
+              <View>
+                <Text style={styles.label}>Gender</Text>
+                <Picker
+                  selectedValue={values.gender}
+                  onValueChange={(itemValue) => setFieldValue('gender', itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select Gender" value="" />
+                  <Picker.Item label="Male" value="male" />
+                  <Picker.Item label="Female" value="female" />
+                </Picker>
+
+                <Text style={styles.label}>Race</Text>
+                <TextInput
+                  placeholder="Race"
+                  onChangeText={handleChange('Race')}
+                  onBlur={handleBlur('Race')}
+                  value={values.Race}
+                  style={styles.input}
+                />
+
+                <Text style={styles.label}>Height</Text>
+                <View style={styles.row}>
+                  <Picker
+                    selectedValue={values.height}
+                    onValueChange={(itemValue) => setFieldValue('height', itemValue)}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select Height" value="" />
+                    {heightOptions.map((option, index) => (
+                      <Picker.Item key={index} label={`${option.height}`} value={`${option.height}`} />
+                    ))}
+                  </Picker>
+                  <Picker
+                    selectedValue={values.inch}
+                    onValueChange={(itemValue) => setFieldValue('inch', itemValue)}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select Inches" value="" />
+                    {inchOptions.map((option, index) => (
+                      <Picker.Item key={index} label={`${option.inch}`} value={`${option.inch}`} />
+                    ))}
+                  </Picker>
+                </View>
+
+                <Text style={styles.label}>Weight</Text>
+                <TextInput
+                  placeholder="Weight"
+                  onChangeText={handleChange('weight')}
+                  onBlur={handleBlur('weight')}
+                  value={values.weight}
+                  style={styles.input}
+                />
+
+                <Text style={styles.label}>Age</Text>
+                <TextInput
+                  placeholder="Age"
+                  onChangeText={handleChange('age')}
+                  onBlur={handleBlur('age')}
+                  value={values.age}
+                  style={styles.input}
+                />
+
+                <Text style={styles.label}>Distinguishing Clothing</Text>
+                <TextInput
+                  placeholder="Clothing"
+                  onChangeText={handleChange('cloth')}
+                  onBlur={handleBlur('cloth')}
+                  value={values.cloth}
+                  style={styles.input}
+                />
+
+                <Text style={styles.label}>Accent</Text>
+                <TextInput
+                  placeholder="Accent"
+                  onChangeText={handleChange('Accent')}
+                  onBlur={handleBlur('Accent')}
+                  value={values.Accent}
+                  style={styles.input}
+                />
+
+                <View style={styles.checkboxContainer}>
+                  <Text>Visible Marks</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setVisibleMark(!visibleMark);
+                      setFieldValue('marks', !visibleMark);
+                    }}
+                    style={styles.checkbox}
+                  >
+                    {visibleMark && <View style={styles.checked} />}
+                  </TouchableOpacity>
+                </View>
+
+                {visibleMark && (
+                  <TextInput
+                    placeholder="Marks Description"
+                    onChangeText={handleChange('marks_desc')}
+                    onBlur={handleBlur('marks_desc')}
+                    value={values.marks_desc}
+                    style={styles.input}
+                  />
+                )}
+
+                <Text style={styles.label}>Hair Color</Text>
+                <TextInput
+                  placeholder="Hair Color"
+                  onChangeText={handleChange('hair_color')}
+                  onBlur={handleBlur('hair_color')}
+                  value={values.hair_color}
+                  style={styles.input}
+                />
+
+                <Text style={styles.label}>Eye Color</Text>
+                <TextInput
+                  placeholder="Eye Color"
+                  onChangeText={handleChange('eye_color')}
+                  onBlur={handleBlur('eye_color')}
+                  value={values.eye_color}
+                  style={styles.input}
+                />
+
+                <Text style={styles.label}>Additional Information</Text>
+                <TextInput
+                  placeholder="Additional Information"
+                  onChangeText={handleChange('additional_info')}
+                  onBlur={handleBlur('additional_info')}
+                  value={values.additional_info}
+                  style={styles.input}
+                />
+              </View>
+            )}
+
+            <Button title="Submit" onPress={handleSubmit as any} />
+          </View>
+        )}
+      </Formik>
+
+      <View style={styles.radioGroup}>
+        <Text style={styles.label}>Do you know the person?</Text>
+        <TouchableOpacity onPress={() => setKnowPerson(true)}>
+          <Text style={knowPerson ? styles.selectedRadio : styles.radio}>Yes</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setUnknowPerson(true)}>
+          <Text style={unknowPerson ? styles.selectedRadio : styles.radio}>No</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  input: {
+    backgroundColor: '#fff',
+    padding: 10,
+    marginVertical: 8,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginVertical: 8,
+  },
+  picker: {
+    backgroundColor: '#fff',
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  radioGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 20,
+  },
+  radio: {
+    fontSize: 16,
+    color: '#007BFF',
+  },
+  selectedRadio: {
+    fontSize: 16,
+    color: '#0056b3',
+    fontWeight: 'bold',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  checked: {
+    width: 14,
+    height: 14,
+    backgroundColor: '#007BFF',
+  },
+});
+
+export default CreateCaseScreen;

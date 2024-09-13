@@ -1,22 +1,45 @@
-// src/providers/card-details/CardDetailsProvider.ts
-import { Api } from "../api/api"; // Ensure this path is correct
+// src/providers/CardDetailsProvider.tsx
+import { Api } from "../api/api";
 
-class CardDetailsProvider {
+
+export class CardDetailsProvider {
   api: Api;
 
   constructor(api: Api) {
     this.api = api;
   }
 
-  cardDetails(userInfo: any) {
-    const headers = { 'Content-Type': 'application/json' };
-    return this.api.post('creditcard_info', userInfo, { headers }); // Removed JSON.stringify
+  async card_details(user_info: any) {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await this.api.post(
+        'creditcard_info',
+        JSON.stringify(user_info),
+        { headers: headers, timeout: 10000 }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  payment(userInfo: any) {
-    const headers = { 'Content-Type': 'application/json' };
-    return this.api.post('charge_credit_card', userInfo, { headers }); // Removed JSON.stringify
+  async payment(user_info: any) {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await this.api.post(
+        'charge_credit_card',
+        JSON.stringify(user_info),
+        { headers: headers, timeout: 10000 }
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 }
-
-export default new CardDetailsProvider(new Api());

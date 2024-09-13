@@ -1,0 +1,252 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TextInput, Button, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { Picker } from '@react-native-picker/picker';
+import ImagePicker from 'react-native-image-picker';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Api } from '../providers/api/api';
+import ProfileProvider from '../providers/profile/profile';
+import CountryProvider from '../providers/country/country';
+
+// Replace with your API base URL
+const API_URL = 'http://aggressionmanagement.com/api';
+
+// Initialize Api and Providers
+const api = new Api(API_URL);
+const profileProvider = new ProfileProvider(api);
+const countryProvider = new CountryProvider(api);
+
+const EditProfileScreen = () => {
+  const { control, handleSubmit, setValue, getValues } = useForm();
+  const [loading, setLoading] = useState(false);
+  const [userInformation, setUserInformation] = useState<any>(null);
+  const [countries, setCountries] = useState<any[]>([]);
+  const [states, setStates] = useState<any[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<any>(null);
+  const [selectedState, setSelectedState] = useState<any>(null);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      setLoading(true);
+      try {
+        // Retrieve user_id and token from AsyncStorage
+        const userData = await AsyncStorage.getItem('user');
+        const { user_id, token } = userData ? JSON.parse(userData) : {};
+
+        if (!user_id || !token) {
+          Alert.alert('Error', 'User not authenticated.');
+          return;
+        }
+
+        // Fetch user information
+        const response = await profileProvider.user_info({ user_id, token });
+        const userDataResponse = response.data;
+
+        setUserInformation(userDataResponse);
+        setValue('fname', userDataResponse.firstname);
+        setValue('lname', userDataResponse.surname);
+        setValue('email', userDataResponse.email);
+        setValue('title', userDataResponse.title);
+        setValue('Organization', userDataResponse.organization);
+        setValue('Profession', userDataResponse.profession);
+
+        // Fetch countries
+        const countriesData = await countryProvider.getCountries(token);
+        setCountries(countriesData);
+
+        // Fetch states if country is selected
+        if (userDataResponse.country_id) {
+          const statesData = await countryProvider.getStates(userDataResponse.country_id, token);
+          setStates(statesData);
+          setSelectedCountry(userDataResponse.country_id);
+          setSelectedState(userDataResponse.state_id);
+        }
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'Something went wrong.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserInfo();
+  }, [setValue]);
+
+  const onCountryChange = async (countryId: string) => {
+    setSelectedCountry(countryId);
+    setLoading(true);
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      const { token } = userData ? JSON.parse(userData) : {};
+      const statesData = await countryProvider.getStates(countryId, token);
+      setStates(statesData);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to fetch states.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      const { user_id, token } = userData ? JSON.parse(userData) : {};
+      if (!user_id || !token) {
+        Alert.alert('Error', 'User not authenticated.');
+        return;
+      }
+
+      const response = await profileProvider.edit_info({
+        user_id,
+        token,
+        ...data,
+        country: selectedCountry,
+        state: selectedState,
+      });
+      Alert.alert('Success', response.data.msg);
+      navigation.goBack();
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to update profile.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openImagePicker = () => {
+    ImagePicker.showImagePicker({ mediaType: 'photo' }, (response) => {
+      if (response.didCancel || response.error) {
+        return;
+      }
+      setValue('profilePic', response.uri);
+    });
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  return (
+    <View style={{ padding: 20 }}>
+      <TouchableOpacity onPress={openImagePicker}>
+        <Image
+          source={{ uri: getValues('profilePic') || 'default_image_url' }}
+          style={{ width: 100, height: 100, borderRadius: 50 }}
+        />
+      </TouchableOpacity>
+      <Controller
+        control={control}
+        name="fname"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="First Name"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+        )}
+        rules={{ required: true }}
+      />
+      <Controller
+        control={control}
+        name="lname"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="Last Name"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+        )}
+        rules={{ required: true }}
+      />
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="Email"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+            editable={false}
+          />
+        )}
+        rules={{ required: true }}
+      />
+      <Controller
+        control={control}
+        name="title"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="Title"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="Organization"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="Organization"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="Profession"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="Profession"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            style={{ borderBottomWidth: 1, marginBottom: 10 }}
+          />
+        )}
+      />
+      <View style={{ marginBottom: 10 }}>
+        <Text>Country</Text>
+        <Picker
+          selectedValue={selectedCountry}
+          onValueChange={async (itemValue) => {
+            setSelectedCountry(itemValue);
+            onCountryChange(itemValue);
+          }}
+        >
+          {countries.map((country) => (
+            <Picker.Item key={country.country_id} label={country.country_name} value={country.country_id} />
+          ))}
+        </Picker>
+      </View>
+      <View style={{ marginBottom: 10 }}>
+        <Text>State</Text>
+        <Picker
+          selectedValue={selectedState}
+          onValueChange={(itemValue) => setSelectedState(itemValue)}
+        >
+          {states.map((state) => (
+            <Picker.Item key={state.state_id} label={state.state_name} value={state.state_id} />
+          ))}
+        </Picker>
+      </View>
+      <Button title="Save" onPress={handleSubmit(onSubmit)} />
+    </View>
+  );
+};
+
+export default EditProfileScreen;

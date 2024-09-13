@@ -10,6 +10,21 @@ import CountrySelectionScreen from './src/pages/CountrySelectionScreen';
 import StateSelectionScreen from './src/pages/StateSelectionScreen';
 import CreditCardScan from './src/pages/CreditCardScan';
 import { LoaderProvider } from './src/providers/loader/loader';
+import SubscriptionPage from './src/pages/SubscriptionPage';
+import ProfileScreen from './src/pages/ProfileScreen';
+import EditProfileScreen from './src/pages/EditProfileScreen';
+import HomePage from './src/pages/HomePage';
+import CreateCaseScreen from './src/pages/CreateCaseScree';
+import AggressionMeterScreen from './src/pages/AggressionMeterScreen';
+import QuestionPage from './src/pages/QuestionPage';
+import BestPracticeScreen from './src/pages/BestPracticeScreen';
+import AggressionStageZeroScreen from './src/pages/AggressionStageZeroScreen';
+import AggressionStageOneScreen from './src/pages/AggressionStageOneScreen';
+import Behaviour from './src/pages/Behaviour';
+import AgressionExplainPage from './src/pages/AgressionExplainPage';
+import MyCasePage from './src/pages/MyCasePage';
+import { handleNextAction } from '@stripe/stripe-react-native';
+
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -18,7 +33,7 @@ const App = () => {
     <LoaderProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ 
             headerShown: false, 
             cardStyle: { backgroundColor: 'red' } 
@@ -29,7 +44,53 @@ const App = () => {
             cardStyle: { backgroundColor: 'red' } 
           }}  
         />
+
+<Stack.Screen name="AggressionStageOneScreen" component={AggressionStageOneScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="AgressionExplainPage" component={AgressionExplainPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="MyCasePage" component={MyCasePage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="AggressionStageZeroScreen" component={AggressionStageZeroScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="Behaviour" component={Behaviour} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="BestPracticeScreen" component={BestPracticeScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+          <Stack.Screen name="AggressionMeterScreen" component={AggressionMeterScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="QuestionPage" component={QuestionPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
         <Stack.Screen name="RegistrationForm" component={RegistrationForm} options={{ 
+            headerShown: false, 
+            cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="CreateCaseScreen" component={CreateCaseScreen} options={{ 
             headerShown: false, 
             cardStyle: { backgroundColor: 'red' } 
           }}  
@@ -47,6 +108,30 @@ const App = () => {
           
         />
          <Stack.Screen name="credit" component={CreditCardScan} options={{ 
+            headerShown: false, 
+            cardStyle: { backgroundColor: 'red' } 
+          }}  
+          
+        />
+         <Stack.Screen name="sub" component={SubscriptionPage} options={{ 
+            headerShown: false, 
+            cardStyle: { backgroundColor: 'red' } 
+          }}  
+          
+        />
+        <Stack.Screen name="profile" component={ProfileScreen} options={{ 
+            headerShown: false, 
+            cardStyle: { backgroundColor: 'red' } 
+          }}  
+          
+        />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+          
+        />
+        <Stack.Screen name="home" component={HomePage} options={{ 
             headerShown: false, 
             cardStyle: { backgroundColor: 'red' } 
           }}  

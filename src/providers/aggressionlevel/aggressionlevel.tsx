@@ -1,37 +1,51 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { Api } from '../api/api';
-import 'rxjs/add/operator/timeout';
-/*
-  Generated class for the AggressionlevelProvider provider.
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-@Injectable()
+// Define the AggressionlevelProvider class
 export class AggressionlevelProvider {
+  private api: Api;
 
-  constructor(public http: HttpClient,public api: Api) {
-    
-  }
-  aggression_level(info) {
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // let headerOptions: any = { 'Content-Type': 'application/json' };
-
-
-    return this.api.post('aggression_level_show_case', JSON.stringify(info), { headers: headers }).timeout(10000) ;
-
+  constructor(api: Api) {
+    this.api = api;
   }
 
-
-  create_case_aggression_level(info){
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // let headerOptions: any = { 'Content-Type': 'application/json' };
-
-
-    return this.api.post('create_case_aggression_level', JSON.stringify(info), { headers: headers });
+  // Helper method to get token from storage
+  private async getToken(): Promise<string | null> {
+    try {
+      const token = await AsyncStorage.getItem('authToken');
+      return token;
+    } catch (error) {
+      console.error('Error retrieving token:', error);
+      return null;
+    }
   }
 
+  // Helper method to set headers with token
+  private async getHeaders() {
+    const token = await this.getToken();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, // Include the token if it exists
+    };
+  }
+
+  // Method to get aggression level
+  async aggression_level(info: any) {
+    const config: AxiosRequestConfig = {
+      headers: await this.getHeaders(),
+      timeout: 10000, // Set timeout for the request
+    };
+
+    return this.api.post('aggression_level_show_case', JSON.stringify(info), config);
+  }
+
+  // Method to create case aggression level
+  async create_case_aggression_level(info: any) {
+    const config: AxiosRequestConfig = {
+      headers: await this.getHeaders(),
+    };
+
+    return this.api.post('create_case_aggression_level', JSON.stringify(info), config);
+  }
 }

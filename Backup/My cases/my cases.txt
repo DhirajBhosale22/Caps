@@ -1,0 +1,160 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator, FlatList, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CaseProvider from '../providers/case/case';
+import ProfileProvider from '../providers/profile/profile';
+import { Api } from '../providers/api/api';
+
+// Initialize API and providers
+const api = new Api('http://aggressionmanagement.com/api');
+const profileProvider = new ProfileProvider(api);
+const caseProvider = new CaseProvider(api);
+
+const MyCasePage = () => {
+  const [loading, setLoading] = useState(true);
+  const [myCases, setMyCases] =useState<any[]>([]);
+  const [userInfo, setUserInfo] = useState(null);
+  const [item, setItem] = useState(null);
+
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  // Function to load cases and user info
+  const loadUserData = async () => {
+    try {
+      const storedUser = await AsyncStorage.getItem('user');
+
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        const token = { token: parsedUser.token, user_id: parsedUser.user_id };
+
+        // Fetch user profile info
+        const userProfileResponse = await profileProvider.user_info(token);
+        console.log('userProfileResponse:', userProfileResponse.data);
+        setUserInfo(userProfileResponse.data);
+
+        // Fetch cases created by the user
+        const myCasesResponse = await caseProvider.myCases(token);
+        console.log('myCasesResponse:', myCasesResponse);
+        
+  
+        
+
+        // Ensure myCases is always an array
+        setMyCases(Array.isArray(myCasesResponse) ? myCasesResponse : []);
+      } else {
+        Alert.alert('Error', 'User token not found. Please log in again.');
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+      Alert.alert('Error', 'Failed to load data. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      {userInfo && (
+        <View style={styles.userInfo}>
+          <Text style={styles.welcomeText}>Welcome, {userInfo.firstname}</Text>
+          <Text>Email: {userInfo.email}</Text>
+        </View>
+      )}
+
+      <Text style={styles.header}>My Cases</Text>
+
+      {/* Show a message if no cases are available */}
+      {myCases.length === 0 ? (
+        <Text style={styles.noCasesText}>No cases available</Text>
+      ) : (
+        <FlatList
+          data={myCases}
+          keyExtractor={(item) => item.case_id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.caseCard} onPress={() => {/* Handle case click */}}>
+              <View style={styles.caseContent}>
+                <Text style={styles.caseName}>{item.name} {item.last_name}</Text>
+                <Text style={styles.caseDate}>{item.date_time}</Text>
+                <Text style={styles.caseId}>Case ID: {item.case_id}</Text>
+                <Text style={styles.caseDetails}>P: {item.Primal}/C: {item.Cognitive}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          style={styles.flatList}
+        />
+      )}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userInfo: {
+    marginBottom: 20,
+  },
+  welcomeText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 10,
+  },
+  caseCard: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 10,
+  },
+  caseContent: {
+    flex: 1,
+  },
+  caseName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  caseDate: {
+    fontSize: 14,
+    color: 'black',
+  },
+  caseId: {
+    fontSize: 14,
+    color: '#666',
+  },
+  caseDetails: {
+    fontSize: 14,
+  },
+  flatList: {
+    flex: 1,
+  },
+  noCasesText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#666',
+    marginTop: 20,
+  },
+});
+
+export default MyCasePage;

@@ -1,43 +1,54 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+// DistributionlistProvider.tsx
+import axios from 'axios';
 import { Api } from '../api/api';
 
-/*
-  Generated class for the DistributionlistProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-@Injectable()
 export class DistributionlistProvider {
+  private api: Api;
 
-  constructor(public http: HttpClient, public api: Api) {
-    
+  constructor(api: Api) {
+    this.api = api;
   }
-  //*************Forgot password********************************/
+
+  // Helper method to set headers
+  private getHeaders() {
+    return {
+      'Content-Type': 'application/json',
+    };
+  }
+
+  // Method to handle distribution
   distribution(userInfo: any) {
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('distribution_list', JSON.stringify(userInfo), { headers: headers }).timeout(10000);
+    return this.api.post('distribution_list', JSON.stringify(userInfo), {
+      headers: this.getHeaders(),
+      timeout: 10000, // Set timeout for the request
+    });
   }
-  group_info(userInfo){
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('group_info', JSON.stringify(userInfo), { headers: headers });
+
+  // Method to get group information
+  group_info(userInfo: any) {
+    return this.api.post('group_info', JSON.stringify(userInfo), {
+      headers: this.getHeaders(),
+    });
   }
-  delete_group_contact(userInfo){
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('delete_group_contact', JSON.stringify(userInfo), { headers: headers });
+
+  // Method to delete group contact
+  delete_group_contact(userInfo: any) {
+    return this.api.post('delete_group_contact', JSON.stringify(userInfo), {
+      headers: this.getHeaders(),
+    });
   }
-  shareGroup_case(case_info){
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('shareGroup_case', JSON.stringify(case_info), { headers: headers });
+
+  // Method to share group case
+  shareGroup_case(case_info: any) {
+    return this.api.post('shareGroup_case', JSON.stringify(case_info), {
+      headers: this.getHeaders(),
+    });
   }
-  edit_list(edit_info){
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('edit_distribution_list', JSON.stringify(edit_info), { headers: headers });
+
+  // Method to edit distribution list
+  edit_list(edit_info: any) {
+    return this.api.post('edit_distribution_list', JSON.stringify(edit_info), {
+      headers: this.getHeaders(),
+    });
   }
 }

@@ -1,0 +1,305 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, Alert, ScrollView, StyleSheet, TouchableOpacity, Modal, StatusBar, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Api } from '../providers/api/api';
+import { AggressionlevelProvider } from '../providers/aggressionlevel/aggressionlevel';
+import { DistributionlistProvider } from '../providers/distributionlist/distributionlist';
+import ProfileProvider from '../providers/profile/profile';
+import { useRoute } from '@react-navigation/native';
+import { CreateCaseProvider } from '../providers/createcase/createcase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const api = new Api(); // Initialize the Api class
+const aggressionLevelProvider = new AggressionlevelProvider(api);
+const distributionListProvider = new DistributionlistProvider(api);
+const profileProvider = new ProfileProvider(api);
+const createCaseProvider = new CreateCaseProvider(api);
+
+const AggressionMeterScreen: React.FC = () => {
+    const route = useRoute();
+    const { suspect_info } = route.params as { suspect_info: { suspect_name: string; last_name: string; } };
+  
+    const [aggressionLevel, setAggressionLevel] = useState(0);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
+   
+    const [aggressionResult, setAggressionResult] = useState<any>({});
+
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const userToken = await AsyncStorage.getItem('user_token');
+            if (userToken) {
+                setToken(userToken);
+
+                // Fetch suspect info using CreateCaseProvider
+                const caseInfo = await createCaseProvider.getSuspectInfo(userToken);
+                setSuspectInfo(caseInfo);
+
+                // Fetch aggression result using AggressionlevelProvider
+                const aggressionData = await aggressionLevelProvider.getAggressionResult(userToken);
+                setAggressionResult(aggressionData);
+                setAggressionLevel(aggressionData.level); // Assume there's a 'level' field
+
+                // Fetch distribution list if needed (Example usage)
+                const distributionList = await distributionListProvider.getDistributionList(userToken);
+                console.log('Distribution List:', distributionList);
+
+                // Fetch profile information if needed (Example usage)
+                const profileData = await profileProvider.getProfile(userToken);
+                console.log('Profile Data:', profileData);
+
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to fetch data');
+            console.error('Fetch Error:', error);
+        }
+    };
+
+    const handleGridItemPress = (screen: string) => {
+        if (screen === 'BestPracticesScreen') {
+            setModalVisible(true); // Show the modal for "Best Practices"
+        } else {
+            navigation.navigate(screen); // Navigate to the specific screen
+        }
+    };
+
+    const getArrowRotation = () => {
+        const angle = (aggressionLevel / 100) * 180 - 90;
+        return {
+            transform: [{ rotate: `${angle}deg` }],
+        };
+    };
+
+    return (
+        <View style={styles.container}>
+            {/* StatusBar */}
+            <StatusBar barStyle="light-content" backgroundColor="#B22222" />
+
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                {/* Top Navigation Bar */}
+                <View style={styles.topBar}>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/download.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/share.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/edit.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/document.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/check.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Name Placeholder */}
+                <Text style={styles.namePlaceholder}>{suspect_info.suspect_name} {suspect_info.last_name}r</Text>
+
+                {/* Grid of Images */}
+                <View style={styles.gridContainer}>
+                    {gridItems.map(({ label, image, screen }) => (
+                        <TouchableOpacity key={label} style={styles.gridItem} onPress={() => handleGridItemPress(screen)}>
+                            <Image source={image} style={styles.gridImage} />
+                            <Text style={styles.gridLabel}>{label.toUpperCase()}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+
+                {/* Aggression Meter */}
+                <View style={styles.meterContainer}>
+                    <View style={styles.meterWrapper}>
+                        <Image
+                            source={require('../assets/img/meter.png')}
+                            style={styles.meterImage}
+                        />
+                        <Image
+                            source={require('../assets/img/arrow1.png')} // Arrow image
+                            style={[styles.arrowImage, getArrowRotation()]}
+                        />
+                    </View>
+                    <Text style={styles.meterText}>METER OF EMERGING AGGRESSION</Text>
+                </View>
+
+                {/* Footer Note */}
+                <Text style={styles.footerText}>
+                    This CAPS Mobile App is fully protected by Copyrights, Trademarks, and Patents. 
+                    Any unauthorized use of this app or its methodologies in whole, or in part, without prior written 
+                    permission from the Center for Aggression Management, Inc., is a Federal offense and will be prosecuted 
+                    to the fullest extent of the law.
+                </Text>
+            </ScrollView>
+
+            {/* Modal for Best Practices */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        
+                        <Text style={styles.modalText}>
+                           In order to advance to Best
+                            {'\n'}
+                            Practice Responses, you must
+                            {'\n'}
+                            first select elements in the
+                            {'\n'}
+                            Meter of Emerging Aggression.
+                            
+                        </Text>
+                        <Pressable style={styles.modalButton} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.modalButtonText}>OK</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
+        </View>
+    );
+};
+
+const gridItems = [
+    { label: 'Behavior', image: require('../assets/img/male.jpg'), screen: 'BehaviorScreen' },
+    { label: 'Communication', image: require('../assets/img/male.jpg'), screen: 'CommunicationScreen' },
+    { label: 'Interaction', image: require('../assets/img/male.jpg'), screen: 'InteractionScreen' },
+    { label: 'Demeanor', image: require('../assets/img/male.jpg'), screen: 'DemeanorScreen' },
+    { label: 'Facial Expression', image: require('../assets/img/male.jpg'), screen: 'FacialExpressionScreen' },
+    { label: 'Tactical Movement', image: require('../assets/img/male.jpg'), screen: 'TacticalMovementScreen' },
+    { label: 'Other Concerning Factors', image: require('../assets/img/male.jpg'), screen: 'OtherConcerningFactorsScreen' },
+    { label: 'Files', image: require('../assets/img/document.png'), screen: 'FilesScreen' },
+    { label: 'Best Practices', image: require('../assets/img/check.png'), screen: 'BestPracticesScreen' },
+];
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#F5F5F5',
+    },
+    topBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#B22222',
+        padding: 14,
+    },
+    footerButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    footerIcon: {
+        width: 22,
+        height: 22,
+        tintColor: 'white',
+    },
+    namePlaceholder: {
+        textAlign: 'center',
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginVertical: 5,
+    },
+    gridContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        paddingHorizontal: 15,
+        width: '100%',
+        height: 'auto', // Adjusted to 'auto' to fit content
+    },
+    gridItem: {
+        width: '28%',
+        height: 90, // Adjusted fixed height
+        backgroundColor: '#D3D3D3',
+        borderRadius: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    gridImage: {
+        width: 45,
+        height: 45,
+        marginBottom: 5,
+    },
+    gridLabel: {
+        fontSize: 10,
+        textAlign: 'center',
+    },
+    meterContainer: {
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    meterWrapper: {
+        position: 'relative',
+    },
+    meterImage: {
+        width: 230,
+        height: 230,
+        resizeMode: 'contain',
+    },
+    arrowImage: {
+        position: 'absolute',
+        top: '38%',
+        left: '37%',
+        width: 75,
+        height: 75,
+        resizeMode: 'contain',
+    },
+    meterText: {
+        marginTop: 15,
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    footerText: {
+        textAlign: 'center',
+        fontSize: 12,
+        marginHorizontal: 10,
+        marginVertical: 20,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 20,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    modalButton: {
+        backgroundColor: '#B22222',
+        borderRadius: 5,
+        padding: 10,
+        width: '50%',
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        color: 'white',
+        fontSize: 14,
+    },
+    scrollViewContent: {
+        paddingBottom: 20,
+    },
+});
+
+export default AggressionMeterScreen;
+	

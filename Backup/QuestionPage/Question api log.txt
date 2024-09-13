@@ -1,0 +1,170 @@
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, Text, FlatList, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import { Api } from '../providers/api/api';
+import AgressionMeterQuestionProvider from '../providers/agressionmeter-question/agressionmeter-question';
+import ProfileProvider from '../providers/profile/profile';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const api = new Api('http://aggressionmanagement.com/api');
+const aggressionMeterProvider = new AgressionMeterQuestionProvider(api);
+const profileProvider = new ProfileProvider(api);
+
+const QuestionPage: React.FC = () => {
+    const route = useRoute();
+    const [questions, setQuestions] = useState<any[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [firstName, setFirstName] = useState<string | null>(null);
+
+    const fetchQuestions = useCallback(async () => {
+        try {
+            setLoading(true);
+    
+            // Fetch user info from AsyncStorage
+            const userData = await AsyncStorage.getItem('user');
+            if (!userData) {
+                Alert.alert('Error', 'User not authenticated.');
+                return;
+            }
+    
+            const { user_id: storedUserId, token: storedToken } = JSON.parse(userData);
+    
+            if (!storedUserId || !storedToken) {
+                Alert.alert('Error', 'User not authenticated.');
+                return;
+            }
+    
+            // Fetch user info from API
+            const userInfoResponse = await profileProvider.user_info({
+                token: storedToken,
+                user_id: storedUserId,
+            });
+    
+            if (userInfoResponse?.data?.firstname) {
+                setFirstName(userInfoResponse.data.firstname);
+            } else {
+                console.log('First name not found in response');
+                setFirstName('Guest');
+            }
+    
+            // Fetch questions
+            const params = route as any;
+            console.log("=============",params);
+            // Enhanced error handling and logging
+            if (!params || !params.params) {
+                console.error('Route parameters are invalid:', params);
+                setError('Invalid route parameters');
+                setLoading(false);
+                return;
+            }
+    
+            const { token, user_id, type } = params.params.data;
+            console.log(token);
+            console.log(user_id);
+            console.log(type);
+            // Ensure type_id exists and is valid
+            if (!token || !user_id || !type) {
+                console.error('Missing token, user_id, or type_id in route parameters:', params.info);
+                setError('Missing necessary parameters');
+                setLoading(false);
+                return;
+            }
+    
+            const pageType = getPageType(type);
+            if (!pageType) {
+                console.error('Invalid type_id:', type);
+                setError('Invalid page type');
+                setLoading(false);
+                return;
+            }
+    
+            const response = await aggressionMeterProvider.emergencyMeterQuestion({
+                token,
+                type: pageType,
+                user_id,
+            });
+    
+            if (response && response.result !== 'failed') {
+                const updatedQuestions = response.map((item: any) => ({
+                    ...item,
+                    is_selected: isSelected(item) ? '1' : '0',
+                }));
+                setQuestions(updatedQuestions);
+            } else {
+                showAlert('Error', response.msg || 'Failed to load questions');
+            }
+        } catch (err) {
+            console.error('Error fetching questions or user info:', err);
+            setError('No internet connection, make sure Wi-Fi or cellular data is turned on, then try again.');
+        } finally {
+            setLoading(false);
+        }
+    }, [route.params]);
+    
+
+    useEffect(() => {
+        fetchQuestions();
+    }, [fetchQuestions]);
+
+    const getPageType = (typeId: string) => {
+        const pageTypes: any = {
+            behavior: 'behavior',
+            communication: 'communication',
+            interaction: 'interaction',
+            demeanor: 'demeanor',
+        };
+        return pageTypes[typeId] || '';
+    };
+
+    const isSelected = (item: any) => {
+        // Your logic for determining if an item is selected
+    };
+
+    const showAlert = (title: string, message: string) => {
+        Alert.alert(title, message);
+    };
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    }
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.header}>Welcome, {firstName}</Text>
+            {error && <Text style={styles.errorText}>{error}</Text>}
+            <FlatList
+                data={questions}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.questionItem}>
+                        <Text>{item.question}</Text>
+                    </View>
+                )}
+            />
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+    },
+    header: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 16,
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 16,
+    },
+    questionItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+});
+
+export default QuestionPage;

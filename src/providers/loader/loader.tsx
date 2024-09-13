@@ -22,7 +22,7 @@ export const LoaderProvider = ({ children }: { children: ReactNode }) => {
       {children}
       {loading && (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size={120} color="#9d0808" />
         </View>
       )}
     </LoaderContext.Provider>
@@ -37,5 +37,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+   
   },
 });

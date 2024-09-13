@@ -2,7 +2,6 @@ import { AsyncStorage } from 'react-native';
 import { Api } from '../api/api';
 
 class User {
-  private _user: any;
   private api: Api;
   private storage: AsyncStorage;
 
@@ -11,16 +10,19 @@ class User {
     this.storage = storage;
   }
 
-  /**
-   * Send a POST request to our login endpoint with the data
-   * the user entered on the form.
-   */
   login(accountInfo: any) {
     const headers = {
       'Content-Type': 'application/json',
     };
-    return this.api.post('login', JSON.stringify(accountInfo), { headers: headers }).then((response: any) => response);
+    return this.api.post('login', accountInfo, { headers: headers })
+      .then((response: any) => response)
+      .catch((error: any) => {
+        console.error('Login Error:', error); // Log the error
+        throw error;
+      });
   }
+
+  
 
   /**
    * Send a POST request to our signup endpoint with the data
@@ -30,7 +32,16 @@ class User {
     const headers = {
       'Content-Type': 'application/json',
     };
-    return this.api.post('registration', JSON.stringify(accountInfo), { headers: headers }).then((response: any) => response);
+
+    return this.api.post('registration', JSON.stringify(accountInfo), { headers })
+      .then((response: any) => response)
+      .catch((error: any) => {
+        if (error.response && error.response.data) {
+          throw new Error(error.response.data.message || 'Validation error');
+        } else {
+          throw new Error('An error occurred during registration');
+        }
+      });
   }
 
   check_email(email: string) {

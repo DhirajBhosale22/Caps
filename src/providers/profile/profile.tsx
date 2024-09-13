@@ -1,33 +1,55 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Api } from '../api/api';
+import axios, { AxiosResponse } from 'axios';
 
-/*
-  Generated class for the ProfileProvider provider.
+class Api {
+  private baseUrl: string;
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-@Injectable()
-export class ProfileProvider {
-
-  constructor(public http: HttpClient, public api: Api) {
-   
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
   }
+
+  post(endpoint: string, data: any, options: any): Promise<AxiosResponse<any>> {
+    return axios.post(`${this.baseUrl}/${endpoint}`, data, options);
+  }
+}
+
+export class ProfileProvider {
+  api: Api;
+
+  constructor(api: Api) {
+    this.api = api;
+  }
+
   //*************User INFO********************************/
-  user_info(userInfo: any) {
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('user_info', JSON.stringify(userInfo), { headers: headers }).timeout(10000);
-    //return this.api.post('emergency_procedures', JSON.stringify(userInfo), { headers: headers }).timeout(10000);
-    
+  user_info(userInfo: any): Promise<AxiosResponse<any>> {
+    return this.api.post('user_info', JSON.stringify(userInfo), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${userInfo.token}`, // Ensure token is sent in headers
+      },
+      timeout: 10000,
+    });
   }
 
   //*******************Edit Profile*************************/
-  edit_info(edit_info: any) {
-   
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('edit_profile', JSON.stringify(edit_info), { headers: headers }).timeout(10000);
+  edit_info(editInfo: any): Promise<AxiosResponse<any>> {
+    return this.api.post('edit_profile', JSON.stringify(editInfo), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 10000,
+    });
+  }
+  
+  upload_profile_picture(formData: FormData): Promise<AxiosResponse<any>> {
+    return this.api.post('upload_profile_picture', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      timeout: 10000,
+    });
   }
 }
+
+
+
+export default ProfileProvider;

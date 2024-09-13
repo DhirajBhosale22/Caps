@@ -1,37 +1,51 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { Api } from '../api/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/*
-  Generated class for the CreatecaseProvider provider.
+export class CreateCaseProvider {
+  private api: Api;
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-@Injectable()
-export class CreatecaseProvider {
-
-  constructor(public http: HttpClient, public api: Api) {
-   
-  }
-  createcase(suspectInfo: any) {
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('create_case', JSON.stringify(suspectInfo), { headers: headers });
+  constructor(api: Api) {
+    this.api = api;
   }
 
-  CaseInfo(suspectInfo: any) {
+  async createCase(suspectInfo: any) {
+    const token = await AsyncStorage.getItem('user_token'); // Retrieve the token
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+    };
 
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('show_case', JSON.stringify(suspectInfo), { headers: headers });
+    try {
+      const response = await this.api.post('create_case', JSON.stringify(suspectInfo), { headers });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  EditCase(suspectInfo: any) {
- 
+  async caseInfo(suspectInfo: any) {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
 
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('edit_case', JSON.stringify(suspectInfo), { headers: headers }).timeout(10000);
+    try {
+      const response = await this.api.post('show_case', JSON.stringify(suspectInfo), { headers });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async editCase(suspectInfo: any) {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await this.api.post('edit_case', JSON.stringify(suspectInfo), { headers, timeout: 10000 });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 }

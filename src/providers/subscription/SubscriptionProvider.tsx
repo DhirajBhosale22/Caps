@@ -1,42 +1,39 @@
 // src/providers/SubscriptionProvider.tsx
 import { Api } from "../api/api";
 
-class SubscriptionProvider {
-  private api: Api;
+export class SubscriptionProvider {
+  api: Api;
 
-  constructor() {
-    this.api = new Api();
+  constructor(api: Api) {
+    this.api = api;
   }
 
-  // Subscription function
-  public async subscription(forgotInfo: any) {
-    try {
-      const response = await this.api.post<any>('validate_serial_key', JSON.stringify(forgotInfo));
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+  //*************subscription********************************/
+  subscription(forgotInfo: any) {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    return this.api.post('validate_serial_key', JSON.stringify(forgotInfo), { headers }).then(response => response).catch(error => {
+      throw new Error(error);
+    });
+  }
+  
+  subscription_type() {
+    return this.api.get('subscription', {}).then(response => response).catch(error => {
+      throw new Error(error);
+    });
   }
 
-  // Get subscription type
-  public async subscription_type() {
-    try {
-      const response = await this.api.get<any>('subscription');
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  // Add subscription
-  public async add_subscription(sub_info: any) {
-    try {
-      const response = await this.api.post<any>('add_subscription', JSON.stringify(sub_info));
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+  add_subscription(sub_info: any) {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    return this.api.post('add_subscription', JSON.stringify(sub_info), { headers }).then(response => response).catch(error => {
+      throw new Error(error);
+    });
   }
 }
 
-export default new SubscriptionProvider();
+// Example usage
+const apiInstance = new Api();
+const subscriptionProvider = new SubscriptionProvider(apiInstance);

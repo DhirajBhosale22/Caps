@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, StyleSheet, Image, KeyboardAvoidingView, StatusBar, Platform, Linking} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { CheckBox } from 'react-native-elements';
 import { Formik } from 'formik';
@@ -8,6 +8,14 @@ import CountryProvider from '../providers/country/country';
 import User from '../providers/user/User';
 import { Api } from '../providers/api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import pointer from '../assets/img/pointer.png';
+import userb from '../assets/img/userb.png';
+import lock from '../assets/img/lock.png';
+import mailb from '../assets/img/mailb.png';
+import Title from '../assets/img/Title.png';
+import organization from '../assets/img/organization.png';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useLoader } from '../providers/loader/loader';
 
 const api = new Api();
 const countryProvider = new CountryProvider(api);
@@ -24,21 +32,29 @@ const PasswordValidationSchema = Yup.object().shape({
     .required('Required'),
 });
 
-class RegistrationForm extends Component {
-  state = {
-    passwordVisible: false,
-    confirmPasswordVisible: false,
-    countries: [],
-    states: [],
-    isEnabled: true,
-    share: false,
-  };
+const RegistrationForm = ({ navigation }) => {
+  const { showLoader, hideLoader } = useLoader();
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [isEnabled, setIsEnabled] = useState(true);
+  const [share, setShare] = useState(false);
 
-  componentDidMount() {
-    this.loadCountries();
-  }
+  const surnameRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
+  const titleRef = useRef<TextInput>(null);
+  const organizationRef = useRef<TextInput>(null);
+  const professionRef = useRef<TextInput>(null);
 
-  loadCountries = async () => {
+  useEffect(() => {
+    loadCountries();
+  }, []);
+
+  const loadCountries = async () => {
+    showLoader();
     try {
       const response = await countryProvider.country();
       const countries = response.data.map(country => ({
@@ -46,13 +62,16 @@ class RegistrationForm extends Component {
         name: country.country_name,
       }));
       console.log('Countries loaded:', countries);
-      this.setState({ countries });
+      setCountries(countries);
     } catch (error) {
       console.error(error);
+    } finally {
+      hideLoader();
     }
   };
 
-  handleCountryChange = async (selectedItem) => {
+  const handleCountryChange = async (selectedItem) => {
+    showLoader();
     try {
       const response = await countryProvider.state(selectedItem.id);
       const states = response.data.map(state => ({
@@ -60,13 +79,17 @@ class RegistrationForm extends Component {
         name: state.state_name,
       }));
       console.log('States loaded for country:', selectedItem, states);
-      this.setState({ states, isEnabled: false });
+      setStates(states);
+      setIsEnabled(false);
     } catch (error) {
       console.error(error);
+    } finally {
+      hideLoader();
     }
   };
 
-  handleSignup = async (values) => {
+  const handleSignup = async (values) => {
+    showLoader();
     try {
       const response = await userProvider.check_email(values.email);
       if (response.data.result === 'success') {
@@ -82,71 +105,43 @@ class RegistrationForm extends Component {
           profession: values.profession,
           share_data: values.share ? '1' : '0',
         };
-        this.props.navigation.navigate('credit', { account });
+        navigation.navigate('credit', { account });
       } else {
         Alert.alert(response.data.result, response.data.msg);
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      hideLoader();
     }
   };
-
-  openTermsConditions = async () => {
-    try {
-      const response = await api.get('terms_conditions');
-      const url = response.data.terms_and_conditions;
-      if (await InAppBrowser.isAvailable()) {
-        InAppBrowser.open(url, {
-          dismissButtonStyle: 'close',
-          preferredBarTintColor: '#453AA4',
-          preferredControlTintColor: 'white',
-          readerMode: false,
-          animated: true,
-          modalPresentationStyle: 'fullScreen',
-          modalTransitionStyle: 'coverVertical',
-          modalEnabled: true,
-          enableBarCollapsing: false,
-          showTitle: true,
-          toolbarColor: '#6200EE',
-          secondaryToolbarColor: 'black',
-          navigationBarColor: 'black',
-          navigationBarDividerColor: 'white',
-          enableDefaultShare: true,
-          forceCloseOnRedirection: false,
-          animations: {
-            startEnter: 'slide_in_right',
-            startExit: 'slide_out_left',
-            endEnter: 'slide_in_left',
-            endExit: 'slide_out_right',
-          },
-          headers: {
-            'my-custom-header': 'my custom header value',
-          },
-        });
-      } else {
-        Alert.alert('Error', 'Browser is not available.');
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
   };
 
-  togglePasswordVisibility = () => {
-    this.setState(prevState => ({
-      passwordVisible: !prevState.passwordVisible,
-    }));
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisible(!confirmPasswordVisible);
   };
 
-  toggleConfirmPasswordVisibility = () => {
-    this.setState(prevState => ({
-      confirmPasswordVisible: !prevState.confirmPasswordVisible,
-    }));
-  };
-
-  render() {
-    console.log('Component state:', this.state);
-    return (
-      <ScrollView contentContainerStyle={styles.scrollView}>
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+     
+        <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Image source={pointer} style={styles.backIcon} resizeMode="cover" />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Welcome</Text>
+        </View>
+        <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps='handled'
+        showsVerticalScrollIndicator={false}
+      >
+       
         <Formik
           initialValues={{
             fname: '',
@@ -203,7 +198,7 @@ class RegistrationForm extends Component {
               .max(30, 'Too Long!')
               .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
           })}
-          onSubmit={this.handleSignup}
+          onSubmit={handleSignup}
         >
           {({
             handleChange,
@@ -215,234 +210,368 @@ class RegistrationForm extends Component {
             setFieldValue,
           }) => (
             <View>
-              <Text style={styles.label}>First Name</Text>
-              <View style={styles.inputRow}>
+               <View>
+          <Text style={styles.trial}> Sign up to start your 1 month free trial </Text>
+        </View>
+              <View style={styles.inputContainer}>
+                <Image source={userb} style={styles.icon} />
                 <TextInput
                   style={styles.input}
+                  placeholder="First Name"
+                  placeholderTextColor="#aaa"
+                  value={values.fname}
                   onChangeText={handleChange('fname')}
                   onBlur={handleBlur('fname')}
-                  value={values.fname}
+                  onSubmitEditing={() => surnameRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                  maxLength={30}
                 />
               </View>
-              {touched.fname && errors.fname && <Text style={styles.warningtext}>{errors.fname}</Text>}
+              <View style={styles.warning}>
+                {touched.fname && errors.fname && <Text style={styles.warningtext}>{errors.fname}</Text>}
+              </View>
 
-              <Text style={styles.label}>Last Name</Text>
-              <View style={styles.inputRow}>
+              <View style={styles.inputContainer}>
+                <Image source={userb} style={styles.icon} />
                 <TextInput
+                  ref={surnameRef}
                   style={styles.input}
+                  placeholder="Surname"
+                  placeholderTextColor="#aaa"
+                  value={values.lname}
                   onChangeText={handleChange('lname')}
                   onBlur={handleBlur('lname')}
-                  value={values.lname}
+                  onSubmitEditing={() => emailRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
                 />
               </View>
-              {touched.lname && errors.lname && <Text style={styles.warningtext}>{errors.lname}</Text>}
+              <View style={styles.warning}>
+                {touched.lname && errors.lname && <Text style={styles.warningtext}>{errors.lname}</Text>}
+              </View>
 
-              <Text style={styles.label}>Email</Text>
-              <View style={styles.inputRow}>
+              <View style={styles.inputContainer}>
+                <Image source={mailb} style={styles.icon} />
                 <TextInput
+                  ref={emailRef}
                   style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor="#aaa"
+                  keyboardType="email-address"
+                  value={values.email}
                   onChangeText={handleChange('email')}
                   onBlur={handleBlur('email')}
-                  value={values.email}
+                  onSubmitEditing={() => passwordRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
                 />
               </View>
-              {touched.email && errors.email && <Text style={styles.warningtext}>{errors.email}</Text>}
+              <View style={styles.warning}>
+                {touched.email && errors.email && <Text style={styles.warningtext}>{errors.email}</Text>}
+              </View>
 
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.passwordContainer}>
+              <View style={styles.inputContainer}>
+                <Image source={lock} style={styles.icon} />
                 <TextInput
-                  style={styles.passwordInput}
-                  secureTextEntry={!this.state.passwordVisible}
+                  ref={passwordRef}
+                  style={styles.input}
+                  placeholder="Password"
+                  placeholderTextColor="#aaa"
+                  secureTextEntry={!passwordVisible}
+                  value={values.password}
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
-                  value={values.password}
+                  onSubmitEditing={() => confirmPasswordRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
                 />
-                <TouchableOpacity onPress={this.togglePasswordVisibility}>
-                  <Text style={styles.passwordToggle}>{this.state.passwordVisible ? 'Hide' : 'Show'}</Text>
+                <TouchableOpacity onPress={togglePasswordVisibility}>
+                  <Icon name={passwordVisible ? 'eye' : 'eye-slash'} size={20} color="#aaa" />
                 </TouchableOpacity>
               </View>
-              {touched.password && errors.password && <Text style={styles.warningtext}>{errors.password}</Text>}
+              <View style={styles.warning}>
+                {touched.password && errors.password && <Text style={styles.warningtext}>{errors.password}</Text>}
+              </View>
 
-              <Text style={styles.label}>Confirm Password</Text>
-              <View style={styles.passwordContainer}>
+              <View style={styles.inputContainer}>
+                <Image source={lock} style={styles.icon} />
                 <TextInput
-                  style={styles.passwordInput}
-                  secureTextEntry={!this.state.confirmPasswordVisible}
+                  ref={confirmPasswordRef}
+                  style={styles.input}
+                  placeholder="Confirm Password"
+                  placeholderTextColor="#aaa"
+                  secureTextEntry={!confirmPasswordVisible}
+                  value={values.confirmPassword}
                   onChangeText={handleChange('confirmPassword')}
                   onBlur={handleBlur('confirmPassword')}
-                  value={values.confirmPassword}
+                  onSubmitEditing={() => titleRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
                 />
-                <TouchableOpacity onPress={this.toggleConfirmPasswordVisibility}>
-                  <Text style={styles.passwordToggle}>{this.state.confirmPasswordVisible ? 'Hide' : 'Show'}</Text>
+                <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
+                  <Icon name={confirmPasswordVisible ? 'eye' : 'eye-slash'} size={20} color="#aaa" />
                 </TouchableOpacity>
               </View>
-              {touched.confirmPassword && errors.confirmPassword && <Text style={styles.warningtext}>{errors.confirmPassword}</Text>}
+              <View style={styles.warning}>
+                {touched.confirmPassword && errors.confirmPassword && <Text style={styles.warningtext}>{errors.confirmPassword}</Text>}
+              </View>
 
-              <Text style={styles.label}>Title</Text>
-              <View style={styles.inputRow}>
+              <View style={styles.inputContainer}>
+                <Image source={Title} style={styles.icon} />
                 <TextInput
+                  ref={titleRef}
                   style={styles.input}
+                  placeholder="Title"
+                  placeholderTextColor="#aaa"
+                  value={values.title}
                   onChangeText={handleChange('title')}
                   onBlur={handleBlur('title')}
-                  value={values.title}
+                  onSubmitEditing={() => organizationRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
                 />
               </View>
-              {touched.title && errors.title && <Text style={styles.warningtext}>{errors.title}</Text>}
+              <View style={styles.warning}>
+                {touched.title && errors.title && <Text style={styles.warningtext}>{errors.title}</Text>}
+              </View>
 
-              <Text style={styles.label}>Organization</Text>
-              <View style={styles.inputRow}>
+              <View style={styles.inputContainer}>
+                <Image source={organization} style={styles.icon} />
                 <TextInput
+                  ref={organizationRef}
                   style={styles.input}
+                  placeholder="Organization"
+                  placeholderTextColor="#aaa"
+                  value={values.organization}
                   onChangeText={handleChange('organization')}
                   onBlur={handleBlur('organization')}
-                  value={values.organization}
+                  onSubmitEditing={() => professionRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
                 />
               </View>
-              {touched.organization && errors.organization && <Text style={styles.warningtext}>{errors.organization}</Text>}
+              <View style={styles.warning}>
+                {touched.organization && errors.organization && <Text style={styles.warningtext}>{errors.organization}</Text>}
+              </View>
 
-              <Text style={styles.label}>Country</Text>
-              <View style={styles.inputRow}>
+              <View style={styles.pickerContainer}>
                 <Picker
-                  style={styles.picker}
                   selectedValue={values.country}
-                  onValueChange={(itemValue) => {
+                  onValueChange={(itemValue, itemIndex) => {
                     setFieldValue('country', itemValue);
-                    this.handleCountryChange(itemValue);
+                    handleCountryChange(itemValue);
                   }}
+                  style={styles.picker}
                 >
-                  <Picker.Item label="Select a country" value="" />
-                  {this.state.countries.map((country) => (
+                  <Picker.Item label="Select Country" value="" />
+                  {countries.map((country) => (
                     <Picker.Item key={country.id} label={country.name} value={country} />
                   ))}
                 </Picker>
               </View>
-              {touched.country && errors.country && <Text style={styles.warningtext}>{errors.country}</Text>}
+              <View style={styles.warning}>
+                {touched.country && errors.country && <Text style={styles.warningtext}>{errors.country}</Text>}
+              </View>
 
-              <Text style={styles.label}>State</Text>
-              <View style={styles.inputRow}>
+              <View style={styles.pickerContainer}>
                 <Picker
-                  style={styles.picker}
                   selectedValue={values.state}
-                  onValueChange={(itemValue) => setFieldValue('state', itemValue)}
-                  enabled={!this.state.isEnabled}
+                  onValueChange={(itemValue, itemIndex) => setFieldValue('state', itemValue)}
+                  style={styles.picker}
+                  enabled={!isEnabled}
                 >
-                  <Picker.Item label="Select a state" value="" />
-                  {this.state.states.map((state) => (
+                  <Picker.Item label="Select State" value="" />
+                  {states.map((state) => (
                     <Picker.Item key={state.id} label={state.name} value={state} />
                   ))}
                 </Picker>
               </View>
-              {touched.state && errors.state && <Text style={styles.warningtext}>{errors.state}</Text>}
+              <View style={styles.warning}>
+                {touched.state && errors.state && <Text style={styles.warningtext}>{errors.state}</Text>}
+              </View>
 
-              <Text style={styles.label}>Profession</Text>
-              <View style={styles.inputRow}>
+              <View style={styles.inputContainer}>
+                <Image source={userb} style={styles.icon} />
                 <TextInput
+                  ref={professionRef}
                   style={styles.input}
+                  placeholder="Profession"
+                  placeholderTextColor="#aaa"
+                  value={values.profession}
                   onChangeText={handleChange('profession')}
                   onBlur={handleBlur('profession')}
-                  value={values.profession}
+                  autoCapitalize="none"
+                  returnKeyType="done"
                 />
               </View>
-              {touched.profession && errors.profession && <Text style={styles.warningtext}>{errors.profession}</Text>}
+              <View style={styles.warning}>
+                {touched.profession && errors.profession && <Text style={styles.warningtext}>{errors.profession}</Text>}
+              </View>
 
               <View style={styles.checkboxContainer}>
                 <CheckBox
+                  title="Share Data"
                   checked={values.share}
                   onPress={() => setFieldValue('share', !values.share)}
+                  containerStyle={styles.checkbox}
                 />
-                <Text style={styles.checkboxLabel}>Share data</Text>
+                <Text style={styles.agreementText}>
+By clicking <Text style={styles.bold}>Register</Text> you are agree to the
+<Text style={styles.link} onPress={() => Linking.openURL('https://aggressionmanagement.com/Privacy%20Policy%20of%20CAPS.html')}> Privacy Policy and conditions</Text>
+</Text>
+
               </View>
-
-              <Text style={styles.link} onPress={this.openTermsConditions}>
-                Terms and Conditions
-              </Text>
-
-              <TouchableOpacity onPress={handleSubmit} style={styles.button}>
-                <Text style={styles.buttonText}>Sign Up</Text>
+              
+              <TouchableOpacity style={styles.signupButton} onPress={handleSubmit}>
+                <Text style={styles.signupButtonText}>NEXT</Text>
               </TouchableOpacity>
             </View>
           )}
         </Formik>
       </ScrollView>
-    );
-  }
-}
+    </KeyboardAvoidingView>
+  );
+};
 
 const styles = StyleSheet.create({
-  scrollView: {
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollViewContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 16,
-    backgroundColor: '#f8f8f8',
+    alignItems: 'center',
+  paddingBottom:60,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  inputRow: {
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#9d0808',
+    padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
+    zIndex: 1, // Ensure header stays above other content
+    },
+    agreementText: {
+      textAlign: 'center',
+      marginLeft:10,
+      marginRight:10,
+      fontSize: 18,
+      color: 'black',
+      marginTop: 5,
+      marginBottom:25,
+      
+      },
+  
+    link: {
+      color: '#800000',
+      },
+      bold:{
+      color:'black',
+      fontSize: 18,
+      fontWeight:'700'
+      },
+
+    backButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      },
+  
+  backIcon: {
+    width: 30,
+    height: 30,
+    padding: 10,
+    tintColor: 'white'
+    },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    },
+  trial: {
+    fontSize: 22,
+    marginTop: '15%',
+    marginBottom: 10,
+    color: 'black',
+    textAlign: 'center',
+    fontWeight:'600'
+
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#9d0808',
+    borderWidth: 1,
+    
+    width: '90%',
+     marginTop: 10,
+    paddingHorizontal: 15,
+    marginLeft:15,
   },
   input: {
     flex: 1,
-    height: 40,
-    fontSize: 16,
-    padding: 8,
+    height: 50,
+    color: '#000',
+    fontSize: 15,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    tintColor: '#800000',
+    },
+  warning: {
+    alignItems: 'flex-start',
+    marginBottom: 10,
   },
   warningtext: {
     color: 'red',
-    fontSize: 12,
-    marginBottom: 8,
   },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  passwordInput: {
-    flex: 1,
-    height: 40,
-    fontSize: 16,
-    padding: 8,
-  },
-  passwordToggle: {
-    fontSize: 16,
-    color: '#007BFF',
-    marginHorizontal: 8,
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#9d0808',
+  marginLeft:15,
+    marginTop: 10,
+    marginRight:20,
+    overflow: 'hidden',
   },
   picker: {
-    flex: 1,
-    height: 40,
-    fontSize: 16,
+    height: 50,
+    width: '100%',
+    color: '#000',
   },
   checkboxContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 16,
+    marginBottom: 20,
   },
-  checkboxLabel: {
-    fontSize: 16,
+  checkbox: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
-  link: {
-    color: '#007BFF',
-    textDecorationLine: 'underline',
-    marginVertical: 16,
-  },
-  button: {
-    backgroundColor: '#007BFF',
-    padding: 12,
-    borderRadius: 8,
+  signupButton: {
+    backgroundColor: '#9d0808',
+    width:'35%',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
     alignItems: 'center',
+    marginLeft:'35%',
   },
-  buttonText: {
+  signupButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });

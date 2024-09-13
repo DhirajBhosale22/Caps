@@ -1,0 +1,561 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, StyleSheet, Image, KeyboardAvoidingView, StatusBar, Platform, Linking} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { CheckBox } from 'react-native-elements';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import CountryProvider from '../providers/country/country';
+import User from '../providers/user/User';
+import { Api } from '../providers/api/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import pointer from '../assets/img/pointer.png';
+import userb from '../assets/img/userb.png';
+import lock from '../assets/img/lock.png';
+import mailb from '../assets/img/mailb.png';
+import Title from '../assets/img/Title.png';
+import organization from '../assets/img/organization.png';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+const api = new Api();
+const countryProvider = new CountryProvider(api);
+const userProvider = new User(api, AsyncStorage);
+
+const PasswordValidationSchema = Yup.object().shape({
+  password: Yup.string()
+    .required('Required')
+    .min(8, 'Too Short!')
+    .max(30, 'Too Long!')
+    .matches(/(?=.*[a-z])(?=.*[0-9])(?=.*[$@$#!%*?&])/, 'Password must contain at least one lowercase letter, one number, and one special character.'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('Required'),
+});
+
+const RegistrationForm = ({ navigation }) => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [isEnabled, setIsEnabled] = useState(true);
+  const [share, setShare] = useState(false);
+
+  const surnameRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
+  const titleRef = useRef<TextInput>(null);
+  const organizationRef = useRef<TextInput>(null);
+  const professionRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    loadCountries();
+  }, []);
+
+  const loadCountries = async () => {
+    try {
+      const response = await countryProvider.country();
+      const countries = response.data.map(country => ({
+        id: country.country_id,
+        name: country.country_name,
+      }));
+      console.log('Countries loaded:', countries);
+      setCountries(countries);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCountryChange = async (selectedItem) => {
+    try {
+      const response = await countryProvider.state(selectedItem.id);
+      const states = response.data.map(state => ({
+        id: state.state_id,
+        name: state.state_name,
+      }));
+      console.log('States loaded for country:', selectedItem, states);
+      setStates(states);
+      setIsEnabled(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSignup = async (values) => {
+    try {
+      const response = await userProvider.check_email(values.email);
+      if (response.data.result === 'success') {
+        const account = {
+          firstname: values.fname,
+          surname: values.lname,
+          email: values.email,
+          password: values.confirmPassword,
+          title: values.title,
+          organization: values.organization,
+          state: values.state.id,
+          country: values.country.id,
+          profession: values.profession,
+          share_data: values.share ? '1' : '0',
+        };
+        navigation.navigate('credit', { account });
+      } else {
+        Alert.alert(response.data.result, response.data.msg);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisible(!confirmPasswordVisible);
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps='handled'
+        showsVerticalScrollIndicator={false}
+      >
+        <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Image source={pointer} style={styles.backIcon} resizeMode="cover" />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Welcome</Text>
+        </View>
+        <View>
+          <Text style={styles.trial}> Sign up to start your 1 month free trial </Text>
+        </View>
+        <Formik
+          initialValues={{
+            fname: '',
+            lname: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            title: '',
+            organization: '',
+            state: '',
+            country: '',
+            share: false,
+            profession: '',
+          }}
+          validationSchema={Yup.object().shape({
+            fname: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+            lname: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+            email: Yup.string()
+              .required('Required')
+              .min(5, 'Too Short!')
+              .max(50, 'Too Long!')
+              .email('Invalid email address'),
+            password: Yup.string()
+              .required('Required')
+              .min(8, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/(?=.*[a-z])(?=.*[0-9])(?=.*[$@$#!%*?&])/, 'Password must contain at least one lowercase letter, one number, and one special character.'),
+            confirmPassword: Yup.string()
+              .oneOf([Yup.ref('password'), null], 'Passwords must match')
+              .required('Required'),
+            title: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+            organization: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+            country: Yup.object().required('Required'),
+            state: Yup.object().required('Required'),
+            profession: Yup.string()
+              .required('Required')
+              .min(2, 'Too Short!')
+              .max(30, 'Too Long!')
+              .matches(/^[a-zA-Z]+$/, 'Only alphabets are allowed.'),
+          })}
+          onSubmit={handleSignup}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+            setFieldValue,
+          }) => (
+            <View>
+              <View style={styles.inputContainer}>
+                <Image source={userb} style={styles.icon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="First Name"
+                  placeholderTextColor="#aaa"
+                  value={values.fname}
+                  onChangeText={handleChange('fname')}
+                  onBlur={handleBlur('fname')}
+                  onSubmitEditing={() => surnameRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                  maxLength={30}
+                />
+              </View>
+              <View style={styles.warning}>
+                {touched.fname && errors.fname && <Text style={styles.warningtext}>{errors.fname}</Text>}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Image source={userb} style={styles.icon} />
+                <TextInput
+                  ref={surnameRef}
+                  style={styles.input}
+                  placeholder="Surname"
+                  placeholderTextColor="#aaa"
+                  value={values.lname}
+                  onChangeText={handleChange('lname')}
+                  onBlur={handleBlur('lname')}
+                  onSubmitEditing={() => emailRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                />
+              </View>
+              <View style={styles.warning}>
+                {touched.lname && errors.lname && <Text style={styles.warningtext}>{errors.lname}</Text>}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Image source={mailb} style={styles.icon} />
+                <TextInput
+                  ref={emailRef}
+                  style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor="#aaa"
+                  keyboardType="email-address"
+                  value={values.email}
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  onSubmitEditing={() => passwordRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                />
+              </View>
+              <View style={styles.warning}>
+                {touched.email && errors.email && <Text style={styles.warningtext}>{errors.email}</Text>}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Image source={lock} style={styles.icon} />
+                <TextInput
+                  ref={passwordRef}
+                  style={styles.input}
+                  placeholder="Password"
+                  placeholderTextColor="#aaa"
+                  secureTextEntry={!passwordVisible}
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  onSubmitEditing={() => confirmPasswordRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                />
+                <TouchableOpacity onPress={togglePasswordVisibility}>
+                  <Icon name={passwordVisible ? 'eye' : 'eye-slash'} size={20} color="#aaa" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.warning}>
+                {touched.password && errors.password && <Text style={styles.warningtext}>{errors.password}</Text>}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Image source={lock} style={styles.icon} />
+                <TextInput
+                  ref={confirmPasswordRef}
+                  style={styles.input}
+                  placeholder="Confirm Password"
+                  placeholderTextColor="#aaa"
+                  secureTextEntry={!confirmPasswordVisible}
+                  value={values.confirmPassword}
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                  onSubmitEditing={() => titleRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                />
+                <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
+                  <Icon name={confirmPasswordVisible ? 'eye' : 'eye-slash'} size={20} color="#aaa" />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.warning}>
+                {touched.confirmPassword && errors.confirmPassword && <Text style={styles.warningtext}>{errors.confirmPassword}</Text>}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Image source={Title} style={styles.icon} />
+                <TextInput
+                  ref={titleRef}
+                  style={styles.input}
+                  placeholder="Title"
+                  placeholderTextColor="#aaa"
+                  value={values.title}
+                  onChangeText={handleChange('title')}
+                  onBlur={handleBlur('title')}
+                  onSubmitEditing={() => organizationRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                />
+              </View>
+              <View style={styles.warning}>
+                {touched.title && errors.title && <Text style={styles.warningtext}>{errors.title}</Text>}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Image source={organization} style={styles.icon} />
+                <TextInput
+                  ref={organizationRef}
+                  style={styles.input}
+                  placeholder="Organization"
+                  placeholderTextColor="#aaa"
+                  value={values.organization}
+                  onChangeText={handleChange('organization')}
+                  onBlur={handleBlur('organization')}
+                  onSubmitEditing={() => professionRef.current.focus()}
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  blurOnSubmit={false}
+                />
+              </View>
+              <View style={styles.warning}>
+                {touched.organization && errors.organization && <Text style={styles.warningtext}>{errors.organization}</Text>}
+              </View>
+
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={values.country}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setFieldValue('country', itemValue);
+                    handleCountryChange(itemValue);
+                  }}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select Country" value="" />
+                  {countries.map((country) => (
+                    <Picker.Item key={country.id} label={country.name} value={country} />
+                  ))}
+                </Picker>
+              </View>
+              <View style={styles.warning}>
+                {touched.country && errors.country && <Text style={styles.warningtext}>{errors.country}</Text>}
+              </View>
+
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={values.state}
+                  onValueChange={(itemValue, itemIndex) => setFieldValue('state', itemValue)}
+                  style={styles.picker}
+                  enabled={!isEnabled}
+                >
+                  <Picker.Item label="Select State" value="" />
+                  {states.map((state) => (
+                    <Picker.Item key={state.id} label={state.name} value={state} />
+                  ))}
+                </Picker>
+              </View>
+              <View style={styles.warning}>
+                {touched.state && errors.state && <Text style={styles.warningtext}>{errors.state}</Text>}
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Image source={userb} style={styles.icon} />
+                <TextInput
+                  ref={professionRef}
+                  style={styles.input}
+                  placeholder="Profession"
+                  placeholderTextColor="#aaa"
+                  value={values.profession}
+                  onChangeText={handleChange('profession')}
+                  onBlur={handleBlur('profession')}
+                  autoCapitalize="none"
+                  returnKeyType="done"
+                />
+              </View>
+              <View style={styles.warning}>
+                {touched.profession && errors.profession && <Text style={styles.warningtext}>{errors.profession}</Text>}
+              </View>
+
+              <View style={styles.checkboxContainer}>
+                <CheckBox
+                  title="Share Data"
+                  checked={values.share}
+                  onPress={() => setFieldValue('share', !values.share)}
+                  containerStyle={styles.checkbox}
+                />
+                <Text style={styles.agreementText}>
+By clicking <Text style={styles.bold}>Register</Text> you are agree to the
+<Text style={styles.link} onPress={() => Linking.openURL('https://aggressionmanagement.com/Privacy%20Policy%20of%20CAPS.html')}> Privacy Policy and conditions</Text>
+</Text>
+
+              </View>
+              
+              <TouchableOpacity style={styles.signupButton} onPress={handleSubmit}>
+                <Text style={styles.signupButtonText}>NEXT</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </Formik>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  paddingBottom:60,
+  },
+  headerContainer: {
+    backgroundColor: '#9d0808',
+    padding: 15,
+    width: '100%',
+    flexDirection: 'row',
+    
+    },
+    agreementText: {
+      textAlign: 'center',
+      marginLeft:10,
+      marginRight:10,
+      fontSize: 18,
+      color: 'black',
+      marginTop: 5,
+      marginBottom:25,
+      
+      },
+  
+    link: {
+      color: '#800000',
+      },
+      bold:{
+      color:'black',
+      fontSize: 18,
+      fontWeight:'700'
+      },
+
+    backButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      },
+  
+  backIcon: {
+    width: 30,
+    height: 30,
+    padding: 10,
+    tintColor: 'white'
+    },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    },
+  trial: {
+    fontSize: 22,
+    marginTop: 15,
+    marginBottom: 15,
+    color: 'black',
+    textAlign: 'center',
+    fontWeight:'600'
+
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#9d0808',
+    borderWidth: 1,
+    
+    width: '95%',
+     marginTop: 10,
+    paddingHorizontal: 15,
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    color: '#000',
+    fontSize: 15,
+  },
+  icon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    tintColor: '#800000',
+    },
+  warning: {
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  warningtext: {
+    color: 'red',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#9d0808',
+  
+    marginTop: 10,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    color: '#000',
+  },
+  checkboxContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  checkbox: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  signupButton: {
+    backgroundColor: '#9d0808',
+    width:'35%',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginLeft:'35%',
+  },
+  signupButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
+
+export default RegistrationForm;
