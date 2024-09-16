@@ -595,7 +595,7 @@ const HomePage = ({ navigation }) => {
               <Text style={styles.menuItemText}>Settings</Text>
             </TouchableOpacity>
             <View style={styles.divider} />
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigateAndCloseModal('LogOutScreen')}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigateAndCloseModal('Login')}>
               <Image source={require('../assets/img/logout_icon.png')} style={styles.menuItemIcon} />
               <Text style={styles.menuItemText}>Logout</Text>
             </TouchableOpacity>
@@ -636,7 +636,7 @@ const Footer = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.footerButton}
-        onPress={() => navigation.navigate('ExistingCases')}
+        onPress={() => navigation.navigate('Login')}
       >
         <Image source={require('../assets/img/logout_icon.png')} style={styles.footerIcon} />
       </TouchableOpacity>

@@ -24,6 +24,7 @@ import Behaviour from './src/pages/Behaviour';
 import AgressionExplainPage from './src/pages/AgressionExplainPage';
 import MyCasePage from './src/pages/MyCasePage';
 import ContactUsScreen from './src/pages/ContactUsPage';
+import ChangePasswordScreen from './src/pages/ChangePasswordScreen';
 import { handleNextAction } from '@stripe/stripe-react-native';
 
 const Stack = createStackNavigator();
@@ -37,16 +38,22 @@ const App = () => {
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
         />
         <Stack.Screen name="EmergencyProceduresPage" component={EmergencyProceduresPage} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
         />
 
 <Stack.Screen name="AggressionStageOneScreen" component={AggressionStageOneScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+
+<Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={{ 
             headerShown: false, 
             // cardStyle: { backgroundColor: 'red' } 
           }}  

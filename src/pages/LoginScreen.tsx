@@ -191,6 +191,7 @@ import User from '../providers/user/User';
 import { Api } from '../providers/api/api';
 import DeviceInfo from 'react-native-device-info';
 import Observy_BG from '../assets/img/Observy_BG.png';
+import { useLoader } from '../providers/loader/loader';
 
 const { width, height } = Dimensions.get('window');
 
@@ -198,13 +199,17 @@ const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [deviceToken, setDeviceToken] = useState('00000');
   const [imei, setImei] = useState('item');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const navigation = useNavigation();
+
+
   const user = new User(new Api(), {}, {});
+
+  const { showLoader, hideLoader } = useLoader(); // Access loader functions
 
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -218,7 +223,7 @@ const LoginScreen: React.FC = () => {
   }, []);
 
   const handleLogin = () => {
-    setLoading(true);
+showLoader(); 
     let valid = true;
 
     if (!email) {
@@ -236,7 +241,7 @@ const LoginScreen: React.FC = () => {
     }
 
     if (!valid) {
-      setLoading(false);
+      hideLoader(); 
       return;
     }
 
@@ -250,7 +255,7 @@ const LoginScreen: React.FC = () => {
   
     user.login(account)
       .then((response: any) => {
-        setLoading(false);
+        hideLoader(); // Hide loader
         const loginRes = response.data;
         if (loginRes.result === 'success') {
           saveUserData(loginRes);
@@ -259,7 +264,7 @@ const LoginScreen: React.FC = () => {
         }
       })
       .catch(error => {
-        setLoading(false);
+        hideLoader(); // Hide loader
         Alert.alert('Error', 'An error occurred during login. Please try again.');
       });
   };
@@ -315,7 +320,7 @@ const LoginScreen: React.FC = () => {
         {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
         
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          {loading ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
+ <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
           <Text style={styles.link}>Forgot Password?</Text>

@@ -47,7 +47,9 @@ class CreditCardScan extends Component {
           Alert.alert('Payment failed', paymentResponse.data.msg);
         }
       } else {
-        Alert.alert('Registration failed', userResponse.data.msg);
+        Alert.alert('Success', 'Thanks for Signing Up ! You will receive an email for account confirmation, Please confirm your account !!!');
+        this.props.navigation.navigate('Login');
+      
       }
     } catch (error) {
       console.error(error);
