@@ -91,45 +91,45 @@ Procedure (SOPs) for a suicide bomber attack, you should always follow those SOP
 
   const scrollViewRef = useRef<ScrollView>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const client_id = 'some_client_id';
-      const user = { token: 'some_token', user_id: 'some_user_id', max_rating: undefined };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const client_id = 'some_client_id';
+  //     const user = { token: 'some_token', user_id: 'some_user_id', max_rating: undefined };
 
-      if (user) {
-        const token = { client_id };
-        try {
-          const response = await fetch('https://api.example.com/emergencyprocedures', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(token),
-          });
-          const res = await response.json();
+  //     if (user) {
+  //       const token = { client_id };
+  //       try {
+  //         const response = await fetch('https://api.example.com/emergencyprocedures', {
+  //           method: 'POST',
+  //           headers: { 'Content-Type': 'application/json' },
+  //           body: JSON.stringify(token),
+  //         });
+  //         const res = await response.json();
 
-          if (res === null || res === undefined || res.result === 'failed') {
-            if (res.msg === 'Your account is deactivated, please contact support.') {
-              Alert.alert('Error', 'Account deactivated. Redirecting to login page.');
-            } else {
-              showAlert(res.result, res.msg);
-            }
-          } else {
-            if (user.max_rating === undefined) {
-              res.forEach((val: any) => {
-                val.expanded = false;
-              });
-              setItems(res);
-            } else {
-              setItems(res.filter((val: any) => val.id === user.max_rating));
-            }
-          }
-        } catch (error) {
-          showAlert('Error', 'No internet connection. Please check your connection and try again.');
-        }
-      }
-    };
+  //         if (res === null || res === undefined || res.result === 'failed') {
+  //           if (res.msg === 'Your account is deactivated, please contact support.') {
+  //             Alert.alert('Error', 'Account deactivated. Redirecting to login page.');
+  //           } else {
+  //             showAlert(res.result, res.msg);
+  //           }
+  //         } else {
+  //           if (user.max_rating === undefined) {
+  //             res.forEach((val: any) => {
+  //               val.expanded = false;
+  //             });
+  //             setItems(res);
+  //           } else {
+  //             setItems(res.filter((val: any) => val.id === user.max_rating));
+  //           }
+  //         }
+  //       } catch (error) {
+  //         showAlert('Error', 'No internet connection. Please check your connection and try again.');
+  //       }
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
   const expandItem = (item: Item) => {
     setItems(items.map(i =>
@@ -142,7 +142,7 @@ Procedure (SOPs) for a suicide bomber attack, you should always follow those SOP
   };
 
   const openRegisterUser = () => {
-    Alert.alert('Registration', 'Registration logic goes here.');
+    navigation.navigate('RegistrationForm');
   };
 
   return (

@@ -1,25 +1,30 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 import { Api } from '../api/api';
+import { AxiosRequestConfig } from 'axios';
 
-/*
-  Generated class for the ContactProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-@Injectable()
 export class ContactProvider {
+  api: Api;
 
-  constructor(public http: HttpClient, public api: Api) {
-   
-  }
-  contact(contactInfo: any) {
-   
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this.api.post('feedback', JSON.stringify(contactInfo), { headers: headers }).timeout(10000);
+  constructor(api: Api) {
+    this.api = api;
   }
 
+  // Contact method to send feedback
+  contact(contactInfo: any): Promise<any> {
+    const headers: AxiosRequestConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
 
+    // Sending a POST request using the Api class
+    return this.api.post('feedback', JSON.stringify(contactInfo), headers)
+      .then((response) => {
+        console.log('Response:', response.data);
+        return response.data;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        throw error;
+      });
+  }
 }

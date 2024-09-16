@@ -23,6 +23,7 @@ import AggressionStageOneScreen from './src/pages/AggressionStageOneScreen';
 import Behaviour from './src/pages/Behaviour';
 import AgressionExplainPage from './src/pages/AgressionExplainPage';
 import MyCasePage from './src/pages/MyCasePage';
+import ContactUsScreen from './src/pages/ContactUsPage';
 import { handleNextAction } from '@stripe/stripe-react-native';
 
 const Stack = createStackNavigator();
@@ -46,6 +47,11 @@ const App = () => {
         />
 
 <Stack.Screen name="AggressionStageOneScreen" component={AggressionStageOneScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="ContactUsScreen" component={ContactUsScreen} options={{ 
             headerShown: false, 
             // cardStyle: { backgroundColor: 'red' } 
           }}  

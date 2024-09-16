@@ -1,0 +1,187 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, Alert,  StyleSheet, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { Api } from '../providers/api/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const ContactUsPage = ({ navigation }) => {
+  const [contactForm, setContactForm] = useState({
+    title: '',
+    Contact: '',
+    message: ''
+  });
+  const [validName, setValidName] = useState(false);
+  const [something, setSomething] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+
+  const api = new Api('http://aggressionmanagement.com/api');
+
+  useEffect(() => {
+    // Fetch user info from AsyncStorage on component mount
+    AsyncStorage.getItem('user').then((result) => {
+      const parsedResult = JSON.parse(result);
+      const user_info = {
+        user_id: parsedResult.user_id,
+        token: parsedResult.token
+      };
+
+      api.post('/user_info', user_info)
+        .then((response) => {
+          const data = response.data;
+          if (data.subscriptionFlag === 1 && parsedResult.client_id === '0') {
+            if (data.user_type === 'tester') {
+              Alert.alert(
+                'Expire',
+                'Your 60 days Free subscription has ended. Please subscribe.',
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: () => {
+                      AsyncStorage.setItem('user', null);
+                      navigation.replace('LoginScreen');
+                    }
+                  },
+                  {
+                    text: 'Continue',
+                    onPress: () => {
+                      navigation.replace('SubscriptionScreen');
+                    }
+                  }
+                ]
+              );
+            } else {
+              navigation.replace('SubscriptionScreen');
+            }
+          } else if (data.subscriptionFlag === 1 && parsedResult.client_id === '1') {
+            AsyncStorage.setItem('user', null);
+            navigation.replace('LoginScreen');
+          } else if (data.msg === 'Your account is deactivated, please contact support.') {
+            AsyncStorage.setItem('user', null);
+            navigation.replace('LoginScreen');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user info:', error);
+        });
+    });
+  }, []);
+
+  const handleContactSubmit = () => {
+    setSomething(true);
+
+    AsyncStorage.getItem('user').then((result) => {
+      const res = JSON.parse(result);
+      const contactInfo = {
+        token: res.token,
+        user_id: res.user_id,
+        firstname: res.firstname,
+        lastname: res.surname,
+        email: contactForm.email,
+        title: contactForm.title,
+        contact_reason: contactForm.Contact,
+        message: contactForm.message
+      };
+
+      api.post('/feedback', contactInfo)
+        .then((response) => {
+          const result = response.data;
+          if (result.result === 'failed') {
+            showAlert(result.result, result.msg);
+          } else {
+            showAlert(result.result, result.msg);
+          }
+        })
+        .catch((error) => {
+          console.error('Error in contact request:', error);
+        });
+    });
+  };
+
+  const showAlert = (result: string, msg: string) => {
+    Alert.alert(
+      'CAPS',
+      msg,
+      [
+        {
+          text: 'Ok',
+          onPress: () => navigation.replace('home')
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handleTextChange = (key: string, value: string) => {
+    setContactForm({ ...contactForm, [key]: value });
+    if (key === 'title') {
+      setValidName(value.trim() !== '');
+    }
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Name"
+        value={contactForm.title}
+        onChangeText={(value) => handleTextChange('title', value)}
+        maxLength={30}
+      />
+      {contactForm.title.length < 2 && <Text style={styles.error}>Enter at least 2 characters.</Text>}
+
+      <View style={styles.picker}>
+        <Picker
+          selectedValue={contactForm.Contact}
+          onValueChange={(itemValue) => handleTextChange('Contact', itemValue)}>
+          <Picker.Item label="Select Contact Reason" value="" />
+          <Picker.Item label="Software Technology Issues" value="Software Technology Issues" />
+          <Picker.Item label="CAPS Application Issues" value="CAPS Application Issues" />
+        </Picker>
+      </View>
+
+      <TextInput
+        style={[styles.input, styles.textArea]}
+        placeholder="Message"
+        value={contactForm.message}
+        onChangeText={(value) => handleTextChange('message', value)}
+        maxLength={250}
+        multiline
+      />
+
+      <Button
+        title="Send Message"
+        onPress={handleContactSubmit}
+        disabled={!validName || something || contactForm.Contact === '' || contactForm.message === ''}
+      />
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+  picker: {
+    height: 50,
+    marginBottom: 20,
+    borderColor: 'gray',
+    borderWidth: 1,
+    justifyContent: 'center',
+  },
+  textArea: {
+    height: 100,
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
+  },
+});
+
+export default ContactUsPage;

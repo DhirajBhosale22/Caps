@@ -536,7 +536,7 @@ const HomePage = ({ navigation }) => {
             styles.menuButton,
             activeButton === 'EmergencyProcedure' && styles.activeMenuButton,
           ]}
-          onPress={() => handlePress('EmergencyProcedure', 'EmergencyProcedure')}
+          onPress={() => handlePress('EmergencyProceduresPage', 'EmergencyProceduresPage')}
         >
           <Image source={require('../assets/img/emergency_procedure.png')} style={styles.icon} />
           <Text style={styles.buttonText}>EMERGENCY {"\n"}PROCEDURES</Text>
