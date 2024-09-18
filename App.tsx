@@ -25,6 +25,7 @@ import AgressionExplainPage from './src/pages/AgressionExplainPage';
 import MyCasePage from './src/pages/MyCasePage';
 import ContactUsScreen from './src/pages/ContactUsPage';
 import ChangePasswordScreen from './src/pages/ChangePasswordScreen';
+import SharegroupPage from './src/pages/SharegroupPage';
 import { handleNextAction } from '@stripe/stripe-react-native';
 
 const Stack = createStackNavigator();
@@ -42,6 +43,11 @@ const App = () => {
           }}  
         />
         <Stack.Screen name="EmergencyProceduresPage" component={EmergencyProceduresPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="SharegroupPage" component={SharegroupPage} options={{ 
             headerShown: false, 
             // cardStyle: { backgroundColor: 'red' } 
           }}  

@@ -376,7 +376,7 @@ const ProfileScreen: React.FC = () => {
         <TouchableOpacity style={styles.buttonFullWidth} onPress={() => navigation.navigate('EditProfile')}>
           <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonFullWidth} onPress={() => navigation.navigate('MyGroupScreen')}>
+        <TouchableOpacity style={styles.buttonFullWidth} onPress={() => navigation.navigate('SharegroupPage')}>
           <Text style={styles.buttonText}>My Groups</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonFullWidth} onPress={() => navigation.navigate('ChangePasswordScreen')}>
