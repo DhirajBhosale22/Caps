@@ -1,22 +1,22 @@
-import { Api } from "../api/api";
+// import { Api } from "../api/api";
 
-class CountryProvider {
-  private api: Api;
+// class CountryProvider {
+//   private api: Api;
 
-  constructor(api: Api) {
-    this.api = api;
-  }
+//   constructor(api: Api) {
+//     this.api = api;
+//   }
 
-  country() {
-    return this.api.get('countrylist', '');
-  }
+//   country() {
+//     return this.api.get('countrylist', '');
+//   }
 
-  state(id: any) {
-    return this.api.get('statelist/' + id);
-  }
-}
+//   state(id: any) {
+//     return this.api.get('statelist/' + id);
+//   }
+// }
 
-export default CountryProvider;
+// export default CountryProvider;
 
 // //convert above code as it is in react native code. I want .tsx file for above code. Use same Api link and api keys also and also use same import files. Convert as it is do not change any function I have same Api file also. I want exact copy. Do not use any angular only use react native. Make exact clone of it
 // // path-to-CountryProvider.ts
@@ -120,3 +120,37 @@ export default CountryProvider;
 // }
 
 // export default CountryProvider;
+
+import { Api } from "../api/api";
+
+class CountryProvider {
+  private api: Api;
+
+  constructor(api: Api) {
+    this.api = api;
+  }
+
+  // Fetch the country list
+  async country(): Promise<any> {
+    try {
+      const response = await this.api.get('countrylist', '');
+      return response; // Handle the successful response here
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+      throw new Error("Failed to fetch countries");
+    }
+  }
+
+  // Fetch the state list based on the country ID
+  async state(id: any): Promise<any> {
+    try {
+      const response = await this.api.get('statelist/' +id);
+      return response; // Handle the successful response here
+    } catch (error) {
+      console.error("Error fetching states:", error);
+      throw new Error("Failed to fetch states");
+    }
+  }
+}
+
+export default CountryProvider;

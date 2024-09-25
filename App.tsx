@@ -26,6 +26,18 @@ import MyCasePage from './src/pages/MyCasePage';
 import ContactUsScreen from './src/pages/ContactUsPage';
 import ChangePasswordScreen from './src/pages/ChangePasswordScreen';
 import SharegroupPage from './src/pages/SharegroupPage';
+import SettingsPage from './src/pages/settings';
+import IntrductionPage from './src/pages/IntroductionToCaps';
+import AggressionStageTwoScreen from './src/pages/AggressionStageTwoScreen';
+import AggressionStageThreeScreen from './src/pages/AggressionStageThreeScreen';
+import AggressionStageFourScreen from './src/pages/AggressionStageFourScreen';
+import AggressionStageFiveScreen from './src/pages/AggressionStageFiveScreen';
+import AggressionStageSixScreen from './src/pages/AggressionStageSixScreen';
+import AggressionStageSevenScreen from './src/pages/AggressionStageSevenScreen';
+import AggressionStageEightScreen from './src/pages/AggressionStageEightScreen';
+import AggressionStageNineScreen from './src/pages/AggressionStageNineScreen';
+import RpTestBestPracticeResponseScreen from './src/pages/RpTestBestPracticeResponseScreen';
+import EmergencyProcedure from './src/pages/EmergencyProcedure';
 import { handleNextAction } from '@stripe/stripe-react-native';
 
 const Stack = createStackNavigator();
@@ -47,7 +59,67 @@ const App = () => {
             // cardStyle: { backgroundColor: 'red' } 
           }}  
         />
+         <Stack.Screen name="IntrductionPage" component={IntrductionPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="AggressionStageTwoScreen" component={AggressionStageTwoScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="AggressionStageThreeScreen" component={AggressionStageThreeScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="AggressionStageFourScreen" component={AggressionStageFourScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="AggressionStageFiveScreen" component={AggressionStageFiveScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="AggressionStageSixScreen" component={AggressionStageSixScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="AggressionStageSevenScreen" component={AggressionStageSevenScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="AggressionStageEightScreen" component={AggressionStageEightScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="AggressionStageNineScreen" component={AggressionStageNineScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="RpTestBestPracticeResponseScreen" component={RpTestBestPracticeResponseScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="EmergencyProcedure" component={EmergencyProcedure} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
          <Stack.Screen name="SharegroupPage" component={SharegroupPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ 
             headerShown: false, 
             // cardStyle: { backgroundColor: 'red' } 
           }}  
@@ -106,41 +178,41 @@ const App = () => {
         />
         <Stack.Screen name="RegistrationForm" component={RegistrationForm} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
         />
         <Stack.Screen name="CreateCaseScreen" component={CreateCaseScreen} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
         />
          <Stack.Screen name="country" component={CountrySelectionScreen} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
           
         />
          <Stack.Screen name="state" component={StateSelectionScreen} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
           
         />
          <Stack.Screen name="credit" component={CreditCardScan} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
           
         />
          <Stack.Screen name="sub" component={SubscriptionPage} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
           
         />
         <Stack.Screen name="profile" component={ProfileScreen} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
           
         />
@@ -152,7 +224,7 @@ const App = () => {
         />
         <Stack.Screen name="home" component={HomePage} options={{ 
             headerShown: false, 
-            cardStyle: { backgroundColor: 'red' } 
+            // cardStyle: { backgroundColor: 'red' } 
           }}  
           
         />

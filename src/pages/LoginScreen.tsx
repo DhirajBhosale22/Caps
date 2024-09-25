@@ -183,7 +183,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   ImageBackground,
-  Dimensions,
+  Dimensions, StatusBar
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -286,6 +286,10 @@ showLoader();
         <Text style={styles.skipButtonText}>Skip</Text>
       </TouchableOpacity>
       <View style={styles.container}>
+      <StatusBar
+        barStyle="light-content" // Set text color to light
+        backgroundColor="#9d0808" // Set background color to brown
+      />
         <Text style={styles.title}>Login</Text>
         {/* Email Input Field */}
         <View style={styles.inputContainer}>

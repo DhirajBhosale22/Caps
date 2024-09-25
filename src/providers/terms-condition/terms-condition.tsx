@@ -1,27 +1,23 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Api } from '..';
+import { Api } from "../api/api";
 
-/*
-  Generated class for the TermsConditionProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-@Injectable()
 export class TermsConditionProvider {
+  api: Api;
 
-  constructor(public http: HttpClient, public api: Api, ) {
-    
+  constructor(api: Api) {
+    this.api = api;
   }
+
   terms_conditions() {
-    var headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    // let headerOptions: any = { 'Content-Type': 'application/json' };
+    const headers = {
+      'Content-Type': 'application/json',
+    };
 
-
-    return this.api.get('terms_and_conditions',  { headers: headers }).timeout(10000);
-
+    return this.api
+      .get('terms_and_conditions', {}, { headers })
+      .then((response) => response)
+      .catch((error) => {
+        console.error('Error fetching terms and conditions:', error);
+        throw error;
+      });
   }
-
 }

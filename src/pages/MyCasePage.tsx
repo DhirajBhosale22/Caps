@@ -6,12 +6,13 @@ import CaseProvider from '../providers/case/case';
 import ProfileProvider from '../providers/profile/profile';
 import { Api } from '../providers/api/api';
 
+
 // Initialize API and providers
 const api = new Api('http://aggressionmanagement.com/api');
 const profileProvider = new ProfileProvider(api);
 const caseProvider = new CaseProvider(api);
 
-const MyCasePage = () => {
+const MyCasePage = ({ navigation }: any) => {
   const [loading, setLoading] = useState(true);
   const [myCases, setMyCases] =useState<any[]>([]);
   const [userInfo, setUserInfo] = useState(null);
@@ -82,7 +83,7 @@ const MyCasePage = () => {
           data={myCases}
           keyExtractor={(item) => item.case_id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.caseCard} onPress={() => {/* Handle case click */}}>
+            <TouchableOpacity style={styles.caseCard} onPress={() => navigation.navigate('AggressionMeterScreen')}>
               <View style={styles.caseContent}>
                 <Text style={styles.caseName}>{item.name} {item.last_name}</Text>
                 <Text style={styles.caseDate}>{item.date_time}</Text>

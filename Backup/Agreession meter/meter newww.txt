@@ -1,0 +1,253 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Modal, ScrollView, StatusBar } from 'react-native';
+import { useRoute } from '@react-navigation/native'; // Import useRoute
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Api } from '../providers/api/api';
+import { DistributionlistProvider } from '../providers/distributionlist/distributionlist';
+import { AggressionlevelProvider } from '../providers/aggressionlevel/aggressionlevel';
+import ProfileProvider from '../providers/profile/profile';
+import { CreateCaseProvider } from '../providers/createcase/createcase';
+
+// Import all images
+import info from '../assets/img/info.png';
+import meter from '../assets/img/meter.png';
+import back from '../assets/img/back.png';
+import green_ar from '../assets/img/green_ar.png';
+
+const AggressionMeterScreen = ({ navigation }: any) => {
+  const route = useRoute(); // Use useRoute hook to access params
+  const { suspect_info } = route.params as { suspect_info: { suspect_name: string; last_name: string } };
+
+
+  const api = new Api();
+  const distributionProvider = new DistributionlistProvider(api);
+  const profileProvider = new ProfileProvider(api);
+  const aggressionProvider = new AggressionlevelProvider(api);
+  const createCaseProvider = new CreateCaseProvider(api);
+
+  const [suspectInfo, setSuspectInfo] = useState<any>(suspect_info || {});
+  const [userName, setUserName] = useState<string>('');
+  const [number, setNumber] = useState<number>(0);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [pages, setPages] = useState<any[]>([
+    { title: 'behavior', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'communication', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'interaction', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'demeanor', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'facial_expression', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'tactical_movement', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'other_concerning_factors', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'Files', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'best practices', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+  ]);
+  const [showColor, setShowColor] = useState<string>('rgba(102, 102, 102, 0.5)'); // Default color for the meter
+
+  useEffect(() => {
+    fetchUserName();
+    fetchData();
+  }, []);
+
+  const fetchUserName = async () => {
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      const { user_id, token } = userData ? JSON.parse(userData) : {};
+
+      if (!user_id || !token) {
+        Alert.alert('Error', 'User not authenticated.');
+        return;
+      }
+
+      const response = await profileProvider.user_info({ user_id, token });
+      const userDataResponse = response.data;
+      setUserName(userDataResponse.firstname);
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      Alert.alert('Error', 'Failed to fetch user information.');
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem('user_token');
+      if (userToken) {
+        const caseInfo = await createCaseProvider.getSuspectInfo(userToken);
+        setSuspectInfo(caseInfo);
+
+        const aggressionData = await aggressionProvider.getAggressionResult(userToken);
+        setNumber(aggressionData.level);
+
+        const profileData = await profileProvider.getProfile(userToken);
+        console.log('Profile Data:', profileData);
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to fetch data');
+      console.error('Fetch Error:', error);
+    }
+  };
+
+  const getQuestion = async (item: any) => {
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      const { user_id, token } = userData ? JSON.parse(userData) : {};
+
+      if (!user_id || !token) {
+        Alert.alert('Error', 'User not authenticated.');
+        return;
+      }
+
+      const myModalData = {
+        token: token,
+        user_id: user_id,
+        type: item.title,
+      };
+
+      const aggressionInfo = { user_id, type: item.title };
+      const aggressionResponse = await aggressionProvider.aggression_level(aggressionInfo);
+      console.log('Aggression Level Response:', aggressionResponse.data);
+
+      navigation.navigate('QuestionPage', {
+        data: myModalData,
+      });
+    } catch (error) {
+      console.error('Error getting token or user_id:', error);
+      Alert.alert('Error', 'Failed to get token or user_id.');
+    }
+  };
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#B22222" />
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.topBar}>
+        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/download.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/share.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/edit.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/document.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+                        <Image source={require('../assets/img/check.png')} style={styles.footerIcon} />
+                    </TouchableOpacity>
+
+        </View>
+
+        {/* Suspect Info and User Name */}
+        <Text style={styles.namePlaceholder}>{suspectInfo.suspect_name} {suspectInfo.last_name}</Text>
+        <Text style={styles.namePlaceholder}>{userName}</Text>
+
+        {/* Pages list */}
+        {pages.map((item, index) => (
+          <TouchableOpacity key={index} onPress={() => getQuestion(item)}>
+            <Image source={info} style={styles.infoIcon} />
+            <Text>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+
+        {/* Aggression Meter */}
+        <View style={styles.meterContainer}>
+          <Image source={meter} style={styles.meterImage} />
+          <Text style={styles.meterText}>Aggression Level: {number}</Text>
+        </View>
+
+        {/* Modal */}
+        <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>To advance to Best Practice Responses, you must first select elements in the Meter of Emerging Aggression.</Text>
+              <TouchableOpacity style={styles.modalButton} onPress={toggleModal}>
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </ScrollView>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f8f8',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+},
+footerIcon: {
+    width: 22,
+    height: 22,
+    tintColor: 'white',
+},
+
+  infoIcon: {
+    width: 30,
+    height: 30,
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#B22222',
+    padding: 10,
+  },
+  namePlaceholder: {
+    fontSize: 20,
+    marginVertical: 20,
+  },
+  meterContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  meterImage: {
+    width: 300,
+    height: 300,
+  },
+  meterText: {
+    fontSize: 18,
+    marginTop: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#B22222',
+    padding: 10,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+});
+
+export default AggressionMeterScreen;

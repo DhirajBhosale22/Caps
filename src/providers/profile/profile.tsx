@@ -35,15 +35,17 @@ export class ProfileProvider {
     return this.api.post('edit_profile', JSON.stringify(editInfo), {
       headers: {
         'Content-Type': 'application/json',
+        
       },
       timeout: 10000,
     });
   }
   
-  upload_profile_picture(formData: FormData): Promise<AxiosResponse<any>> {
+  upload_profile_picture(formData: FormData, token: string): Promise<AxiosResponse<any>> {
     return this.api.post('upload_profile_picture', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`, // Include the token in the header
       },
       timeout: 10000,
     });
