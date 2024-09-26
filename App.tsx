@@ -1,7 +1,8 @@
 // App.js
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useColorScheme } from 'react-native';
 import LoginScreen from './src/pages/LoginScreen';
 import ForgotPasswordScreen from './src/pages/ForgetPasswordScreen';
 import EmergencyProceduresPage from './src/pages/EmergencyProceduresPage';
@@ -38,15 +39,18 @@ import AggressionStageEightScreen from './src/pages/AggressionStageEightScreen';
 import AggressionStageNineScreen from './src/pages/AggressionStageNineScreen';
 import RpTestBestPracticeResponseScreen from './src/pages/RpTestBestPracticeResponseScreen';
 import EmergencyProcedure from './src/pages/EmergencyProcedure';
+import EditCaseScreen from './src/pages/EditCaseScreen';
 import { handleNextAction } from '@stripe/stripe-react-native';
 
 const Stack = createStackNavigator();
 
 const App = () => {
+  const scheme = useColorScheme(); // Detect the current theme (light or dark)
+
   return (
 
     <LoaderProvider>
-    <NavigationContainer>
+    <NavigationContainer   theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ 
@@ -174,6 +178,11 @@ const App = () => {
         <Stack.Screen name="QuestionPage" component={QuestionPage} options={{ 
             headerShown: false, 
             // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="EditCaseScreen" component={EditCaseScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } EditCaseScreen
           }}  
         />
         <Stack.Screen name="RegistrationForm" component={RegistrationForm} options={{ 

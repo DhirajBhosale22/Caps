@@ -83,14 +83,25 @@ const MyCasePage = ({ navigation }: any) => {
           data={myCases}
           keyExtractor={(item) => item.case_id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.caseCard} onPress={() => navigation.navigate('AggressionMeterScreen')}>
-              <View style={styles.caseContent}>
-                <Text style={styles.caseName}>{item.name} {item.last_name}</Text>
-                <Text style={styles.caseDate}>{item.date_time}</Text>
-                <Text style={styles.caseId}>Case ID: {item.case_id}</Text>
-                <Text style={styles.caseDetails}>P: {item.Primal}/C: {item.Cognitive}</Text>
-              </View>
-            </TouchableOpacity>
+            <TouchableOpacity
+            style={styles.caseCard}
+            onPress={() => navigation.navigate('EditCaseScreen', {
+              case_id: item.case_id, // Pass the case_id to the EditCaseScreen
+              name: item.name,
+              last_name: item.last_name,
+              date_time: item.date_time,
+              Primal: item.Primal,
+              Cognitive: item.Cognitive,
+            })}
+          >
+            <View style={styles.caseContent}>
+              <Text style={styles.caseName}>{item.name} {item.last_name}</Text>
+              <Text style={styles.caseDate}>{item.date_time}</Text>
+              <Text style={styles.caseId}>Case ID: {item.case_id}</Text>
+              <Text style={styles.caseDetails}>P: {item.Primal}/C: {item.Cognitive}</Text>
+            </View>
+          </TouchableOpacity>
+          
           )}
           contentContainerStyle={{ paddingBottom: 20 }}
           style={styles.flatList}

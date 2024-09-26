@@ -24,17 +24,19 @@ export class CreateCaseProvider {
   }
 
   async caseInfo(suspectInfo: any) {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
+  const token = await AsyncStorage.getItem('user_token'); // Retrieve the token
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+  };
 
-    try {
-      const response = await this.api.post('show_case', JSON.stringify(suspectInfo), { headers });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+  try {
+    const response = await this.api.post('show_case', JSON.stringify(suspectInfo), { headers });
+    return response.data;
+  } catch (error) {
+    throw error;
   }
+}
 
   async editCase(suspectInfo: any) {
     const headers = {

@@ -719,8 +719,8 @@
 
 
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Modal, ScrollView, StatusBar } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Modal, ScrollView, StatusBar, Animated  } from 'react-native';
 import { useRoute } from '@react-navigation/native'; // Import useRoute
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Api } from '../providers/api/api';
@@ -734,6 +734,10 @@ import info from '../assets/img/info.png';
 import meter from '../assets/img/meter.png';
 import back from '../assets/img/back.png';
 import green_ar from '../assets/img/green_ar.png';
+import man from '../assets/img/man.png';
+import tactic_movement from '../assets/img/tactic_movement.png';
+import demeanor from '../assets/img/demeanor.png';
+import file from '../assets/img/file.png';
 
 const AggressionMeterScreen = ({ navigation }: any) => {
   const route = useRoute(); // Use useRoute hook to access params
@@ -751,18 +755,27 @@ const AggressionMeterScreen = ({ navigation }: any) => {
   const [number, setNumber] = useState<number>(0);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pages, setPages] = useState<any[]>([
-    { title: 'behavior', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
-    { title: 'communication', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
-    { title: 'interaction', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
-    { title: 'demeanor', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
-    { title: 'facial_expression', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
-    { title: 'tactical_movement', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
-    { title: 'other_concerning_factors', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
-    { title: 'Files', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
-    { title: 'best practices', icon: 'info', rating: '', select: '', colors: '', type_id: '' },
+    { title: 'behavior', icon: 'man', rating: '', select: '', colors: '', type_id: '', image: man },
+    { title: 'communication', icon: 'info', rating: '', select: '', colors: '', type_id: '' ,  image: info},
+    { title: 'interaction', icon: 'info', rating: '', select: '', colors: '', type_id: '',  image: info },
+    { title: 'demeanor', icon: 'demeanor', rating: '', select: '', colors: '', type_id: '',  image: demeanor },
+    { title: 'facial_expression', icon: 'info', rating: '', select: '', colors: '', type_id: '',  image: info },
+    { title: 'tactical_movement', icon: 'info', rating: '', select: '', colors: '', type_id: '' , image: info },
+    { title: 'other_concerning_factors', icon: 'tactic_movement', rating: '', select: '', colors: '', type_id: '', image: tactic_movement },
+    { title: 'Files', icon: 'info', rating: '', select: '', colors: '', type_id: '' , image: file },
+    { title: 'best practices', icon: 'file', rating: '', select: '', colors: '', type_id: '',  image: info },
   ]);
   const [showColor, setShowColor] = useState<string>('rgba(102, 102, 102, 0.5)'); // Default color for the meter
+  const rotateValue = useRef(new Animated.Value(0)).current; 
 
+  useEffect(() => {
+    // Update arrow rotation based on 'number' state
+    Animated.timing(rotateValue, {
+      toValue:  2* 20 - 90, // Adjust rotation based on number (0-9)  parseInt(number)
+      duration: 500, // Adjust animation duration
+      useNativeDriver: true, 
+    }).start();
+  }, [number]); // Run this effect whenever 'number' changes
   useEffect(() => {
     fetchUserName();
     fetchData();
@@ -842,7 +855,7 @@ const AggressionMeterScreen = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#B22222" />
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+     
         <View style={styles.topBar}>
         <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
                         <Image source={require('../assets/img/download.png')} style={styles.footerIcon} />
@@ -864,23 +877,42 @@ const AggressionMeterScreen = ({ navigation }: any) => {
                     </TouchableOpacity>
 
         </View>
-
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {/* Suspect Info and User Name */}
         <Text style={styles.namePlaceholder}>{suspectInfo.suspect_name} {suspectInfo.last_name}</Text>
-        <Text style={styles.namePlaceholder}>{userName}</Text>
+        {/* <Text style={styles.namePlaceholder}>{userName}</Text> */}
 
-        {/* Pages list */}
-        {pages.map((item, index) => (
-          <TouchableOpacity key={index} onPress={() => getQuestion(item)}>
-            <Image source={info} style={styles.infoIcon} />
-            <Text>{item.title}</Text>
-          </TouchableOpacity>
-        ))}
+        <View style={styles.gridContainer}>
+          {/* Pages list - Mapped to create grid items */}
+          {pages.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => getQuestion(item)} style={styles.gridItem}>
+              <Image source={item.image} style={styles.infoIcon} />
+              <Text style={styles.gridItemText}>{item.title.replace(/_/g, ' ')}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-        {/* Aggression Meter */}
         <View style={styles.meterContainer}>
-          <Image source={meter} style={styles.meterImage} />
-          <Text style={styles.meterText}>Aggression Level: {number}</Text>
+    <Image source={meter} style={styles.meterImg} resizeMode="contain" />
+ 
+      <Animated.Image 
+        source={green_ar} 
+        style={[
+          styles.arrowImg, 
+          {
+            transform: [{
+              rotate: rotateValue.interpolate({
+                inputRange: [0, 360], // Adjust input range if needed
+                outputRange: ['0deg', '360deg'], 
+              })
+            }]
+          }
+        ]}
+        resizeMode="contain" 
+      />
+    
+          <Text style={styles.notification}>{number}</Text>
+          <Text style={styles.meterText}>METER OF EMERGING AGGRESSION</Text>
         </View>
 
         {/* Modal */}
@@ -902,48 +934,104 @@ const AggressionMeterScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: '#e9ebeb8a',
   },
   scrollViewContent: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 5,
   },
   footerButton: {
     justifyContent: 'center',
     alignItems: 'center',
-},
-footerIcon: {
+    marginHorizontal: 10,
+  },
+  footerIcon: {
     width: 22,
     height: 22,
     tintColor: 'white',
-},
-
-  infoIcon: {
-    width: 30,
-    height: 30,
   },
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    alignItems: 'center',
     backgroundColor: '#B22222',
-    padding: 10,
+    paddingVertical: 10,
   },
   namePlaceholder: {
-    fontSize: 20,
-    marginVertical: 20,
+    fontSize: 16,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  gridContainer: {
+    flex:3,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  gridItem: {
+    width: '30%',
+    backgroundColor: 'rgba(102, 102, 102, 0.5)',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  infoIcon: {
+    width: 25,
+    height: 25,
+    marginBottom: 10,
+  },
+  gridItemText: {
+    fontSize: 16,
+    
   },
   meterContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    width: 270,
+    height: 157,
+    position: 'absolute',
+    top: '90%', 
+    left: 177, 
+    marginLeft: -50, // half of the width
+    transform: [{ translateX: -50 }, { translateY: -50 }],
   },
-  meterImage: {
+  meterImg: {
     width: 300,
-    height: 300,
+  },
+  meterArrowContainer: {
+    position: 'absolute',
+    top: 51,
+    left: 132,
+  },
+  arrowImg: {
+    position: 'absolute',
+    top: 33,
+    left: 95,
+    height: 93,
+    transform: [{ rotate: '-50deg' }],
+    transformOrigin: 'bottom',
+  },
+  notification: {
+    fontSize: 14,
+    position: 'absolute',
+    bottom: 23,
+    color: '#ffffff',
   },
   meterText: {
-    fontSize: 18,
+    fontSize: 17,
     marginTop: 10,
+    color: '#B22222',
+    textAlign: 'center',
+  },
+  meterTextInner: {
+    fontSize: 17,
+    marginTop: 10,
+    color: '#B22222',
+    textAlign: 'center',
+    textTransform: 'uppercase',
   },
   modalContainer: {
     flex: 1,
