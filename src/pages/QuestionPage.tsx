@@ -284,289 +284,289 @@
 // });
 
 // export default QuestionPage;
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, StyleSheet, Modal, ScrollView } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native'; // Import useNavigation
-import { Api } from '../providers/api/api';
-import AgressionMeterQuestionProvider from '../providers/agressionmeter-question/agressionmeter-question';
-import ProfileProvider from '../providers/profile/profile';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import RenderHTML from 'react-native-render-html'; // Import RenderHTML
+// import React, { useState, useEffect, useCallback } from 'react';
+// import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, StyleSheet, Modal, ScrollView } from 'react-native';
+// import { useRoute, useNavigation } from '@react-navigation/native'; // Import useNavigation
+// import { Api } from '../providers/api/api';
+// import AgressionMeterQuestionProvider from '../providers/agressionmeter-question/agressionmeter-question';
+// import ProfileProvider from '../providers/profile/profile';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import RenderHTML from 'react-native-render-html'; // Import RenderHTML
 
-const api = new Api('http://aggressionmanagement.com/api');
-const aggressionMeterProvider = new AgressionMeterQuestionProvider(api);
-const profileProvider = new ProfileProvider(api);
+// const api = new Api('http://aggressionmanagement.com/api');
+// const aggressionMeterProvider = new AgressionMeterQuestionProvider(api);
+// const profileProvider = new ProfileProvider(api);
 
-const QuestionPage: React.FC = () => {
-  const route = useRoute();
-  const navigation = useNavigation(); // Use navigation for navigation actions
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [firstName, setFirstName] = useState<string | null>(null);
-  const [pageType, setPageType] = useState<string>(''); 
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
+// const QuestionPage: React.FC = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation(); // Use navigation for navigation actions
+//   const [questions, setQuestions] = useState<any[]>([]);
+//   const [loading, setLoading] = useState<boolean>(false);
+//   const [error, setError] = useState<string | null>(null);
+//   const [firstName, setFirstName] = useState<string | null>(null);
+//   const [pageType, setPageType] = useState<string>(''); 
+//   const [modalVisible, setModalVisible] = useState<boolean>(false);
+//   const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchQuestions();
-  }, [fetchQuestions]);
+//   useEffect(() => {
+//     fetchQuestions();
+//   }, [fetchQuestions]);
 
-  const fetchQuestions = useCallback(async () => {
-    try {
-      setLoading(true);
-      const userData = await AsyncStorage.getItem('user');
-      if (!userData) {
-        Alert.alert('Error', 'User not authenticated.');
-        return;
-      }
+//   const fetchQuestions = useCallback(async () => {
+//     try {
+//       setLoading(true);
+//       const userData = await AsyncStorage.getItem('user');
+//       if (!userData) {
+//         Alert.alert('Error', 'User not authenticated.');
+//         return;
+//       }
 
-      const { user_id: storedUserId, token: storedToken } = JSON.parse(userData);
-      if (!storedUserId || !storedToken) {
-        Alert.alert('Error', 'User not authenticated.');
-        return;
-      }
+//       const { user_id: storedUserId, token: storedToken } = JSON.parse(userData);
+//       if (!storedUserId || !storedToken) {
+//         Alert.alert('Error', 'User not authenticated.');
+//         return;
+//       }
 
-      const userInfoResponse = await profileProvider.user_info({
-        token: storedToken,
-        user_id: storedUserId,
-      });
+//       const userInfoResponse = await profileProvider.user_info({
+//         token: storedToken,
+//         user_id: storedUserId,
+//       });
 
-      setFirstName(userInfoResponse?.data?.firstname || 'Guest');
+//       setFirstName(userInfoResponse?.data?.firstname || 'Guest');
 
-      const params = route as any;
-      const { token, user_id, type } = params.params.data;
+//       const params = route as any;
+//       const { token, user_id, type } = params.params.data;
 
-      const pageTypeValue = getPageType(type);
-      setPageType(pageTypeValue);
-      const response = await aggressionMeterProvider.emergencyMeterQuestion({
-        token,
-        type: pageTypeValue,
-        user_id,
-      });
+//       const pageTypeValue = getPageType(type);
+//       setPageType(pageTypeValue);
+//       const response = await aggressionMeterProvider.emergencyMeterQuestion({
+//         token,
+//         type: pageTypeValue,
+//         user_id,
+//       });
 
-      if (response && response.result !== 'failed') {
-        const updatedQuestions = response.map((item: any) => ({
-          ...item,
-          is_selected: isSelected(item) ? '1' : '0',
-        }));
-        setQuestions(updatedQuestions);
-      } else {
-        showAlert('Error', response.msg || 'Failed to load questions');
-      }
-    } catch (err) {
-      setError('No internet connection, make sure Wi-Fi or cellular data is turned on, then try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [route.params]);
+//       if (response && response.result !== 'failed') {
+//         const updatedQuestions = response.map((item: any) => ({
+//           ...item,
+//           is_selected: isSelected(item) ? '1' : '0',
+//         }));
+//         setQuestions(updatedQuestions);
+//       } else {
+//         showAlert('Error', response.msg || 'Failed to load questions');
+//       }
+//     } catch (err) {
+//       setError('No internet connection, make sure Wi-Fi or cellular data is turned on, then try again.');
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [route.params]);
 
-  const getPageType = (typeId: string) => {
-    const pageTypes: any = {
-      behavior: 'behavior',
-      communication: 'communication',
-      interaction: 'interaction',
-      demeanor: 'demeanor',
-      facial_expression: 'facial_expression',
-      tactical_movement: 'tactical_movement',
-      other_concerning_factors: 'tactical_clothing', 
-    };
-    return pageTypes[typeId] || '';
-  };
+//   const getPageType = (typeId: string) => {
+//     const pageTypes: any = {
+//       behavior: 'behavior',
+//       communication: 'communication',
+//       interaction: 'interaction',
+//       demeanor: 'demeanor',
+//       facial_expression: 'facial_expression',
+//       tactical_movement: 'tactical_movement',
+//       other_concerning_factors: 'tactical_clothing', 
+//     };
+//     return pageTypes[typeId] || '';
+//   };
 
-  const isSelected = (item: any) => {
-    return item.is_selected === '1';
-  };
+//   const isSelected = (item: any) => {
+//     return item.is_selected === '1';
+//   };
 
-  const showAlert = (title: string, message: string) => {
-    Alert.alert(title, message);
-  };
+//   const showAlert = (title: string, message: string) => {
+//     Alert.alert(title, message);
+//   };
 
-  const handleQuestionSelect = (qes: any) => {
-    // Mark the question as selected
-    const updatedQuestions = questions.map((item) =>
-      item.id === qes.id ? { ...item, is_selected: '1' } : item
-    );
-    setQuestions(updatedQuestions);
+//   const handleQuestionSelect = (qes: any) => {
+//     // Mark the question as selected
+//     const updatedQuestions = questions.map((item) =>
+//       item.id === qes.id ? { ...item, is_selected: '1' } : item
+//     );
+//     setQuestions(updatedQuestions);
 
-    // Navigate back to the previous screen and pass the selected rating and text
-    navigation.navigate('AggressionMeterScreen', {
-      selectedRating: qes.rating,
-      selectedText: qes.text,
-    });
-  };
+//     // Navigate back to the previous screen and pass the selected rating and text
+//     navigation.navigate('AggressionMeterScreen', {
+//       selectedRating: qes.rating,
+//       selectedText: qes.text,
+//     });
+//   };
 
-  const handleInfoPress = (explanation: string) => {
-    setSelectedExplanation(explanation);
-    setModalVisible(true);
-  };
+//   const handleInfoPress = (explanation: string) => {
+//     setSelectedExplanation(explanation);
+//     setModalVisible(true);
+//   };
 
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedExplanation(null);
-  };
+//   const closeModal = () => {
+//     setModalVisible(false);
+//     setSelectedExplanation(null);
+//   };
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+//   if (loading) {
+//     return <ActivityIndicator size="large" color="#0000ff" />;
+//   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Welcome, {firstName}</Text>
-      <Text style={styles.title}>Select Level of Aggression</Text>
-      <Text style={styles.subtitle}>{pageType} Options</Text>
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.header}>Welcome, {firstName}</Text>
+//       <Text style={styles.title}>Select Level of Aggression</Text>
+//       <Text style={styles.subtitle}>{pageType} Options</Text>
       
-      {error && <Text style={styles.errorText}>{error}</Text>}
+//       {error && <Text style={styles.errorText}>{error}</Text>}
 
-      <FlatList
-        data={questions}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.questionItem}>
-            <Text style={styles.questionText}>{item.text || 'No question available'}</Text>
-            <View style={styles.questionActions}>
-              <TouchableOpacity
-                style={item.is_selected === '1' ? styles.selectedButton : styles.selectButton}
-                onPress={() => handleQuestionSelect(item)} // Pass item to handleQuestionSelect
-              >
-                <Text>{item.is_selected === '1' ? 'Selected' : 'Select'}</Text>
-              </TouchableOpacity>
-              <Text style={styles.ratingBadge}>{item.rating}</Text>
-              <TouchableOpacity onPress={() => handleInfoPress(item.explanation)}>
-                <Text style={styles.infoIcon}>ℹ️</Text>
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.aggressionType}>{item.aggression_type}</Text>
-          </View>
-        )}
-      />
+//       <FlatList
+//         data={questions}
+//         keyExtractor={(item) => item.id.toString()}
+//         renderItem={({ item }) => (
+//           <View style={styles.questionItem}>
+//             <Text style={styles.questionText}>{item.text || 'No question available'}</Text>
+//             <View style={styles.questionActions}>
+//               <TouchableOpacity
+//                 style={item.is_selected === '1' ? styles.selectedButton : styles.selectButton}
+//                 onPress={() => handleQuestionSelect(item)} // Pass item to handleQuestionSelect
+//               >
+//                 <Text>{item.is_selected === '1' ? 'Selected' : 'Select'}</Text>
+//               </TouchableOpacity>
+//               <Text style={styles.ratingBadge}>{item.rating}</Text>
+//               <TouchableOpacity onPress={() => handleInfoPress(item.explanation)}>
+//                 <Text style={styles.infoIcon}>ℹ️</Text>
+//               </TouchableOpacity>
+//             </View>
+//             <Text style={styles.aggressionType}>{item.aggression_type}</Text>
+//           </View>
+//         )}
+//       />
 
-      {/* Modal for Explanation */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <ScrollView>
-              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-              <Text style={styles.modalheading}>Explore This Stage of Aggression!</Text>
-              <RenderHTML contentWidth={300} source={{ html: selectedExplanation }} />
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
-    </View>
-  );
-};
+//       {/* Modal for Explanation */}
+//       <Modal
+//         animationType="slide"
+//         transparent={true}
+//         visible={modalVisible}
+//         onRequestClose={closeModal}
+//       >
+//         <View style={styles.modalContainer}>
+//           <View style={styles.modalContent}>
+//             <ScrollView>
+//               <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+//                 <Text style={styles.closeButtonText}>Close</Text>
+//               </TouchableOpacity>
+//               <Text style={styles.modalheading}>Explore This Stage of Aggression!</Text>
+//               <RenderHTML contentWidth={300} source={{ html: selectedExplanation }} />
+//             </ScrollView>
+//           </View>
+//         </View>
+//       </Modal>
+//     </View>
+//   );
+// };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  modalheading:{
-color:'black',
-textAlign:'center',
-fontSize: 20,
-  },
-  title: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  skipButton: {
-    alignSelf: 'flex-end',
-    backgroundColor: 'red',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 5,
-  },
-  skipButtonText: {
-    color: 'white',
-  },
-  questionItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  questionText: {
-    fontSize: 16,
-    color: 'black',
-  },
-  questionActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  selectButton: {
-    backgroundColor: 'blue',
-    padding: 8,
-    borderRadius: 5,
-  },
-  selectedButton: {
-    backgroundColor: 'red',
-    padding: 8,
-    borderRadius: 5,
-  },
-  ratingBadge: {
-    marginLeft: 16,
-    fontSize: 16,
-    color: '#000',
-  },
-  infoIcon: {
-    marginLeft: 16,
-    fontSize: 22,
-    color: '#9d0808',
-  },
-  aggressionType: {
-    fontSize: 14,
-    color: '#555',
-    marginTop: 4,
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 16,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  closeButton: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: 'white',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 16,
+//   },
+//   header: {
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//     marginBottom: 16,
+//   },
+//   modalheading:{
+// color:'black',
+// textAlign:'center',
+// fontSize: 20,
+//   },
+//   title: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//     marginBottom: 8,
+//   },
+//   subtitle: {
+//     fontSize: 16,
+//     textAlign: 'center',
+//     marginBottom: 16,
+//   },
+//   skipButton: {
+//     alignSelf: 'flex-end',
+//     backgroundColor: 'red',
+//     paddingHorizontal: 16,
+//     paddingVertical: 8,
+//     borderRadius: 5,
+//   },
+//   skipButtonText: {
+//     color: 'white',
+//   },
+//   questionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   questionText: {
+//     fontSize: 16,
+//     color: 'black',
+//   },
+//   questionActions: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     marginTop: 8,
+//   },
+//   selectButton: {
+//     backgroundColor: 'blue',
+//     padding: 8,
+//     borderRadius: 5,
+//   },
+//   selectedButton: {
+//     backgroundColor: 'red',
+//     padding: 8,
+//     borderRadius: 5,
+//   },
+//   ratingBadge: {
+//     marginLeft: 16,
+//     fontSize: 16,
+//     color: '#000',
+//   },
+//   infoIcon: {
+//     marginLeft: 16,
+//     fontSize: 22,
+//     color: '#9d0808',
+//   },
+//   aggressionType: {
+//     fontSize: 14,
+//     color: '#555',
+//     marginTop: 4,
+//   },
+//   errorText: {
+//     color: 'red',
+//     marginBottom: 16,
+//   },
+//   modalContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//   },
+//   modalContent: {
+//     width: '100%',
+//     height: '100%',
+//     backgroundColor: 'white',
+//     borderRadius: 10,
+//     padding: 20,
+//     alignItems: 'center',
+//   },
+//   closeButton: {
+//     backgroundColor: 'blue',
+//     padding: 10,
+//     borderRadius: 5,
+//   },
+//   closeButtonText: {
+//     color: 'white',
+//   },
+// });
 
-export default QuestionPage;
+// export default QuestionPage;   newwwwwwwwwwwwwwwwww
 
 
 
@@ -1136,3 +1136,457 @@ export default QuestionPage;
 // });
 
 // export default AggressionMeterScreen;
+
+
+
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, StyleSheet, Modal, ScrollView, Image } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import { Api } from '../providers/api/api';
+import AgressionMeterQuestionProvider from '../providers/agressionmeter-question/agressionmeter-question';
+import { useNavigation } from '@react-navigation/native';
+import ProfileProvider from '../providers/profile/profile';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import RenderHTML from 'react-native-render-html'; // Import RenderHTML
+import { useLoader } from '../providers/loader/loader';
+
+const api = new Api('https://aggressionmanagement.com/api');
+const aggressionMeterProvider = new AgressionMeterQuestionProvider(api);
+const profileProvider = new ProfileProvider(api);
+
+const QuestionPage: React.FC = () => {
+  const route = useRoute();
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [selectedItemId, setSelectedItemId] = useState<string>('');
+  const { showLoader, hideLoader } = useLoader();
+  const [error, setError] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [pageType, setPageType] = useState<string>(''); 
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchQuestions();
+  }, [fetchQuestions]);
+
+  useEffect(() => {
+    if (route.params && route.params.selectedItemId) {
+      setSelectedItemId(route.params.selectedItemId);
+    }
+  }, [route.params]);
+
+  const fetchQuestions = useCallback(async () => {
+    try {
+      showLoader(); 
+      const userData = await AsyncStorage.getItem('user');
+      if (!userData) {
+        Alert.alert('Error', 'User not authenticated.');
+        return;
+      }
+
+      const { user_id: storedUserId, token: storedToken } = JSON.parse(userData);
+      if (!storedUserId || !storedToken) {
+        Alert.alert('Error', 'User not authenticated.');
+        return;
+      }
+
+      const userInfoResponse = await profileProvider.user_info({
+        token: storedToken,
+        user_id: storedUserId,
+      });
+
+      setFirstName(userInfoResponse?.data?.firstname || 'Guest');
+
+      const params = route as any;
+      const { token, user_id, type, case_id, rating } = params.params.data;
+
+      const pageTypeValue = getPageType(type);
+      setPageType(pageTypeValue);
+      const response = await aggressionMeterProvider.emergencyMeterQuestion({
+        token,
+        type: pageTypeValue,
+        user_id,
+        case_id,
+      });
+
+      
+
+      if (response && response.result !== 'failed') {
+        const updatedQuestions = response.map((item: any) => {
+          let is_selected = '0';
+          if (item.rating === rating) {
+            is_selected = '1';
+          }
+          return { ...item, is_selected };
+        });
+
+        updatedQuestions.sort((a, b) => {
+          if (a.is_selected === '1' && b.is_selected === '0') {
+            return -1;
+          } else if (a.is_selected === '0' && b.is_selected === '1') {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+
+        setQuestions(updatedQuestions);
+      } else {
+        showAlert('Error', response.msg || 'Failed to load questions');
+      }
+    } catch (err) {
+      setError(' ');
+    } finally {
+      hideLoader();
+    }
+  }, [route.params]);
+
+  const getPageType = (typeId: string) => {
+    const pageTypes: any = {
+      behavior: 'behavior',
+      communication: 'communication',
+      interaction: 'interaction',
+      demeanor: 'demeanor',
+      facial_expression: 'facial_expression',
+    tactical_movement: 'tactical_movement',
+    other_concerning_factors: 'tactical_clothing', 
+  
+    };
+    return pageTypes[typeId] || '';
+  };
+
+  const isSelected = (item: any) => {
+    return item.is_selected === '1';
+  };
+
+  const showAlert = (title: string, message: string) => {
+    Alert.alert(title, message);
+  };
+
+  const handleSkip = () => {
+    navigation.goBack();
+  };
+
+  const handleQuestionSelect = (selectedQuestion) => {
+    setQuestions((prevQuestions) => {
+      const updatedQuestions = prevQuestions.map((q) => ({
+        ...q,
+        is_selected: q.id === selectedQuestion.id ? '1' : '0', // Mark only the selected question
+      }));
+
+      // Find the selected question and move it to the top
+      const selected = updatedQuestions.find(q => q.id === selectedQuestion.id);
+      const others = updatedQuestions.filter(q => q.id !== selectedQuestion.id);
+
+      return [selected, ...others];
+    });
+    // Navigate back to AggressionMeterScreen with the selected item's rating and aggression type
+    navigation.navigate('AggressionMeterScreen', {
+      avg_rating: selectedQuestion.rating,
+      aggression_type: selectedQuestion.aggression_type,
+    });
+  };
+
+  const handleInfoPress = (explanation: string) => {
+    setSelectedExplanation(explanation);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedExplanation(null);
+  };
+
+ 
+
+  return (
+    
+    <View style={styles.container}>
+
+      <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+        <Text style={styles.skipButtonText}>SKIP</Text>
+      </TouchableOpacity>
+
+ 
+      <Text style={styles.title}>SELECT LEVEL OF AGGRESSION</Text>
+      <Text style={styles.subtitle}>{pageType} Options</Text>
+      
+      {error && <Text style={styles.errorText}>{error}</Text>}
+
+      
+      <FlatList
+           data={questions.sort((a, b) => {
+            if (a.is_selected === '1' && b.is_selected === '0') {
+              return -1;
+            } else if (a.is_selected === '0' && b.is_selected === '1') {
+              return 1;
+            } else {
+              return 0;
+            }
+          })}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+          <View style={styles.questionContainer}>
+          <View style={styles.questionItem}>
+            <Text style={styles.questionText}>{item.text || 'No question available'}</Text>
+            
+            <View style={styles.questionActions}>
+          <TouchableOpacity
+            onPress={() => {
+              handleQuestionSelect(item);
+              navigation.navigate('AggressionMeterScreen', {
+                avg_rating: item.rating,
+                aggression_type: item.aggression_type,
+              });
+            }}
+  style={[
+    item.is_selected === '1' ? styles.selectedButton : styles.selectButton,
+    
+  ]}
+>
+           <Text style={item.is_selected === '1' ? styles.selectedButtonText : styles.selectButtonText}>
+             {item.is_selected === '1' ? 'Selected' : 'SELECT'}
+           </Text>
+     </TouchableOpacity>
+            <Text style={styles.ratingBadge}>{item.rating}</Text>
+          <TouchableOpacity onPress={() => handleInfoPress(item.explanation)}>
+              <Image source={require('../assets/img/info.png')} style={styles.infoIcon} />
+          </TouchableOpacity>
+          </View>
+            <Text style={styles.aggressionType}>{item.aggression_type}</Text>
+          </View>
+          </View>
+        )}
+      />
+
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+          <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+          
+  <ScrollView>
+        <TouchableOpacity style={styles.closeButton1} onPress={closeModal}>
+              <Text style={styles.closeButtonText1}>SKIP</Text>
+        
+
+        </TouchableOpacity>
+              <Text style={styles.modalheading1}>EXPLORE THIS STAGE OF AGGRESSION!</Text>
+              <RenderHTML contentWidth={400} source={{ html: selectedExplanation }} baseStyle={{ fontSize: 18 }} />
+  </ScrollView>
+           
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  header: {
+    fontSize: 70,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  
+  modalheading:{
+   color:'white',
+   fontSize: 20,
+  },
+  modalheading1:{
+    color:'black',
+    textAlign:'center',
+    fontSize: 28,
+    marginBottom: 15,
+      },
+  title: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 10,
+    marginVertical:20,
+    fontWeight:'bold'
+  },
+  titleContainer: {
+    marginBottom: 10, // Adds spacing below the title
+    alignItems: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 30,
+    marginTop:-10,
+    fontWeight:'bold'
+  },
+  questionContainer: {
+    backgroundColor: '#f9f9f9', // Light background for each item
+    borderRadius: 10, // Add border radius for the container
+    padding: 10, // Padding inside the box
+    marginBottom: 8,// Space between items
+    borderColor: 'white', // Optional: Border color
+    borderWidth: 1, // Optional: Border width
+    shadowColor: 'grey', // Shadow color
+    
+    shadowOffset: { width: 2, height: 3 }, // Shadow offset
+    shadowOpacity: 20, // Shadow opacity
+    shadowRadius: 15, // Shadow blur radius
+    elevation: 40, // Elevation for Android shadow
+
+  },
+ 
+  skipButton: {
+    alignSelf: 'flex-end',
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 2,
+    borderWidth:1,
+    borderColor:'red'
+    
+
+   
+    
+  },
+  skipButtonText: {
+    color: 'red',
+  },
+  questionItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  questionText: {
+    fontSize: 16,
+    color: 'black',
+    marginBottom:10,
+  },
+  questionActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+      borderTopStyle: 'solid',
+      borderBottomStyle: 'solid',
+      borderTopWidth: 0.5,
+      borderBottomWidth:0.5,
+      borderColor: '#ccc', 
+     
+     
+  },
+  selectButton: {
+    backgroundColor: 'brown',
+    padding: 8,
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    color:'white',
+    marginTop:15,
+    marginBottom:15,
+    
+  },
+  selectedButton: {
+     backgroundColor: 'white',
+     padding: 8,
+     borderRadius: 10,
+     borderColor:'red',
+     borderWidth:1,
+     marginTop:15,
+     marginBottom:15,
+    
+  },
+  ratingBadge: {
+    marginLeft: 90,
+    fontSize: 16,
+    marginTop:15,
+    color: 'brown',
+    paddingHorizontal:8,
+    
+    // paddingVertical:8,
+    marginBottom:15,
+   
+   borderRadius:10,
+    borderColor: 'brown',
+    borderWidth:1,
+  },
+    
+    
+  infoIcon: {
+    position: 'absolute',
+    // left: 15,
+    marginLeft:90,
+    width: 10,
+    height: 20,
+    marginTop:-15,
+    tintColor:'brown',
+    padding:15,
+    textAlign:'center',
+    
+    
+  },
+  aggressionType: {
+    fontSize: 16,
+    color: '#555',
+   
+    
+    
+     // fontWeight:'bold',
+   
+    
+
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  closeButton: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+  },
+  closeButton1: {
+    alignSelf: 'flex-end',
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 2,
+    borderWidth:1,
+    borderColor:'red',
+    marginBottom:15,
+  },
+  closeButtonText1: {
+    color: 'red',
+  },
+   selectButtonText: {
+    color: 'white', // Text color for "SELECT" button
+  },
+  
+  selectedButtonText: {
+    color: 'red', // Text color for "Selected" button
+  },
+});
+
+export default QuestionPage;

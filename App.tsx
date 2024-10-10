@@ -1,4 +1,4 @@
-// App.js
+// App.tsx
 import React from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -39,9 +39,13 @@ import AggressionStageEightScreen from './src/pages/AggressionStageEightScreen';
 import AggressionStageNineScreen from './src/pages/AggressionStageNineScreen';
 import RpTestBestPracticeResponseScreen from './src/pages/RpTestBestPracticeResponseScreen';
 import EmergencyProcedure from './src/pages/EmergencyProcedure';
+import Sharedcases from './src/pages/SharedcasesPage';
 import EditCaseScreen from './src/pages/EditCaseScreen';
 import { handleNextAction } from '@stripe/stripe-react-native';
-
+import CasesharedWith from './src/pages/CasesharedWithPage';
+import FilesPage from './src/pages/FilePage';
+import ExistingCases from './src/pages/ExistingCases';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -51,7 +55,7 @@ const App = () => {
 
     <LoaderProvider>
     <NavigationContainer   theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="home">
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ 
             headerShown: false, 
@@ -59,6 +63,26 @@ const App = () => {
           }}  
         />
         <Stack.Screen name="EmergencyProceduresPage" component={EmergencyProceduresPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="FilesPage" component={FilesPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+          <Stack.Screen name="CasesharedWith" component={CasesharedWith} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+          <Stack.Screen name="Sharedcases" component={Sharedcases} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="ExistingCases" component={ExistingCases} options={{ 
             headerShown: false, 
             // cardStyle: { backgroundColor: 'red' } 
           }}  

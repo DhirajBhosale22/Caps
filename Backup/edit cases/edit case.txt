@@ -1,0 +1,291 @@
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  ScrollView,
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import CheckBox from '@react-native-community/checkbox';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Api } from '../providers/api/api';
+import User from '../providers/user/User';
+import { useLoader } from '../providers/loader/loader';
+import { CreateCaseProvider } from '../providers/createcase/createcase';
+
+const apiInstance = new Api(); 
+const userProvider = new User(apiInstance, AsyncStorage); 
+const createCaseProvider = new CreateCaseProvider(apiInstance); 
+
+const EditCaseScreen = ({ navigation, route }) => {
+  const { showLoader, hideLoader } = useLoader();
+  const case_id = route.params.case_id;
+  
+  const [editForm, setEditForm] = useState({
+    name: '',
+    lastname: '',
+    gender: '',
+    race: '',
+    height: '',
+    inch: '',
+    weight: '',
+    age: '',
+    // mark: false,
+    place: '',
+    clothing: '',
+    accent: '',
+    date: '',
+    know: false,
+    unknow: false,
+    visible_marks: false,
+    visible_marks_desc:'',
+    additional_info: '',
+    hair_color: '',
+    eye_color: '',
+  });
+  
+  const [person, setPerson] = useState(0);
+  const [visibleMark, setVisibleMark] = useState(false);
+  const [heightOptions] = useState([...Array(11).keys()].map(i => ({ height: i + 1 })));
+  const [inchOptions] = useState([...Array(11).keys()].map(i => ({ inch: i + 1 })));
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    const userInfo = await AsyncStorage.getItem('user');
+    if (!userInfo) {
+      navigation.navigate('LoginPage');
+      return;
+    }
+
+    const parsedUser = JSON.parse(userInfo);
+    const case_info = { token: parsedUser.token, user_id: parsedUser.user_id, case_id };
+    showLoader(); 
+    
+    try {
+      const res = await createCaseProvider.caseInfo(case_info);
+      console.log('API Response:', res);
+      console.log('res.visible_marks:', res.visible_marks); // Add this line
+      hideLoader();
+
+      if (res.result === "failed") {
+        if (res.msg === "Your account is deactivated, please contact support.") {
+          AsyncStorage.setItem('user', null);
+          navigation.navigate('LoginPage');
+        }
+     } else {
+      const date = res.date_time.substring(0, 10);
+      const [height, inch] = res.height.split(',');
+      const visibleMarks = res.visible_marks === "1" ? true : false;
+
+      setEditForm(prev => ({ 
+        ...prev, 
+        ...res, 
+        date, 
+        height: parseInt(height), 
+        inch: parseInt(inch), 
+        visible_marks: visibleMarks 
+      }));
+      setPerson(parseInt(res.known) === 1 ? 1 : 0);
+      setVisibleMark(visibleMarks);
+    }
+    } catch (err) {
+      hideLoader();
+      console.error('Error loading case data:', err);
+      Alert.alert('No internet connection', 'Make sure Wi-Fi or cellular data is turned on, then try again.', [
+        { text: 'Retry', onPress: loadData },
+      ]);
+    }
+  };
+
+  const handleInputChange = (name, value) => {
+    setEditForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    const userInfo = await AsyncStorage.getItem('user');
+    if (!userInfo) {
+      navigation.navigate('LoginPage');
+      return;
+    }
+
+    const parsedUser = JSON.parse(userInfo);
+    const case_info = {
+      token: parsedUser.token,
+      user_id: parsedUser.user_id,
+      case_id,
+      ...editForm,
+      known: person === 1 ? "1" : "0",
+      height: `${editForm.height},${editForm.inch}`,
+    };
+
+    showLoader();
+    try {
+      const res = await createCaseProvider.editCase(case_info);
+      hideLoader();
+      if (res.result === "failed") {
+        if (res.msg === "Your account is deactivated, please contact support.") {
+          AsyncStorage.setItem('user', null);
+          navigation.navigate('LoginPage');
+        }
+      } else {
+        if (res.msg === "Case edited successfully.") {
+          navigation.goBack();
+        }
+      }
+    } catch (err) {
+      hideLoader();
+      console.error('Error saving case data:', err);
+      Alert.alert('Error', 'Something went wrong.');
+    }
+  };
+
+
+  return (
+    <ScrollView>
+      <View>
+        <Text>Known Person</Text>
+        <CheckBox value={person === 1} onValueChange={() => setPerson(1)} />
+        
+        <Text>Unknown Person</Text>
+        <CheckBox value={person === 0} onValueChange={() => setPerson(0)} />
+
+        <Text>First Name</Text>
+        <TextInput
+          placeholder="Subject first Name"
+          value={editForm.name}
+          onChangeText={value => handleInputChange('name', value)}
+        />
+
+        <Text>Last Name</Text>
+        <TextInput
+          placeholder="Subject’s Last Name"
+          value={editForm.lastname}
+          onChangeText={value => handleInputChange('lastname', value)}
+        />
+
+        <Text>Gender</Text>
+        <Picker
+          selectedValue={editForm.gender}
+          onValueChange={value => handleInputChange('gender', value)}
+        >
+          <Picker.Item label="Male" value="0" />
+          <Picker.Item label="Female" value="1" />
+        </Picker>
+
+        <Text>Date of Birth</Text>
+        <TextInput
+          placeholder="YYYY-MM-DD"
+          value={editForm.date}
+          onChangeText={value => handleInputChange('date', value)}
+        />
+
+        <Text>Skin Tone</Text>
+        <TextInput
+          placeholder="Skin Tone"
+          value={editForm.race}
+          onChangeText={value => handleInputChange('race', value)}
+        />
+
+        <Text>Eye Color</Text>
+        <TextInput
+          placeholder="Eye Color"
+          value={editForm.eye_color}
+          onChangeText={value => handleInputChange('eye_color', value)}
+        />
+
+        <Text>Hair Color</Text>
+        <TextInput
+          placeholder="Hair Color"
+          value={editForm.hair_color}
+          onChangeText={value => handleInputChange('hair_color', value)}
+        />
+
+        <Text>Height</Text>
+        <Picker
+          selectedValue={editForm.height}
+          onValueChange={value => handleInputChange('height', value)}
+        >
+          {heightOptions.map(item => (
+            <Picker.Item key={item.height} label={`${item.height}`} value={item.height} />
+          ))}
+        </Picker>
+
+        <Text>Inch</Text>
+        <Picker
+          selectedValue={editForm.inch}
+          onValueChange={value => handleInputChange('inch', value)}
+        >
+          {inchOptions.map(item => (
+            <Picker.Item key={item.inch} label={`${item.inch}`} value={item.inch} />
+          ))}
+        </Picker>
+
+        <Text>Weight</Text>
+        <TextInput
+          placeholder="Approximate weight (in pounds)"
+          keyboardType="numeric"
+          value={editForm.weight}
+          onChangeText={value => handleInputChange('weight', value)}
+        />
+
+        <Text>Age</Text>
+        <TextInput
+          placeholder="Approximate age"
+          keyboardType="numeric"
+          value={editForm.age}
+          onChangeText={value => handleInputChange('age', value)}
+        />
+
+        <Text>Visible scars, marks, tattoos</Text>
+        <CheckBox
+          value={visibleMark}
+          onValueChange={() => {
+            setVisibleMark(!visibleMark);
+            handleInputChange('visible_marks', !visibleMark);
+          }}
+        />
+
+        {visibleMark && (
+          <TextInput
+            placeholder="Visible marks"
+            value={editForm.visible_marks_desc}
+            onChangeText={value => handleInputChange('visible_marks_desc', value)}
+          />
+        )}
+
+        <TextInput
+          placeholder="Place of incident"
+          value={editForm.place}
+          onChangeText={value => handleInputChange('place', value)}
+        />
+
+        <TextInput
+          placeholder="Distinguishing clothing"
+          value={editForm.clothing}
+          onChangeText={value => handleInputChange('clothing', value)}
+        />
+
+        <TextInput
+          placeholder="Accent"
+          value={editForm.accent}
+          onChangeText={value => handleInputChange('accent', value)}
+        />
+
+        <TextInput
+          placeholder="Additional Information"
+          value={editForm.additional_info}
+          onChangeText={value => handleInputChange('additional_info', value)}
+        />
+
+        <Button title="Save" onPress={handleSave} />
+      </View>
+    </ScrollView>
+  );
+};
+
+export default EditCaseScreen;

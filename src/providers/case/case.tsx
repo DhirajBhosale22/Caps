@@ -31,10 +31,10 @@ class CaseProvider {
     }
   }
   
-  async sharedCases(params: any): Promise<any> {
+  async sharedCases(userInfo: any, token: any): Promise<any> {
     const headers = await this.getHeaders(); // Get headers with token
     try {
-      const response = await this.api.post('shared_cases', params, { headers });
+      const response = await this.api.post('shared_cases', userInfo, { headers });
       console.log('sharedCases response:', response.data); // Log response data
       return response.data;
     } catch (error) {
@@ -44,7 +44,7 @@ class CaseProvider {
   }
 
   // Share case via email with authentication token
-  async nocapsShareCase(userInfo: any): Promise<any> {
+  async nocaps_shareCase(userInfo: any): Promise<any> {
     const headers = await this.getHeaders(); // Get headers with token
     try {
       const response = await this.api.post('shareCase_byEmail', userInfo, { headers });
@@ -57,17 +57,9 @@ class CaseProvider {
   }
 
   // Share case contact details with authentication token
-  async shareCaseContactDetails(userInfo: any): Promise<any> {
-    const headers = await this.getHeaders(); // Get headers with token
-    try {
-      const response = await this.api.post('shareCase_contact_details', userInfo, { headers });
-      console.log('shareCaseContactDetails response:', response.data); // Log response data
-      return response.data;
-    } catch (error) {
-      console.error('Error sharing case contact details:', error);
-      throw error;
-    }
-  }
+  
+
+
 }
 
 export default CaseProvider;

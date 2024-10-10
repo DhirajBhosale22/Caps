@@ -211,6 +211,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import ProfileProvider from '../providers/profile/profile';
 import { Api } from '../providers/api/api';
+import { useLoader } from '../providers/loader/loader';
+
+
 
 const { height } = Dimensions.get('window');
 
@@ -218,12 +221,12 @@ const ProfileScreen: React.FC = () => {
   const [showFooter, setShowFooter] = useState(true);
   
   const [userInfo, setUserInfo] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+
   const navigation = useNavigation();
-  const api = new Api('http://aggressionmanagement.com/api');
+  const api = new Api('https://aggressionmanagement.com/api');
   const profileProvider = new ProfileProvider(api);
 
- 
+  const { showLoader, hideLoader } = useLoader();
 
   useEffect(() => {
     const fetchStoredUser = async () => {
@@ -245,7 +248,7 @@ const ProfileScreen: React.FC = () => {
   }, []);
 
   const fetchUserInfo = async (storedUser: any) => {
-    setLoading(true);
+    showLoader(); // Show the loader
     const userInfo = {
       user_id: storedUser.user_id,
       token: storedUser.token,
@@ -257,7 +260,7 @@ const ProfileScreen: React.FC = () => {
       if (response && response.status === 200) {
         const data = response.data;
         console.log('Received user data:', data);
-        setLoading(false);
+      hideLoader();
 
         if (data.subscriptionFlag === 1 && storedUser.client_id === '0') {
           if (data.user_type === 'tester') {
@@ -288,11 +291,11 @@ const ProfileScreen: React.FC = () => {
           });
         }
       } else {
-        setLoading(false);
+        hideLoader();
         Alert.alert('Error', `Server error: ${response.status}. Please try again later.`);
       }
     } catch (error) {
-      setLoading(false);
+      hideLoader();
       handleNetworkError(error);
     }
   };
@@ -318,13 +321,13 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#007BFF" />
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <ActivityIndicator size="large" color="#007BFF" />
+  //     </View>
+  //   );
+  // }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -402,15 +405,16 @@ const styles = StyleSheet.create({
     
   },
   backIcon: {
-    width: 24,
-    height: 24,
+    width: 22,
+    height: 22,
     tintColor: 'white',
+    marginTop:5,
   },
   stickyHeader: {
     backgroundColor: '#9d0808',
     width: '100%',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 20,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',

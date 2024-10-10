@@ -1,0 +1,41 @@
+import { Api } from "../api/api";
+
+class AggressionLevelProvider {
+  private api: Api;
+
+  constructor(api: Api) {
+    this.api = api;
+  }
+
+  async aggressionLevel(info: any) {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await this.api.post('aggression_level_show_case', JSON.stringify(info), { headers });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching aggression level:', error);
+      return null;
+    }
+  }
+
+  async createCaseAggressionLevel(info: any) {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      const response = await this.api.post('create_case_aggression_level', JSON.stringify(info), { headers });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating case aggression level:', error);
+      return null;
+    }
+  }
+}
+
+export default AggressionLevelProvider;
+
+

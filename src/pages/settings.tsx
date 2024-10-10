@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
   StyleSheet,
+  Image
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Contacts from 'react-native-contacts';
@@ -16,6 +17,7 @@ import InAppBrowser from 'react-native-inappbrowser-reborn';
 import { Api } from '../providers/api/api';
 import ProfileProvider from '../providers/profile/profile';
 import { useLoader } from '../providers/loader/loader';
+import Ionicons from 'react-native-vector-icons/Ionicons'; 
 
 const SettingsPage = ({ navigation, route }) => {
   const [shareData, setShareData] = useState(false);
@@ -25,7 +27,7 @@ const SettingsPage = ({ navigation, route }) => {
   const [hideFingerprint, setHideFingerprint] = useState(false);
   const [isTester, setIsTester] = useState(false);
   const [userInfo, setUserInfo] = useState({});
-  const api = new Api('http://aggressionmanagement.com/api');
+  const api = new Api('https://aggressionmanagement.com/api');
   const profileProvider = new ProfileProvider(api); // Initialize ProfileProvider
   const { showLoader, hideLoader } = useLoader(); // Use the loader context
 
@@ -214,66 +216,146 @@ const SettingsPage = ({ navigation, route }) => {
   
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {userType === '0' && (
-        <>
-          <Text style={styles.subtitle}>Sharing Cases</Text>
-          <View style={styles.item}>
-            <Text style={styles.settingName}>Share Data</Text>
-            <Switch value={shareData} onValueChange={handleShareDataChange} />
-          </View>
-
-          {shareData && (
-            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('ShareGroupScreen')}>
-              <Text style={styles.settingName}>Sharing Group</Text>
-            </TouchableOpacity>
-          )}
-        </>
-      )}
-
-      <Text style={styles.subtitle}>System</Text>
-      {!hideFingerprint && (
-        <View style={styles.item}>
-          <Text style={styles.settingName}>Fingerprint Unlock</Text>
-          <Switch value={fingerprintUnlock} onValueChange={handleFingerprintChange} />
-        </View>
-      )}
-
-      <TouchableOpacity style={styles.item} onPress={openTermsConditions}>
-        <Text style={styles.settingName}>Terms and Conditions</Text>
-      </TouchableOpacity>
-
-      {userType === '0' &&  (
-        <TouchableOpacity style={styles.item} onPress={handleOptOut}>
-          <Text style={styles.settingName}>OPT_OUT</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back-outline" size={24} color="white" />
         </TouchableOpacity>
-      )}
-
-      <Text style={styles.subtitle}>App Version Details</Text>
-      <View style={styles.item}>
-        <Text style={styles.settingName}>{version}</Text>
+        <Text style={styles.headerText}>Setting</Text>
       </View>
-    </ScrollView>
+      <ScrollView contentContainerStyle={styles.content}>
+        {userType === '0' && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Sharing Cases</Text>
+            <View style={styles.item}>
+              <View style={styles.itemLeft}>
+                <Image source={require('../assets/img/share-button.png')} style={styles.icon} />
+                <Text style={styles.settingName}>Share Data</Text>
+              </View>
+              <Switch
+                value={shareData}
+                onValueChange={handleShareDataChange}
+                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                thumbColor={shareData ? '#f5dd4b' : '#f4f3f4'}
+              />
+            </View>
+            {shareData && (
+              <TouchableOpacity
+                style={styles.item}
+                onPress={() => navigation.navigate('ShareGroupScreen')}
+              >
+                <View style={styles.itemLeft}>
+                  <Image source={require('../assets/img/userc.png')} style={styles.icon} />
+                  <Text style={styles.settingName}>Sharing Group</Text>
+                </View>
+                <Ionicons name="chevron-forward-outline" size={24} color="black" />
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>System</Text>
+          {!hideFingerprint && (
+            <View style={styles.item}>
+              <View style={styles.itemLeft}>
+                <Image source={require('../assets/img/fingerprint.png')} style={styles.icon} />
+                <Text style={styles.settingName}>Fingerprint Unlock</Text>
+              </View>
+              <Switch
+                value={fingerprintUnlock}
+                onValueChange={handleFingerprintChange}
+                trackColor={{ false: '#767577', true: '#81b0ff' }}
+                thumbColor={fingerprintUnlock ? '#f5dd4b' : '#f4f3f4'}
+              />
+            </View>
+          )}
+          <TouchableOpacity
+            style={styles.item}
+            onPress={openTermsConditions}
+          >
+            <View style={styles.itemLeft}>
+              <Image source={require('../assets/img/bookmark.png')} style={styles.icon} />
+              <Text style={styles.settingName}>Terms and Conditions</Text>
+            </View>
+            <Ionicons name="chevron-forward-outline" size={24} color="#ccc" />
+          </TouchableOpacity>
+          {userType === '0' && (
+            <TouchableOpacity style={styles.item} onPress={handleOptOut}>
+              <View style={styles.itemLeft}>
+                <Image source={require('../assets/img/bookmark.png')} style={styles.icon} />
+                <Text style={styles.settingName}>OPT_OUT</Text>
+              </View>
+              <Ionicons name="chevron-forward-outline" size={24} color="#ccc" />
+            </TouchableOpacity> //
+          )}
+        </View>
+        <View style={styles.section}>
+        <Text style={styles.sectionTitle}>App Version Details</Text>
+          <View style={styles.item}>
+            <View style={styles.itemLeft}>
+              <Image source={require('../assets/img/bookmark.png')} style={styles.icon} />
+              <Text style={styles.settingName}>App Version</Text>
+            </View>
+            <Text style={styles.versionText}>{version}</Text>
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    height: 60,
+    backgroundColor: '#9d0808',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  headerText: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  content: {
     padding: 20,
   },
-  subtitle: {
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginVertical: 10,
+    marginBottom: 10,
   },
   item: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 15,
+    alignItems: 'center',
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
   settingName: {
-    fontSize: 14,
+    fontSize: 16,
+  },
+  versionText: {
+    fontSize: 16,
+    color: '#666',
   },
 });
 

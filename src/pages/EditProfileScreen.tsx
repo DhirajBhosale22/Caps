@@ -22,7 +22,7 @@ import { Api } from '../providers/api/api';
 import ProfileProvider from '../providers/profile/profile';
 import CountryProvider from '../providers/country/country';
 
-const API_URL = 'http://aggressionmanagement.com/api';
+const API_URL = 'https://aggressionmanagement.com/api';
 
 const api = new Api(API_URL);
 const profileProvider = new ProfileProvider(api);

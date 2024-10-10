@@ -24,12 +24,19 @@ class AgressionMeterQuestionProvider {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         };
+        const data = {
+            token: token,
+            type: question.type,
+            user_id: user.user_id,
+            case_id: question.case_id, // Add the case_id to the API call
+          };
+      
 
         console.log('Sending Request to API:', {
             url: 'meter_of_aggression',
             method: 'POST',
             headers,
-            data: question,
+            data,
         });
 
         const response = await this.api.post('meter_of_aggression', question, {

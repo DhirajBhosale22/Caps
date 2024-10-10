@@ -48,7 +48,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 export class Api {
   private axiosInstance: AxiosInstance;
-  private url: string = 'http://aggressionmanagement.com/api';
+  private url: string = 'https://aggressionmanagement.com/api';
 
   constructor() {
     this.axiosInstance = axios.create({

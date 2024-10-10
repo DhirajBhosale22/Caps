@@ -481,7 +481,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, TextInput, Modal } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-
+import { fetchApi } from 'react-native-fetch-api';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -583,14 +583,27 @@ const CreateCaseScreen = () => {
     );
   };
 
-  const getCurrentAddress = (latitude, longitude) => {
-  Geocoder.geocodePosition({ lat: latitude, lng: longitude })
-    .then(res => {
-      setCurrentAddress(res[0].locality);
-    })
-    .catch(err => console.log(err));
-};
-
+  
+  const getCurrentAddress = async (latitude, longitude) => {
+    const url = `${PLACES_API_BASE}/geocode/json?latlng=${latitude},${longitude}&key=${API_KEY}`;
+  
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+  
+      if (data.status === 'OK') {
+        const address = data.results[0].formatted_address;
+        setCurrentAddress(address);  // Set the exact address here
+      } else {
+        console.log('Error fetching address:', data.status);
+      }
+    } catch (error) {
+      console.log('Error fetching address:', error);
+    }
+  };
+  
+    const API_KEY = 'AIzaSyC2GNzQwQP-mMTxnCxK6NOTjCFx-mYjvBg';
+    const PLACES_API_BASE = 'https://maps.googleapis.com/maps/api/place';
   const currentDate = () => {
     const today = new Date();
     const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -702,7 +715,7 @@ const CreateCaseScreen = () => {
             case_id: res.case_id,
             last_name: res.last_name,
           };
-          navigation.reset({ index: 0, routes: [{ name: 'AggressionMeterScreen', params: { suspect_info } }] });
+          navigation.reset({ index: 0, routes: [{ name: 'AggressionMeterScreen', params: { suspect_info, case_id: res.case_id } }] });
         }
       })
       .catch((err) => {
@@ -754,7 +767,7 @@ const CreateCaseScreen = () => {
             case_id: res.case_id,
             last_name: res.last_name,
           };
-          navigation.reset({ index: 0, routes: [{ name: 'AggressionMeterScreen', params: { suspect_info } }] });
+          navigation.reset({ index: 0, routes: [{ name: 'AggressionMeterScreen', params: { suspect_info, case_id: res.case_id } }] });
         }
       })
       .catch((err) => {

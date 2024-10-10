@@ -183,8 +183,9 @@ import {
   StyleSheet,
   ActivityIndicator,
   ImageBackground,
-  Dimensions, StatusBar
+  Dimensions, StatusBar, Modal
 } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import User from '../providers/user/User';
@@ -196,6 +197,7 @@ import { useLoader } from '../providers/loader/loader';
 const { width, height } = Dimensions.get('window');
 
 const LoginScreen: React.FC = () => {
+  const route = useRoute();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -204,6 +206,10 @@ const LoginScreen: React.FC = () => {
   const [imei, setImei] = useState('item');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalType, setModalType] = useState('success');
+  
   const navigation = useNavigation();
 
 
@@ -211,6 +217,18 @@ const LoginScreen: React.FC = () => {
 
   const { showLoader, hideLoader } = useLoader(); // Access loader functions
 
+  useEffect(() => {
+    if (route.params?.modalVisible) {
+      setModalVisible(route.params.modalVisible);
+      setModalMessage(route.params.modalMessage);
+      setModalType(route.params.modalType);
+    }
+  }, [route.params]);
+  const closeModal = () => {
+    setModalVisible(false);
+    // Optionally clear params after closing the modal
+    navigation.setParams({ modalVisible: false, modalMessage: '', modalType: 'success' });
+  };
   useEffect(() => {
     if (Platform.OS === 'android') {
       DeviceInfo.getUniqueId().then(setImei);
@@ -268,7 +286,18 @@ showLoader();
         Alert.alert('Error', 'An error occurred during login. Please try again.');
       });
   };
-
+  useEffect(() => {
+    const checkIfLoggedIn = async () => {
+      const user = await AsyncStorage.getItem('user');
+      if (user) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'home' }],
+        });
+      }
+    };
+    checkIfLoggedIn();
+  }, [navigation]);
   const saveUserData = (loginRes: any) => {
     AsyncStorage.setItem('user', JSON.stringify(loginRes))
       .then(() => AsyncStorage.setItem('client_id', loginRes.client_id))
@@ -283,7 +312,7 @@ showLoader();
   return (
     <ImageBackground source={Observy_BG} style={styles.backgroundImage}>
       <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('EmergencyProceduresPage')}>
-        <Text style={styles.skipButtonText}>Skip</Text>
+        <Text style={styles.skipButtonText}>SKIP</Text>
       </TouchableOpacity>
       <View style={styles.container}>
       <StatusBar
@@ -327,12 +356,31 @@ showLoader();
  <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-          <Text style={styles.link}>Forgot Password?</Text>
+          <Text style={styles.link}>Forgot Password ?</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('RegistrationForm')} style={styles.createAccountButton}>
           <Text style={styles.createAccountText}>Create an account</Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => closeModal()}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={[styles.modalText, modalType === 'error' && styles.errorText1]}>{modalType === 'error' ? 'Failed' : 'Success'}</Text>
+            <Text style={styles.modalMessage}>{modalMessage}</Text>
+            <TouchableOpacity
+              style={[styles.modalButton, modalType === 'error' ? styles.errorButton : styles.successButton]}
+              onPress={closeModal}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ImageBackground>
   );
 };
@@ -439,6 +487,54 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: '90%',
     textAlign: 'left',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    width: 300,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButton: {
+    padding: 10,
+    borderRadius: 5,
+  },
+  errorButton: {
+    backgroundColor: '#9d0808',
+  },
+  successButton: {
+    backgroundColor: '#9d0808',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  errorText1: {
+    color: 'red',
   },
 });
 

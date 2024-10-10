@@ -478,7 +478,7 @@ const HomePage = ({ navigation }: any) => {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   
 
-  const api = new Api('http://aggressionmanagement.com/api');
+  const api = new Api('https://aggressionmanagement.com/api');
   const profileProvider = new ProfileProvider(api);
 
   useFocusEffect(
@@ -491,6 +491,18 @@ const HomePage = ({ navigation }: any) => {
     checkUserSubscription();
     loadUserData(); // Load user data when the component mounts
   }, []);
+  useEffect(() => {
+    const checkIfLoggedIn = async () => {
+      const user = await AsyncStorage.getItem('user');
+      if (!user) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      }
+    };
+    checkIfLoggedIn();
+  }, [navigation]);
 
   const loadUserData = async () => {
     try {
@@ -618,9 +630,12 @@ const HomePage = ({ navigation }: any) => {
   if (loading) {
     return <LoaderProvider />;
   }
-  const handleLogout = () => {
-    setLogoutModalVisible(false);
-    navigation.navigate('Login');
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('user');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
   };
 
   const handleLogoutCancel = () => {

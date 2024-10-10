@@ -720,15 +720,22 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Modal, ScrollView, StatusBar, Animated  } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Modal, ScrollView, StatusBar, Animated, PermissionsAndroid, Platform  } from 'react-native';
 import { useRoute } from '@react-navigation/native'; // Import useRoute
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Api } from '../providers/api/api';
+import RNFS from 'react-native-fs';
+import ViewShot from 'react-native-view-shot'; // Import for screenshot
+import AggressionLevelProvider from '../providers/aggressionlevel/aggressionlevel';
 import { DistributionlistProvider } from '../providers/distributionlist/distributionlist';
-import { AggressionlevelProvider } from '../providers/aggressionlevel/aggressionlevel';
 import ProfileProvider from '../providers/profile/profile';
-import { CreateCaseProvider } from '../providers/createcase/createcase';
+import CaseProvider from '../providers/case/case';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import DocumentPicker from 'react-native-document-picker';
 
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+
+import { useLoader } from '../providers/loader/loader';
 // Import all images
 import info from '../assets/img/info.png';
 import meter from '../assets/img/meter.png';
@@ -738,113 +745,226 @@ import man from '../assets/img/man.png';
 import tactic_movement from '../assets/img/tactic_movement.png';
 import demeanor from '../assets/img/demeanor.png';
 import file from '../assets/img/file.png';
+import meeting from '../assets/img/meeting.png';
+import walking from '../assets/img/walking.png';
+import grinning from '../assets/img/grinning.png';
+import checkc from '../assets/img/checkc.png';
+import social from '../assets/img/social.png';
+import { Rating } from 'react-native-elements';
 
-const AggressionMeterScreen = ({ navigation }: any) => {
-  const route = useRoute(); // Use useRoute hook to access params
+const AggressionMeterScreen = ({ navigation, route }: any) => {
+  const { case_id, token } = route.params; // Access the token here
   const { suspect_info } = route.params as { suspect_info: { suspect_name: string; last_name: string } };
-
+  const { avg_rating } = route.params;
 
   const api = new Api();
   const distributionProvider = new DistributionlistProvider(api);
   const profileProvider = new ProfileProvider(api);
-  const aggressionProvider = new AggressionlevelProvider(api);
-  const createCaseProvider = new CreateCaseProvider(api);
+  const aggressionLevelProvider = new AggressionLevelProvider(api); // Create an instance of AggressionLevelProvider
 
+  const createCaseProvider = new CaseProvider(api);
+  const [avgRating, setAvgRating] = useState<string>('');
   const [suspectInfo, setSuspectInfo] = useState<any>(suspect_info || {});
   const [userName, setUserName] = useState<string>('');
   const [number, setNumber] = useState<number>(0);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pages, setPages] = useState<any[]>([
     { title: 'behavior', icon: 'man', rating: '', select: '', colors: '', type_id: '', image: man },
-    { title: 'communication', icon: 'info', rating: '', select: '', colors: '', type_id: '' ,  image: info},
-    { title: 'interaction', icon: 'info', rating: '', select: '', colors: '', type_id: '',  image: info },
-    { title: 'demeanor', icon: 'demeanor', rating: '', select: '', colors: '', type_id: '',  image: demeanor },
-    { title: 'facial_expression', icon: 'info', rating: '', select: '', colors: '', type_id: '',  image: info },
-    { title: 'tactical_movement', icon: 'info', rating: '', select: '', colors: '', type_id: '' , image: info },
-    { title: 'other_concerning_factors', icon: 'tactic_movement', rating: '', select: '', colors: '', type_id: '', image: tactic_movement },
-    { title: 'Files', icon: 'info', rating: '', select: '', colors: '', type_id: '' , image: file },
-    { title: 'best practices', icon: 'file', rating: '', select: '', colors: '', type_id: '',  image: info },
+    { title: 'communication', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: meeting },
+    { title: 'interaction', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: social },
+    { title: 'demeanor', icon: 'demeanor', rating: '', select: '', colors: '', type_id: '', image: demeanor },
+    { title: 'facial expression', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: grinning },
+    { title: 'tactical_movement', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: walking },
+    { title: 'other concerning factors', icon: 'tactic_movement', rating: '', select: '', colors: '', type_id: '', image: tactic_movement },
+    { title: 'Files', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: file },
+    { title: 'best practices', icon: 'file', rating: '', select: '', colors: '', type_id: '', image: checkc },
   ]);
+  const { showLoader, hideLoader } = useLoader();
   const [showColor, setShowColor] = useState<string>('rgba(102, 102, 102, 0.5)'); // Default color for the meter
-  const rotateValue = useRef(new Animated.Value(0)).current; 
+  const rotateValue = useRef(new Animated.Value(0)).current;
+  const viewShotRef = useRef(null); // For screenshot reference
+
+  
 
   useEffect(() => {
-    // Update arrow rotation based on 'number' state
-    Animated.timing(rotateValue, {
-      toValue:  2* 20 - 90, // Adjust rotation based on number (0-9)  parseInt(number)
-      duration: 500, // Adjust animation duration
-      useNativeDriver: true, 
-    }).start();
-  }, [number]); // Run this effect whenever 'number' changes
+    if (avgRating !== '' && !isNaN(parseFloat(avgRating))) {
+      Animated.timing(rotateValue, {
+        toValue: parseFloat(avgRating) * 20 - 90,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [avgRating]);
   useEffect(() => {
     fetchUserName();
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (pages.length > 0) {
+      const maxRating = Math.max(...pages.map(page => page.rating ? parseInt(page.rating) : 0));
+      setAvgRating(maxRating.toString());
+    } else {
+      setAvgRating('0');
+    }
+  }, [pages]);
+
   const fetchUserName = async () => {
+    showLoader();
     try {
       const userData = await AsyncStorage.getItem('user');
       const { user_id, token } = userData ? JSON.parse(userData) : {};
 
       if (!user_id || !token) {
-        Alert.alert('Error', 'User not authenticated.');
+        Alert.alert('Error', 'User  not authenticated.');
         return;
       }
 
       const response = await profileProvider.user_info({ user_id, token });
-      const userDataResponse = response.data;
+      const userDataResponse =response.data;
       setUserName(userDataResponse.firstname);
     } catch (error) {
       console.error('Error fetching user info:', error);
       Alert.alert('Error', 'Failed to fetch user information.');
+    } finally {
+      hideLoader();
     }
   };
 
   const fetchData = async () => {
+    showLoader();
     try {
       const userToken = await AsyncStorage.getItem('user_token');
       if (userToken) {
-        const caseInfo = await createCaseProvider.getSuspectInfo(userToken);
+        const caseInfo = await createCaseProvider.myCases({}, userToken); // Use the new myCases method
         setSuspectInfo(caseInfo);
 
-        const aggressionData = await aggressionProvider.getAggressionResult(userToken);
-        setNumber(aggressionData.level);
-
-        const profileData = await profileProvider.getProfile(userToken);
+        const profileData = await profileProvider.user_info(userToken);
         console.log('Profile Data:', profileData);
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch data');
       console.error('Fetch Error:', error);
+    }  finally {
+      hideLoader();
     }
   };
 
+  const fetchAggressionLevel = async () => {
+    showLoader();
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      const { user_id, token } = userData ? JSON.parse(userData) : {};
+  
+      if (!user_id || !token) {
+        Alert.alert('Error', 'User not authenticated.');
+        hideLoader(); // Hide loader if user is not authenticated
+        return;
+      }
+  
+      const info = {
+        token: token,
+        user_id: user_id,
+        case_id: case_id,
+      };
+  
+      const response = await aggressionLevelProvider.aggressionLevel(info);
+      if (response) {
+        const aggressionInfo = response.aggression_level_details;
+        if (aggressionInfo=== 'No content') {
+          const defaultPages = pages.map((page) => ({
+            ...page,
+            rating: '',
+            colors: 'grey', // default color
+          }));
+          setPages(defaultPages);
+        } else {
+        
+          const updatedPages = pages.map((page) => {
+            let show_color = 'grey'; // Default color
+            const matchingAggression = aggressionInfo.find((data) => data.type === page.title);
+            if (matchingAggression) {
+              // Set rating and determine color
+            
+  
+              // Rating-based color logic
+              const rating = matchingAggression.rating;
+              if (rating === '1' || rating === '2' || rating === '3') {
+                show_color = 'rgb(58, 186, 128)'; // Green
+              } else if (rating === '4' || rating === '5' || rating === '6') {
+                show_color = 'rgb(232, 185, 106)'; // Yellow
+              } else if (rating === '0') {
+                show_color = 'grey'; // Grey
+              } else {
+                show_color = 'rgb(216, 108, 107)'; // Red
+              }
+  
+              return {
+                ...page,
+                rating: matchingAggression.rating,
+                colors: show_color, // Assign the color based on rating
+              };
+            }
+            return { ...page, colors: show_color };
+          });
+  
+          setPages(updatedPages); // Update pages state with colors
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching aggression level:', error);
+    }
+    finally {
+      hideLoader();
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchAggressionLevel();
+  }, []);
+
+
   const getQuestion = async (item: any) => {
+    showLoader();
     try {
       const userData = await AsyncStorage.getItem('user');
       const { user_id, token } = userData ? JSON.parse(userData) : {};
 
       if (!user_id || !token) {
-        Alert.alert('Error', 'User not authenticated.');
+        Alert.alert('Error', 'User  not authenticated.');
         return;
+      }
+
+      if (item.title === 'best practices') {
+        navigation.navigate('EmergencyProcedure', {  token: token, user_id: user_id, case_id: case_id,}); // Navigate to BestPractices page
+      } else {
+      let type = item.title;
+      if (type === 'facial expression') {
+        type = 'facial_expression';
+      }
+
+      if (type === 'other concerning factors') {
+        type = 'other_concerning_factors';
       }
 
       const myModalData = {
         token: token,
         user_id: user_id,
-        type: item.title,
+        type,
+        case_id: case_id, // Pass case_id
+        rating: item.rating, 
       };
-
-      const aggressionInfo = { user_id, type: item.title };
-      const aggressionResponse = await aggressionProvider.aggression_level(aggressionInfo);
-      console.log('Aggression Level Response:', aggressionResponse.data);
 
       navigation.navigate('QuestionPage', {
         data: myModalData,
       });
+      }
     } catch (error) {
       console.error('Error getting token or user_id:', error);
       Alert.alert('Error', 'Failed to get token or user_id.');
+    } finally {
+      hideLoader();
     }
   };
 
@@ -852,94 +972,188 @@ const AggressionMeterScreen = ({ navigation }: any) => {
     setIsModalVisible(!isModalVisible);
   };
 
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Storage Permission Required',
+          message: 'This app needs access to your storage to download the PDF',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } else {
+      return true;
+    }
+  };
+
+
+  const generatePDF = async () => {
+    const hasPermission = await requestStoragePermission();
+    if (!hasPermission) {
+      Alert.alert('Permission denied', 'Cannot save PDF without storage permission.');
+      return;
+    }
+  
+    try {
+      // Capture screenshot
+      const uri = await viewShotRef.current.capture();
+      console.log('Screenshot captured at:', uri);
+      const base64 = await RNFS.readFile(uri, 'base64');
+  
+      // Convert HTML to PDF
+      let options = {
+        html: `
+          <html>
+            <body>
+              <h1>Aggression Meter Report</h1>
+              <p>Suspect: ${suspectInfo.suspect_name} ${suspectInfo.last_name}</p>
+              <img src="data:image/jpeg;base64,${base64}" alt="Screenshot" width="70%" height="80%" />
+              <!-- Additional case details -->
+            </body>
+          </html>
+        `,
+        fileName: `AggressionMeter_${case_id}`,
+        directory: 'Documents',
+      };
+  
+      const pdf = await RNHTMLtoPDF.convert(options);
+
+    // Get the directory path
+    const directory = await RNFS.DownloadDirectoryPath;
+
+    // Create the file path
+    const filePath = `${directory}/AggressionMeter_${case_id}.pdf`;
+
+    // Write the PDF to the file path
+    await RNFS.writeFile(filePath, pdf.filePath, 'base64');
+
+    // Save the file path for later use
+    await RNFS.moveFile(pdf.filePath, filePath);
+
+    Alert.alert('PDF Generated', `PDF file has been saved to: ${filePath}`);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    Alert.alert('Error', 'Failed to generate PDF.');
+  }
+};
+
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#B22222" />
-     
-        <View style={styles.topBar}>
-        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
-                        <Image source={require('../assets/img/download.png')} style={styles.footerIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
-                        <Image source={require('../assets/img/share.png')} style={styles.footerIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
-                        <Image source={require('../assets/img/edit.png')} style={styles.footerIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
-                        <Image source={require('../assets/img/document.png')} style={styles.footerIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
-                        <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
-                        <Image source={require('../assets/img/check.png')} style={styles.footerIcon} />
-                    </TouchableOpacity>
-
-        </View>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {/* Suspect Info and User Name */}
-        <Text style={styles.namePlaceholder}>{suspectInfo.suspect_name} {suspectInfo.last_name}</Text>
-        {/* <Text style={styles.namePlaceholder}>{userName}</Text> */}
-
-        <View style={styles.gridContainer}>
-          {/* Pages list - Mapped to create grid items */}
-          {pages.map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => getQuestion(item)} style={styles.gridItem}>
-              <Image source={item.image} style={styles.infoIcon} />
-              <Text style={styles.gridItemText}>{item.title.replace(/_/g, ' ')}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View style={styles.meterContainer}>
-    <Image source={meter} style={styles.meterImg} resizeMode="contain" />
- 
-      <Animated.Image 
-        source={green_ar} 
-        style={[
-          styles.arrowImg, 
-          {
-            transform: [{
-              rotate: rotateValue.interpolate({
-                inputRange: [0, 360], // Adjust input range if needed
-                outputRange: ['0deg', '360deg'], 
-              })
-            }]
-          }
-        ]}
-        resizeMode="contain" 
-      />
-    
-          <Text style={styles.notification}>{number}</Text>
-          <Text style={styles.meterText}>METER OF EMERGING AGGRESSION</Text>
-        </View>
-
-        {/* Modal */}
-        <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalText}>To advance to Best Practice Responses, you must first select elements in the Meter of Emerging Aggression.</Text>
-              <TouchableOpacity style={styles.modalButton} onPress={toggleModal}>
-                <Text style={styles.modalButtonText}>OK</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      </ScrollView>
+  
+      <View style={styles.topBar}>
+        <TouchableOpacity style={styles.footerButton} onPress={generatePDF}>
+          <Image source={require('../assets/img/download.png')} style={styles.footerIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('FilesPage')}>
+        <Image source={require('../assets/img/share.png')} style={styles.footerIcon} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('EditCaseScreen', { case_id: case_id })}>
+        <Image source={require('../assets/img/edit.png')} style={styles.footerIcon} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('MyCasePage', { token})}>
+        <Image source={require('../assets/img/document.png')} style={styles.footerIcon} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('CasesharedWith', { case_id: case_id })}>
+        <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
+        <Image source={require('../assets/img/check.png')} style={styles.footerIcon} />
+      </TouchableOpacity>
     </View>
+    <ViewShot ref={viewShotRef} style={styles.container} options={{ format: 'jpg', quality: 0.9 }}>
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <Text style={styles.namePlaceholder}>{suspectInfo.suspect_name} {suspectInfo.last_name}</Text>
+
+      <View style={styles.gridContainer}>
+        {pages.map((item, index) => (
+          <TouchableOpacity 
+            key={index} 
+            onPress={() => getQuestion(item)} 
+            style={[styles.gridItem, { backgroundColor: item.colors }]} // Apply the dynamic background color
+          >
+            
+          
+              <Image source={item.image} style={styles.infoIcon} />
+            
+            <Text style={styles.gridItemText}>{item.title.replace(/_/g, ' ')}</Text>
+            {item.rating && (
+              <Text style={styles.ratingText}>{item.rating}</Text>
+            )}
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={styles.meterContainer}>
+        <Image source={meter} style={styles.meterImg} resizeMode="contain" />
+
+        <Animated.Image
+          source={green_ar}
+          style={[
+            styles.arrowImg,
+            {
+              transform: [
+                {
+                  rotate: rotateValue.interpolate({
+                    inputRange: [0, 360], // Adjust input range if needed
+                    outputRange: ['0deg', '360deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+          resizeMode="contain"
+        />
+        <Text style={styles.notification}>{avgRating}</Text>
+      </View>
+
+      <Text style={styles.meterText}>METER OF EMERGING AGGRESSION</Text>
+      <Text style={styles.meterTextInner}>
+        This CAPS Mobile App is fully protected by Copyrights, Trademarks and Patents. Any unauthorized use of this app or its methodologies in whole or in part without prior written permission from the Center for Aggression Management, Inc. is a Federal offense and will be prosecuted to the fullest extent of the law.
+      </Text>
+
+      {/* Modal */}
+      <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>To advance to Best Practice Responses, you must first select elements in the Meter of Emerging Aggression.</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={toggleModal}>
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
+    </ViewShot>
+  </View>
+
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e9ebeb8a',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollViewContent: {
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingVertical: 5,
+  },
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#B22222',
+    paddingVertical: 10,
+    width:'100%',
   },
   footerButton: {
     justifyContent: 'center',
@@ -951,87 +1165,103 @@ const styles = StyleSheet.create({
     height: 22,
     tintColor: 'white',
   },
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#B22222',
-    paddingVertical: 10,
-  },
   namePlaceholder: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: 14, // Updated font size
+    color: '#737373', // Updated text color
+    marginBottom: 10, // Updated margin bottom
     textAlign: 'center',
   },
+  ratingText: {
+    position: 'absolute',
+    textAlign:'center',
+    color: 'black', // React Native doesn't use 'color' for View components, it applies to Text components
+    backgroundColor: 'white', // Use 'backgroundColor' instead of 'background'
+    fontWeight: 'bold',
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: '#b7bcc1',
+    width: 27,
+    height: 27,
+    padding: 3,
+    zIndex: 2500,
+  bottom:72,
+   left:13,
+    marginHorizontal: 70,
+  },
+  
   gridContainer: {
-    flex:3,
+    flex: 3,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
+   
   },
   gridItem: {
-    width: '30%',
-    backgroundColor: 'rgba(102, 102, 102, 0.5)',
-    padding: 10,
-    marginBottom: 10,
+    width: '27%', // Updated width
+    height: 90, // Updated height
     borderRadius: 10,
-    alignItems: 'center',
-  },
-  infoIcon: {
-    width: 25,
-    height: 25,
-    marginBottom: 10,
-  },
-  gridItemText: {
-    fontSize: 16,
-    
-  },
-  meterContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 270,
-    height: 157,
+    marginBottom: 25,
+    backgroundColor: 'rgba(102, 102, 102, 0.5)', // Default color
+  },
+  infoIcon: {
+    width: 31, // Updated width
+    height: 31, // Updated height
+    marginTop: 5,
+    marginBottom: 10,
+    tintColor: 'white',
+  },
+  gridItemText: {
+    fontSize: 8.5, // Updated font size
+    color: 'white',
+    textTransform: 'uppercase', // Added text transform
+  },
+  meterContainer: {
     position: 'absolute',
-    top: '90%', 
-    left: 177, 
-    marginLeft: -50, // half of the width
-    transform: [{ translateX: -50 }, { translateY: -50 }],
+    top: '40%', // Updated top position
+    left: '30%', // Updated left position
+    transform: [{ translateX: -50 }, { translateY: -50 }], // Added transform
+    width: 270, // Updated width
+    height: 157, // Updated height
   },
   meterImg: {
-    width: 300,
+    width: 295, // Updated width
   },
   meterArrowContainer: {
     position: 'absolute',
-    top: 51,
-    left: 132,
+    top: '65%', // Updated top position
+    left: '30%', // Updated left position
   },
   arrowImg: {
     position: 'absolute',
-    top: 33,
-    left: 95,
-    height: 93,
-    transform: [{ rotate: '-50deg' }],
-    transformOrigin: 'bottom',
+    top: '135%', // Updated top position
+    left: '40%',// Updated left position
+    height: 93, // Updated height
+    transform: [{ rotate: '-50deg' }], // Added transform
+    transformOrigin: 'bottom', // Added transform origin
   },
   notification: {
-    fontSize: 14,
+    fontSize: 15, // Updated font size
     position: 'absolute',
-    bottom: 23,
-    color: '#ffffff',
+    top: '186%', // Updated top position
+    left: '53%',// Updated left position
+    color: 'white', // Updated text color
   },
   meterText: {
-    fontSize: 17,
-    marginTop: 10,
-    color: '#B22222',
-    textAlign: 'center',
+    fontSize: 17, // Updated font size
+    textAlign: 'center', // Updated text alignment
+    textTransform: 'uppercase', // Added text transform
+   
+    bottom:55,
+    color:'black'
   },
   meterTextInner: {
-    fontSize: 17,
-    marginTop: 10,
-    color: '#B22222',
-    textAlign: 'center',
-    textTransform: 'uppercase',
+    fontSize: 10, // Updated font size
+    color:'black',
+    textAlign: 'center',// Updated text alignment
+    padding: 5, // Updated padding
+    bottom:30,
   },
   modalContainer: {
     flex: 1,

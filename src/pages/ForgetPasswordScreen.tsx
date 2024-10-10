@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { forgotPassword } from '../providers/forgotpassword/forgotpassword';
 import { useNavigation } from '@react-navigation/native';
+import { useLoader } from '../providers/loader/loader';
 
 // Validation schema
 const schema = yup.object().shape({
@@ -17,20 +18,21 @@ const schema = yup.object().shape({
 });
 
 const ForgotPasswordScreen = () => {
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const { control, handleSubmit, formState: { errors, isValid }, watch } = useForm({
     resolver: yupResolver(schema),
+    mode: 'onChange', // This ensures validation updates as the user types
   });
   const navigation = useNavigation();
-  const [loading, setLoading] = React.useState(false);
+  const { showLoader, hideLoader } = useLoader(); // Destructure showLoader and hideLoader
   const [modalVisible, setModalVisible] = React.useState(false);
   const [modalMessage, setModalMessage] = React.useState('');
   const [modalType, setModalType] = React.useState<'success' | 'error'>('success');
 
   const onSubmit = async (data: { email: string }) => {
-    setLoading(true);
+    showLoader(); // Show loader
     try {
       const response = await forgotPassword({ emailid: data.email });
-      setLoading(false);
+      hideLoader(); // Hide loader after request
       if (response.data.result === 'failed') {
         setModalType('error');
         setModalMessage(response.data.msg);
@@ -40,13 +42,13 @@ const ForgotPasswordScreen = () => {
       }
       setModalVisible(true);
     } catch (error) {
-      setLoading(false);
+      hideLoader(); // Hide loader after request
       setModalType('error');
       setModalMessage('An error occurred. Please try again.');
       setModalVisible(true);
     }
   };
-
+  const email = watch('email');
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
@@ -76,8 +78,12 @@ const ForgotPasswordScreen = () => {
         )}
       />
       {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Reset Password</Text>}
+      <TouchableOpacity
+        style={[styles.button, !isValid && styles.buttonDisabled]} // Add disabled style if not valid
+        onPress={handleSubmit(onSubmit)}
+        disabled={!isValid} // Disable the button if form is not valid
+      >
+        <Text style={styles.buttonText}>Reset Password</Text>
       </TouchableOpacity>
 
       <Modal
@@ -88,7 +94,7 @@ const ForgotPasswordScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={[styles.modalText, modalType === 'error' && styles.errorText]}>{modalType === 'error' ? 'Failed' : 'Success'}</Text>
+            <Text style={[styles.modalText, modalType === 'error' && styles.errorText1]}>{modalType === 'error' ? 'Failed' : 'Success'}</Text>
             <Text style={styles.modalMessage}>{modalMessage}</Text>
             <TouchableOpacity
               style={[styles.modalButton, modalType === 'error' ? styles.errorButton : styles.successButton]}
@@ -151,7 +157,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderRadius: 4,
     paddingHorizontal: 10,
-    marginBottom: 20,
+    
     height: 50,
     backgroundColor: 'rgba(255, 255, 255, 0.4)',
   },
@@ -175,10 +181,14 @@ const styles = StyleSheet.create({
     width: '60%',
     height: 4.5 * 12,
     alignSelf: 'center',
+    marginTop:15,
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
+  },
+  buttonDisabled: {
+    opacity: 0.5, // Blur effect for disabled state
   },
   modalContainer: {
     flex: 1,
@@ -231,6 +241,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   errorText: {
+    fontSize: 12,
+ marginLeft:15,
+ marginBottom: 20,
+    color:'red'
+  },
+  errorText1: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,

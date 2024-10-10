@@ -16,7 +16,7 @@ export class ImgVidAudiouploadProvider {
   base64img:string='';
   video:any;
   audio:any;
-  url:'http://vortexmobievotingapp.000webhostapp.com/imageUpload.php';
+  url:'https://vortexmobievotingapp.000webhostapp.com/imageUpload.php';
 
  
   
