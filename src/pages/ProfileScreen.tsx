@@ -349,11 +349,11 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.profileImageContainer}>
           <Image
             style={styles.profileImage}
-            source={{ uri: userInfo?.profile_image || 'http://safetnet.site/Aggression_management/profile_images/default_profile.png' }}
+            source={{ uri: userInfo?.profile_image || 'https://safetnet.site/Aggression_management/profile_images/default_profile.png' }}
             onError={() =>
               setUserInfo({
                 ...userInfo,
-                profile_image: 'http://safetnet.site/Aggression_management/profile_images/default_profile.png',
+                profile_image: 'https://safetnet.site/Aggression_management/profile_images/default_profile.png',
               })
             }
           />

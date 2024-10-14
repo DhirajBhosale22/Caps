@@ -1,112 +1,167 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Alert, ScrollView } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { Stripe } from '@stripe/stripe-react-native';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import { TextInput } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { SubscriptionProvider } from '../../src/providers/subscription/SubscriptionProvider'; // Adjust the import path
+import { Api } from '../providers/api/api'; // Importing the API class
 
-import { InternetErrorProvider } from '../providers/interneterror/InternetErrorProvider';
-import { LoaderProvider } from '../providers/loader/loader';
-import { SubscriptionProvider } from '../providers/subscription/SubscriptionProvider';
-import User from '../providers/user/User';
-import { useStorage } from '@react-native-async-storage/async-storage';
-import Api from './../../providers/api/Api';
+// Define the structure of a Subscription object
+interface Subscription {
+  duration: string;
+  discount: string;
+  price: string;
+  normal_txt: string;
+}
 
 const SubscriptionPage = () => {
-  const [subscriptions, setSubscriptions] = useState<any[]>([]);
-  const [subHide, setSubHide] = useState(false);
-  const navigation = useNavigation();
-  const route = useRoute();
-  const storage = useStorage();
-  
-  const initialValues = { Searial_key: '' };
-  const validationSchema = Yup.object().shape({
-    Searial_key: Yup.string().required('Serial key is required'),
-  });
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null); // State for token
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        const result = await SubscriptionProvider.subscription_type();
-        setSubscriptions(result);
+        const storedUser = await AsyncStorage.getItem('user');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setToken(parsedUser.token); // Set the token state
+          
+          const apiInstance = new SubscriptionProvider(new Api());
+          const response = await apiInstance.subscription_type(parsedUser.token);
+          
+          if (response.status === 200) {
+            setSubscriptions(response.data as Subscription[]);          } else {
+            setError('Failed to fetch subscriptions');
+          }
+        } else {
+          Alert.alert('Error', 'User not found. Please log in.');
+        }
       } catch (error) {
-        console.error(error);
+        console.error('Failed to retrieve user from storage:', error);
+        setError('Error fetching subscriptions');
+      } finally {
+        setLoading(false);
       }
     };
 
-    Stripe.setOptions({ publishableKey: 'pk_test_RgXyKuy7aBs9A0f1EAcxTfPb00Zm1vsZCh' });
-    setSubHide(route.params?.sub_hide);
     fetchSubscriptions();
-  }, [route.params?.sub_hide]);
+  }, []);
 
-  const handleSubscription = async (values: any) => {
-    try {
-      LoaderProvider.presentLoading();
-      const userInfo = await User.user_information();
-      LoaderProvider.dismiss_loader();
-      const subInfo = {
-        email: userInfo.email,
-        serial_key: values.Searial_key.toUpperCase(),
-      };
-      const res = await SubscriptionProvider.subscription(subInfo);
-      if (res.result === 'failed' || !res) {
-        showAlert(res.result, res.msg);
-      } else {
-        if (res.msg === 'Serial key found') {
-          await storage.setItem('client_id', res.client_id);
-          await storage.setItem('user_type', res.user_type);
-          Event.publish('profile');
-          navigation.reset({ index: 0, routes: [{ name: 'TabsPage' }] });
-        }
-      }
-    } catch (error) {
-      LoaderProvider.dismiss_loader();
-      InterneterrorProvider.error();
+  console.log(token);
+  const handleAddSubscription = (sub_info: Subscription) => {
+    const apiInstance = new SubscriptionProvider(new Api());
+
+    // Call the add_subscription method with the subscription info and token
+    if (token) {
+      apiInstance.add_subscription(sub_info, token)
+        .then(response => {
+          console.log('Subscription added successfully:', response);
+          // Perform any further actions based on the response, e.g., navigate to a confirmation page
+        })
+        .catch(err => {
+          console.error('Error adding subscription:', err);
+          setError('Failed to add subscription');
+        });
+    } else {
+      setError('User token is not available');
     }
   };
 
-  const showAlert = (title: string, sub_tit: string) => {
-    Alert.alert(title, sub_tit, [{ text: 'Ok' }]);
-  };
+  if (loading) {
+    return <ActivityIndicator size="large" color="#9d0808" style={styles.loader} />;
+  }
 
-  const individualSubscription = (subscription: any) => {
-    navigation.navigate('AllCardsPage', { sub: 'subs', subscribe: subscription });
-  };
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 16 }}>
+    <ScrollView contentContainerStyle={styles.container}>
       {subscriptions.map((subscription, index) => (
-        <View key={index} style={{ marginBottom: 16 }}>
-          <Text>{subscription.duration}</Text>
-          {subscription.discount !== '0' && <Text style={{ color: '#9d0808' }}>{subscription.discount}% OFF</Text>}
-          <Text>{subscription.normal_txt}</Text>
-          <Button title={`Continue (${subscription.price} $)`} onPress={() => individualSubscription(subscription)} />
+        <View key={index} style={styles.subscriptionCard}>
+          <View style={styles.subscriptionHeader}>
+            <Text style={styles.durationText}>{subscription.duration}</Text>
+            <Text style={styles.discountText}>{subscription.discount}% OFF</Text>
+          </View>
+          <Text style={styles.descriptionText}>{subscription.normal_txt}</Text>
+          <TouchableOpacity 
+            style={styles.buttonContainer}
+            onPress={() => handleAddSubscription(subscription)}
+          >
+            <Text style={styles.buttonText}>Continue ({subscription.price}$)</Text>
+          </TouchableOpacity>
         </View>
       ))}
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubscription}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <View>
-            <TextInput
-              label="Serial Key"
-              onChangeText={handleChange('Searial_key')}
-              onBlur={handleBlur('Searial_key')}
-              value={values.Searial_key}
-              error={touched.Searial_key && errors.Searial_key}
-            />
-            {touched.Searial_key && errors.Searial_key && (
-              <Text style={{ color: 'red' }}>{errors.Searial_key}</Text>
-            )}
-            <Button onPress={handleSubmit as any} title="Submit" />
-          </View>
-        )}
-      </Formik>
     </ScrollView>
   );
 };
+
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    padding: 16,
+    backgroundColor: '#f0eff5',
+  },
+  subscriptionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 16,
+    elevation: 2,
+  },
+  subscriptionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  durationText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4f4f4f',
+  },
+  discountText: {
+    fontSize: 16,
+    color: '#9d0808',
+    fontWeight: 'bold',
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: 'black',
+    marginBottom: 12,
+    fontWeight:'400',
+    marginTop:20,
+  },
+  buttonContainer: {
+    backgroundColor: '#9d0808',
+    borderRadius: 30,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 18,
+  },
+});
 
 export default SubscriptionPage;

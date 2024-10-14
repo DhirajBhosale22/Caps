@@ -460,12 +460,13 @@
 // export default HomePage;
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, Animated, Alert, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, Animated, Alert, StatusBar, Linking } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoaderProvider } from '../providers/loader/loader';
 import ProfileProvider from '../providers/profile/profile';
 import { Api } from '../providers/api/api';
+
 
 const HomePage = ({ navigation }: any) => {
   const [activeButton, setActiveButton] = useState(null);
@@ -673,7 +674,7 @@ const HomePage = ({ navigation }: any) => {
           ]}
           onPress={() => handlePress('CreateCaseScreen', 'CreateCaseScreen')}
         >
-          <Image source={require('../assets/img/create-case.png')} style={styles.icon} />
+          <Image source={require('../assets/img/createcase.png')} style={styles.icon} />
           <Text style={styles.buttonText}>CREATE A CASE</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -683,7 +684,7 @@ const HomePage = ({ navigation }: any) => {
           ]}
           onPress={() => handlePress('ExistingCases', 'ExistingCases')}
         >
-          <Image source={require('../assets/img/existing-cases.png')} style={styles.icon} />
+          <Image source={require('../assets/img/existingcase.png')} style={styles.icon} />
           <Text style={styles.buttonText}>EXISTING CASES</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -693,7 +694,7 @@ const HomePage = ({ navigation }: any) => {
           ]}
           onPress={() => handlePress('EmergencyProcedure', 'EmergencyProcedure')}
         >
-          <Image source={require('../assets/img/emergency_procedure.png')} style={styles.icon} />
+          <Image source={require('../assets/img/emergencyprocedure.png')} style={styles.icon} />
           <Text style={styles.buttonText}>EMERGENCY {"\n"}PROCEDURES</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -703,7 +704,7 @@ const HomePage = ({ navigation }: any) => {
           ]}
           onPress={() => handlePress('IntrductionPage', 'IntrductionPage')}
         >
-          <Image source={require('../assets/img/introduction.jpg')} style={styles.icon} />
+          <Image source={require('../assets/img/Introduction.png')} style={styles.icon} />
           <Text style={styles.buttonText}>INTRODUCTION TO {"\n"}CAPS MOBILE APP</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -713,7 +714,7 @@ const HomePage = ({ navigation }: any) => {
           ]}
           onPress={() => handlePress('BestPracticeScreen', 'BestPracticeScreen')}
         >
-          <Image source={require('../assets/img/best_practice.webp')} style={styles.icon} />
+          <Image source={require('../assets/img/bestpractice.webp')} style={styles.icon} />
           <Text style={styles.buttonText}>BEST PRACTICE {"\n"}RESPONSES</Text>
         </TouchableOpacity>
       </View>
@@ -722,17 +723,17 @@ const HomePage = ({ navigation }: any) => {
           <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('home')}>
             <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
+          <TouchableOpacity style={styles.footerButton} onPress={() => Linking.openURL('tel:911')}>
             <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('SharegroupPage')}>
             <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('EditProfile')}>
             <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.footerButton} onPress={() => setLogoutModalVisible(true)}>
-            <Image source={require('../assets/img/logout_icon.png')} style={styles.footerIcon} />
+            <Image source={require('../assets/img/logout.png')} style={styles.footerIcon} />
           </TouchableOpacity>
         </View>
       )}
@@ -768,7 +769,7 @@ const HomePage = ({ navigation }: any) => {
           <TouchableOpacity style={styles.overlayTouchable} onPress={closeModal} />
           <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
             <View style={styles.profileContainer}>
-              <Image source={require('../assets/img/male.jpg')} style={styles.profileImage} />
+              <Image    source={{ uri: 'https://safetnet.site/Aggression_management/profile_images/default_profile.png' }} style={styles.profileImage} />
               <View>
                 <Text style={styles.profileName}>{userName || "User Name"}</Text>
                 <Text style={styles.profileEmail}>{userEmail}</Text>
@@ -947,7 +948,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#b71c1c',
     padding: 10,
     marginBottom: 20,
-    width: '106%',  // Make sure the container takes up the full width of the sidebar
+    width: '107%',  // Make sure the container takes up the full width of the sidebar
     overflow: 'hidden',
     
   },

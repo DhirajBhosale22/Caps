@@ -479,7 +479,7 @@
 
 
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, TextInput, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, TextInput, Modal, Linking } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { fetchApi } from 'react-native-fetch-api';
 import { useNavigation } from '@react-navigation/native';
@@ -1073,25 +1073,25 @@ const CreateCaseScreen = () => {
 
     
   </ScrollView>
-    {showFooter && (
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
-          <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
-          <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
-          <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
-          <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton} onPress={() => setLogoutModalVisible(true)}>
-          <Image source={require('../assets/img/logout_icon.png')} style={styles.footerIcon} />
-        </TouchableOpacity>
-      </View>
-    )}
+  {showFooter && (
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('home')}>
+            <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => Linking.openURL('tel:911')}>
+            <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('SharegroupPage')}>
+            <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('EditProfile')}>
+            <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => setLogoutModalVisible(true)}>
+            <Image source={require('../assets/img/logout.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+        </View>
+      )}
      <Modal
       animationType="slide"
       transparent={true}
