@@ -717,25 +717,39 @@
 
 // export default AggressionMeterScreen;
 
-
-
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Modal, ScrollView, StatusBar, Animated, PermissionsAndroid, Platform  } from 'react-native';
-import { useRoute } from '@react-navigation/native'; // Import useRoute
+import { 
+  SafeAreaView,
+  View, 
+  Text, 
+  Image, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert, 
+  Modal, 
+  ScrollView, 
+  StatusBar, 
+  Animated, 
+  PermissionsAndroid, 
+  Platform,
+  TextInput,
+  Dimensions, BackHandler
+} from 'react-native';
+import { useRoute, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Api } from '../providers/api/api';
 import RNFS from 'react-native-fs';
-import ViewShot from 'react-native-view-shot'; // Import for screenshot
+import ViewShot from 'react-native-view-shot';
 import AggressionLevelProvider from '../providers/aggressionlevel/aggressionlevel';
 import { DistributionlistProvider } from '../providers/distributionlist/distributionlist';
 import ProfileProvider from '../providers/profile/profile';
 import CaseProvider from '../providers/case/case';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import DocumentPicker from 'react-native-document-picker';
-
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-
 import { useLoader } from '../providers/loader/loader';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 // Import all images
 import info from '../assets/img/info.png';
 import meter from '../assets/img/meter.png';
@@ -751,40 +765,191 @@ import grinning from '../assets/img/grinning.png';
 import checkc from '../assets/img/checkc.png';
 import social from '../assets/img/social.png';
 import { Rating } from 'react-native-elements';
+import CustomModal from './CustomModal';
 
-const AggressionMeterScreen = ({ navigation, route }: any) => {
-  const { case_id, token } = route.params; // Access the token here
-  const { suspect_info } = route.params as { suspect_info: { suspect_name: string; last_name: string } };
-  const { avg_rating } = route.params;
+const AggressionMeterScreen = ({ navigation, route }) => {
+  const { case_id, token, suspect_info, avg_rating } = route.params;
 
   const api = new Api();
   const distributionProvider = new DistributionlistProvider(api);
   const profileProvider = new ProfileProvider(api);
-  const aggressionLevelProvider = new AggressionLevelProvider(api); // Create an instance of AggressionLevelProvider
-
+  const aggressionLevelProvider = new AggressionLevelProvider(api);
   const createCaseProvider = new CaseProvider(api);
-  const [avgRating, setAvgRating] = useState<string>('');
-  const [suspectInfo, setSuspectInfo] = useState<any>(suspect_info || {});
-  const [userName, setUserName] = useState<string>('');
-  const [number, setNumber] = useState<number>(0);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pages, setPages] = useState<any[]>([
-    { title: 'behavior', icon: 'man', rating: '', select: '', colors: '', type_id: '', image: man },
-    { title: 'communication', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: meeting },
-    { title: 'interaction', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: social },
-    { title: 'demeanor', icon: 'demeanor', rating: '', select: '', colors: '', type_id: '', image: demeanor },
-    { title: 'facial expression', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: grinning },
-    { title: 'tactical_movement', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: walking },
-    { title: 'other concerning factors', icon: 'tactic_movement', rating: '', select: '', colors: '', type_id: '', image: tactic_movement },
-    { title: 'Files', icon: 'info', rating: '', select: '', colors: '', type_id: '', image: file },
-    { title: 'best practices', icon: 'file', rating: '', select: '', colors: '', type_id: '', image: checkc },
+  const [isShareErrorModalVisible, setIsShareErrorModalVisible] = useState(false);
+  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
+  const [isShareSpecificUserModalVisible, setIsShareSpecificUserModalVisible] = useState(false);
+  const [avgRating, setAvgRating] = useState('');
+  const [agressionResult, setAgressionResult] = useState(null);
+  const [agressionFiles, setAgressionFiles] = useState([]);
+  const [suspectInfo, setSuspectInfo] = useState(suspect_info || {});
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isNoInternetModalVisible, setIsNoInternetModalVisible] = useState(false);
+  const [pages, setPages] = useState([
+    { title: 'behavior', rating: '', colors: '', image: man },
+    { title: 'communication', rating: '', colors: '', image: meeting },
+    { title: 'interaction', rating: '', colors: '', image: social },
+    { title: 'demeanor', rating: '', colors: '', image: demeanor },
+    { title: 'facial expression', rating: '', colors: '', image: grinning },
+    { title: 'tactical_movement', rating: '', colors: '', image: walking },
+    { title: 'other concerning factors', rating: '', colors: '', image: tactic_movement },
+    { title: 'Files', rating: '', colors: '', image: file },
+    { title: 'best practices', rating: '', colors: '', image: checkc },
   ]);
-  const { showLoader, hideLoader } = useLoader();
-  const [showColor, setShowColor] = useState<string>('rgba(102, 102, 102, 0.5)'); // Default color for the meter
-  const rotateValue = useRef(new Animated.Value(0)).current;
-  const viewShotRef = useRef(null); // For screenshot reference
+  const [isErrorModalVisible, setIsErrorModalVisible] = useState(false);
+  const [isErrorModalVisibless, setIsErrorModalVisibless] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessagess, setErrorMessagess] = useState('');
+  const [errorMessagesss, setErrorMessagesss] = useState('');
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
+const [confirmMessage, setConfirmMessage] = useState('');
+const [isBackModalVisible, setIsBackModalVisible] = useState(false);
+const [shareData, setShareData] = useState(null);
 
-  
+  const { showLoader, hideLoader } = useLoader();
+  const rotateValue = useRef(new Animated.Value(0)).current;
+  const viewShotRef = useRef(null);
+
+  const shareWithSpecificUser  = async () => {
+    setIsShareSpecificUserModalVisible(true);
+  };
+  const showErrorModal = (message) => {
+    setErrorMessage(message);
+    setIsErrorModalVisible(true);
+  };
+  const showErrorModalsss = (message) => {
+    setErrorMessagesss(message);
+    setIsShareErrorModalVisible(true);
+  };
+  const showErrorModalss = (message) => {
+    setErrorMessagess(message);
+    setIsErrorModalVisibless(true);
+  };
+  const showSuccessModal = (message) => {
+    setSuccessMessage(message);
+    setIsSuccessModalVisible(true);
+  };
+
+  const validateEmail = (email) => {
+    if (/(.+)@(.+){2,}\.(.+){2,}/.test(email)) {
+      return { isValid: true, message: '' };
+    } else {
+      return { isValid: false, message: 'Email address is required' };
+    }
+  };
+  const handleBackButtonPress = () => {
+    if (agressionResult && agressionResult.aggression_level_details === 'No content') {
+      setErrorMessage('You cannot go back, you must have to fill data in at least one aggression level.');
+      setIsBackModalVisible(true);
+    } else if (pages.some(page => page.rating !== '')) {
+      setErrorMessage('You cannot go back until you submit this case.');
+      setIsBackModalVisible(true);
+    } else {
+      // If no conditions are met, allow back navigation
+      navigation.goBack();
+    }
+    return true; // Prevent default behavior
+  };
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackButtonPress
+    );
+
+    return () => backHandler.remove(); // Cleanup the event listener on unmount
+  }, [agressionResult, pages]);
+  const handleShareWithSpecificUser  = async (email) => {
+    const validateObj = validateEmail(email);
+    if (!validateObj.isValid) {
+      showErrorModal(validateObj.message); // Show error modal
+      return;
+    }
+
+    try {
+      const userData = await AsyncStorage.getItem('user');
+      const { user_id, token } = userData ? JSON.parse(userData) : {};
+
+      if (!user_id || !token) {
+        showErrorModal('User  not authenticated. ');// Show error modal
+        
+        return;
+      }
+
+      const case_info = { user_id, token, emailid: email, case_id };
+      const response = await createCaseProvider.nocaps_shareCase(case_info);
+
+      if (response.result === 'success') {
+        showSuccessModal(response.msg); // Show success modal
+      } else {
+        showErrorModal(response.msg); // Show error modal
+      }
+    } catch (error) {
+      console.error('Error sharing case with specific user:', error);
+      showErrorModal('Failed to share case with specific user'); // Show error modal
+    } finally {
+      setIsShareSpecificUserModalVisible(false);
+    }
+  };
+  const loadShareData = async () => {
+    try {
+      const data = await AsyncStorage.getItem('sharedata');
+      setShareData(data ? parseInt(data) : 0); // Parse to integer, default to 0
+    } catch (error) {
+      console.error('Error loading share_data:', error);
+    }
+  };
+  useEffect(() => {
+    loadShareData(); // Call to load share_data when component mounts
+  }, []);
+  const handleShareButtonPress = () => {
+    if (agressionResult && agressionResult.aggression_level_details === 'No content') {
+      showErrorModalsss('You can share case details only after submitting the case.'); // Show share error modal
+    } else if (shareData === 1) {
+      setIsShareModalVisible(true); // Show share modal
+    } else {
+      showErrorModalss('Sharing cases is not allowed. To enable this feature, go to settings -> Enable Sharing'); // Show error message modal
+    }
+  };
+  const loadData = async () => {
+    setIsNoInternetModalVisible(false);
+    showLoader();
+    try {
+      await fetchUserName();
+      await fetchData();
+      await fetchAggressionLevel();
+    } catch (error) {
+      console.error('Error loading data:', error);
+      if (error.message === 'Network Error' || error instanceof TypeError) {
+        setIsNoInternetModalVisible(true);
+      } else {
+        Alert.alert('Error', 'An unexpected error occurred.');
+      }
+    } finally {
+      hideLoader();
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadData();
+      return () => {
+        setIsNoInternetModalVisible(false);
+        setIsModalVisible(false);
+        setIsShareModalVisible(false);
+      };
+    }, [])
+  );
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadData();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     if (avgRating !== '' && !isNaN(parseFloat(avgRating))) {
@@ -795,10 +960,6 @@ const AggressionMeterScreen = ({ navigation, route }: any) => {
       }).start();
     }
   }, [avgRating]);
-  useEffect(() => {
-    fetchUserName();
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (pages.length > 0) {
@@ -810,7 +971,6 @@ const AggressionMeterScreen = ({ navigation, route }: any) => {
   }, [pages]);
 
   const fetchUserName = async () => {
-    showLoader();
     try {
       const userData = await AsyncStorage.getItem('user');
       const { user_id, token } = userData ? JSON.parse(userData) : {};
@@ -821,111 +981,103 @@ const AggressionMeterScreen = ({ navigation, route }: any) => {
       }
 
       const response = await profileProvider.user_info({ user_id, token });
-      const userDataResponse =response.data;
-      setUserName(userDataResponse.firstname);
+      setUserName(response.data.firstname);
     } catch (error) {
       console.error('Error fetching user info:', error);
-      Alert.alert('Error', 'Failed to fetch user information.');
-    } finally {
-      hideLoader();
+      if (error.message === 'Network Error' || error instanceof TypeError) {
+        throw error; // Propagate network error to loadData
+      } else {
+        Alert.alert('Error', 'Failed to fetch user information.');
+      }
     }
   };
 
   const fetchData = async () => {
-    showLoader();
     try {
       const userToken = await AsyncStorage.getItem('user_token');
       if (userToken) {
-        const caseInfo = await createCaseProvider.myCases({}, userToken); // Use the new myCases method
+        const caseInfo = await createCaseProvider.myCases({}, userToken);
         setSuspectInfo(caseInfo);
 
         const profileData = await profileProvider.user_info(userToken);
         console.log('Profile Data:', profileData);
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to fetch data');
       console.error('Fetch Error:', error);
-    }  finally {
-      hideLoader();
+      if (error.message === 'Network Error' || error instanceof TypeError) {
+        throw error; // Propagate network error to loadData
+      } else {
+        Alert.alert('Error', 'Failed to fetch data');
+      }
     }
   };
 
   const fetchAggressionLevel = async () => {
-    showLoader();
     try {
       const userData = await AsyncStorage.getItem('user');
       const { user_id, token } = userData ? JSON.parse(userData) : {};
-  
+
       if (!user_id || !token) {
-        Alert.alert('Error', 'User not authenticated.');
-        hideLoader(); // Hide loader if user is not authenticated
-        return;
+        Alert.alert('Error', 'User  not authenticated.');
+        throw new Error('User  not authenticated'); // Propagate error
       }
-  
-      const info = {
-        token: token,
-        user_id: user_id,
-        case_id: case_id,
-      };
-  
+
+      const info = { token: token, user_id: user_id, case_id: case_id };
       const response = await aggressionLevelProvider.aggressionLevel(info);
       if (response) {
         const aggressionInfo = response.aggression_level_details;
-        if (aggressionInfo=== 'No content') {
+
+        setAgressionResult(response);
+
+        if (aggressionInfo === 'No content') {
           const defaultPages = pages.map((page) => ({
             ...page,
             rating: '',
-            colors: 'grey', // default color
+            colors: 'grey',
           }));
           setPages(defaultPages);
         } else {
-        
           const updatedPages = pages.map((page) => {
-            let show_color = 'grey'; // Default color
-            const matchingAggression = aggressionInfo.find((data) => data.type === page.title);
+            let show_color = 'grey';
+            const matchingAggression = aggressionInfo.find(
+              (data) => data.type.toLowerCase() === page.title.toLowerCase()
+            );
             if (matchingAggression) {
-              // Set rating and determine color
-            
-  
-              // Rating-based color logic
               const rating = matchingAggression.rating;
-              if (rating === '1' || rating === '2' || rating === '3') {
+              if (['1', '2', '3'].includes(rating)) {
                 show_color = 'rgb(58, 186, 128)'; // Green
-              } else if (rating === '4' || rating === '5' || rating === '6') {
+              } else if (['4', '5', '6'].includes(rating)) {
                 show_color = 'rgb(232, 185, 106)'; // Yellow
               } else if (rating === '0') {
-                show_color = 'grey'; // Grey
+                show_color = 'grey';
               } else {
                 show_color = 'rgb(216, 108, 107)'; // Red
               }
-  
+
               return {
                 ...page,
                 rating: matchingAggression.rating,
-                colors: show_color, // Assign the color based on rating
+                colors: show_color,
               };
             }
             return { ...page, colors: show_color };
           });
-  
-          setPages(updatedPages); // Update pages state with colors
+
+          setPages(updatedPages);
+        // Assuming files are part of the response, extract them
+        if (response.aggression_files) {
+          setAgressionFiles(response.aggression_files); // Store aggression files
         }
       }
-    } catch (error) {
-      console.error('Error fetching aggression level:', error);
     }
-    finally {
-      hideLoader();
-    }
-  };
-  
+  } catch (error) {
+    setIsNoInternetModalVisible(true);
+    console.error('Error fetching aggression level:', error);
+    throw error; // Propagate error
+  }
+};
 
-  useEffect(() => {
-    fetchAggressionLevel();
-  }, []);
-
-
-  const getQuestion = async (item: any) => {
+  const getQuestion = async (item) => {
     showLoader();
     try {
       const userData = await AsyncStorage.getItem('user');
@@ -937,28 +1089,39 @@ const AggressionMeterScreen = ({ navigation, route }: any) => {
       }
 
       if (item.title === 'best practices') {
-        navigation.navigate('EmergencyProcedure', {  token: token, user_id: user_id, case_id: case_id,}); // Navigate to BestPractices page
-      } else {
-      let type = item.title;
-      if (type === 'facial expression') {
-        type = 'facial_expression';
-      }
+        const hasRating = pages.some((page) => page.rating !== '');
+        if (!hasRating) {
+          setIsModalVisible(true);
+        } else {
+          navigation.navigate('EmergencyProcedure', { token, user_id, case_id });
+        }
+      }  else if (item.title.toLowerCase() === 'files') {
+        // Navigate to FilesPage with the necessary parameters
+        navigation.navigate('FilesPage', { 
+          token, 
+          user_id, 
+          case_id,
+          agression_files: agressionFiles // Pass the aggression files
+        });
+      }  else {
+        let type = item.title;
+        if (type === 'facial expression') {
+          type = 'facial_expression';
+        }
 
-      if (type === 'other concerning factors') {
-        type = 'other_concerning_factors';
-      }
+        if (type === 'other concerning factors') {
+          type = 'other_concerning_factors';
+        }
 
-      const myModalData = {
-        token: token,
-        user_id: user_id,
-        type,
-        case_id: case_id, // Pass case_id
-        rating: item.rating, 
-      };
+        const myModalData = {
+          token: token,
+          user_id: user_id,
+          type,
+          case_id: case_id,
+          rating: item.rating, 
+        };
 
-      navigation.navigate('QuestionPage', {
-        data: myModalData,
-      });
+        navigation.navigate('QuestionPage', { data: myModalData });
       }
     } catch (error) {
       console.error('Error getting token or user_id:', error);
@@ -986,10 +1149,9 @@ const AggressionMeterScreen = ({ navigation, route }: any) => {
       );
       return granted === PermissionsAndroid.RESULTS.GRANTED;
     } else {
-      return true;
+      return true; // iOS automatically grants permission
     }
   };
-
 
   const generatePDF = async () => {
     const hasPermission = await requestStoragePermission();
@@ -997,13 +1159,13 @@ const AggressionMeterScreen = ({ navigation, route }: any) => {
       Alert.alert('Permission denied', 'Cannot save PDF without storage permission.');
       return;
     }
-  
+
     try {
       // Capture screenshot
       const uri = await viewShotRef.current.capture();
       console.log('Screenshot captured at:', uri);
       const base64 = await RNFS.readFile(uri, 'base64');
-  
+
       // Convert HTML to PDF
       let options = {
         html: `
@@ -1011,7 +1173,7 @@ const AggressionMeterScreen = ({ navigation, route }: any) => {
             <body>
               <h1>Aggression Meter Report</h1>
               <p>Suspect: ${suspectInfo.suspect_name} ${suspectInfo.last_name}</p>
-              <img src="data:image/jpeg;base64,${base64}" alt="Screenshot" width="70%" height="80%" />
+              <img src="data:image/jpeg;base64,${base64}" alt="Screenshot" width="90%" height="90%" />
               <!-- Additional case details -->
             </body>
           </html>
@@ -1019,249 +1181,573 @@ const AggressionMeterScreen = ({ navigation, route }: any) => {
         fileName: `AggressionMeter_${case_id}`,
         directory: 'Documents',
       };
-  
+
       const pdf = await RNHTMLtoPDF.convert(options);
 
-    // Get the directory path
-    const directory = await RNFS.DownloadDirectoryPath;
+      // Get the directory path
+      const directory = RNFS.DownloadDirectoryPath;
 
-    // Create the file path
-    const filePath = `${directory}/AggressionMeter_${case_id}.pdf`;
+      // Create the file path
+      const filePath = `${directory}/AggressionMeter_${case_id}.pdf`;
 
-    // Write the PDF to the file path
-    await RNFS.writeFile(filePath, pdf.filePath, 'base64');
+      // Write the PDF to the file path
+      await RNFS.moveFile(pdf.filePath, filePath);
 
-    // Save the file path for later use
-    await RNFS.moveFile(pdf.filePath, filePath);
+      Alert.alert('PDF Generated', `PDF file has been saved to: ${filePath}`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      Alert.alert('Error', 'Failed to generate PDF.');
+    }
+  };
 
-    Alert.alert('PDF Generated', `PDF file has been saved to: ${filePath}`);
+  // Retry function to reload data
+  const retryLoadData = () => {
+    setIsNoInternetModalVisible(false);
+    loadData();
+  };
+
+  const submitCase = async () => {
+    try {
+      // Take screenshot
+      const uri = await viewShotRef.current.capture();
+      const base64 = await RNFS.readFile(uri, 'base64');
+      const casePhoto = `data:image/jpeg;base64,${base64}`;
+
+      // Check if data is available
+      if (pages.every((page) => page.rating === '')) {
+       setErrorMessage('You must have to fill data in at least one aggression level');
+      setIsErrorModalVisible(true);
+        return;
+      }
+
+      // Show confirmation prompt
+      Alert.alert(
+        'Confirm',
+        'Is the witnessed aggression consistent with the level of aggression described by the Meter of Emerging Aggression?',
+        [
+          {
+            text: 'Yes',
+            onPress: async () => {
+              const userData = await AsyncStorage.getItem('user');
+              const { user_id, token } = userData ? JSON.parse(userData) : {};
+
+              if (!user_id || !token) {
+                setErrorMessage('User  not authenticated');
+                setIsErrorModalVisible(true);
+                return;
+              }
+
+              const caseAggressionLevelInfo = {
+                types: pages.map((page) => ({
+                  type: page.title,
+                  rating: page.rating,
+                })),
+                case_photo: casePhoto,
+                token,
+                user_id,
+                case_id,
+                avg_rating: avgRating,
+                verification: 'yes',
+                client_id: 'your_client_id', // Replace with your client ID
+              };
+
+              const response = await aggressionLevelProvider.createCaseAggressionLevel(caseAggressionLevelInfo);
+              if (response) {
+                navigation.navigate('ExistingCases', { flag: 1 });
+              } else {
+               setErrorMessage('Failed to create case aggression level');
+               setIsErrorModalVisible(true);
+              }
+            },
+          },
+          {
+            text: 'No',
+            onPress: async () => {
+              const userData = await AsyncStorage.getItem('user');
+              const { user_id, token } = userData ? JSON.parse(userData) : {};
+
+              if (!user_id || !token) {
+               setErrorMessage('User  not authenticated');
+                setIsErrorModalVisible(true);
+                return;
+              }
+
+              const caseAggressionLevelInfo = {
+                types: pages.map((page) => ({
+                  type: page.title,
+                  rating: page.rating,
+                })),
+                case_photo: casePhoto,
+                token,
+                user_id,
+                case_id,
+                avg_rating: avgRating,
+                verification: 'no',
+                client_id: 'your_client_id', // Replace with your client ID
+              };
+
+              const response = await aggressionLevelProvider.createCaseAggressionLevel(caseAggressionLevelInfo);
+              if (response) { navigation.navigate('ExistingCases', { flag: 1 });
+            } else {
+               setErrorMessage('Failed to create case aggression level');
+               setIsErrorModalVisible(true);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   } catch (error) {
-    console.error('Error generating PDF:', error);
-    Alert.alert('Error', 'Failed to generate PDF.');
+    setErrorMessage('Failed to submit case');
+    setIsErrorModalVisible(true);
+   
   }
 };
+               
 
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#B22222" />
-  
-      <View style={styles.topBar}>
-        <TouchableOpacity style={styles.footerButton} onPress={generatePDF}>
-          <Image source={require('../assets/img/download.png')} style={styles.footerIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('FilesPage')}>
-        <Image source={require('../assets/img/share.png')} style={styles.footerIcon} />
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#B22222" />
+
+        {/* Top Bar */}
+        <View style={styles.topBar}>
+          <TouchableOpacity style={styles.footerButton} onPress={generatePDF}>
+            <Image source={require('../assets/img/download.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          {/* Share Modal Trigger */}
+          <TouchableOpacity style={styles.footerButton} onPress={handleShareButtonPress}>
+            <Image source={require('../assets/img/share.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('EditCaseScreen', { case_id })}>
+            <Image source={require('../assets/img/edit.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('MyCasePage', { token })}>
+            <Image source={require('../assets/img/document.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('CasesharedWith', { case_id })}>
+            <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={submitCase}>
+            <Image source={require('../assets/img/check.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Content to be captured in PDF */}
+        <ViewShot ref={viewShotRef} style={styles.viewShot} options={{ format: 'jpg', quality: 0.9 }}>
+          <ScrollView 
+            contentContainerStyle={styles.scrollViewContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <Text style={styles.namePlaceholder}>
+              {suspectInfo.suspect_name} {suspectInfo.last_name}
+            </Text>
+
+            <View style={styles.gridContainer}>
+              {pages.map((item, index) => (
+                <TouchableOpacity 
+                  key={index} 
+                  onPress={() => getQuestion(item)} 
+                  style={[styles.gridItem, { backgroundColor: item.colors }]}
+                >
+                  <Image source={item.image} style={styles.infoIcon} />
+                  <Text style={styles.gridItemText}>{item.title.replace(/_/g, ' ')}</Text>
+                  {item.rating && (
+                    <Text style={styles.ratingText}>{item.rating}</Text>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.meterContainer}>
+              <Image source={meter} style={styles.meterImg} resizeMode="contain" />
+
+              <Animated.Image
+                source={green_ar}
+                style={[
+                  styles.arrowImg,
+                  {
+                    transform: [
+                      {
+                        rotate: rotateValue.interpolate({
+                          inputRange: [0, 360],
+                          outputRange: ['0deg', '360deg'],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+                resizeMode="contain"
+              />
+              <Text style={styles.notification}>{avgRating}</Text>
+            </View>
+
+            <Text style={styles.meterText}>Meter of Emerging Aggression</Text>
+            <Text style={styles.meterTextInner}>
+              This CAPS Mobile App is fully protected by Copyrights,
+              Trademarks and Patents. Any unauthorized use of this app or 
+              its methodologies in whole or in part without prior written 
+              permission from the Center for Aggression Management, Inc. is a 
+              Federal offense and will be prosecuted to the fullest extent of the law.
+            </Text>
+          </ScrollView>
+        </ViewShot>
+        <Modal 
+          animationType="slide" 
+          transparent={true} 
+          visible={isErrorModalVisible} 
+          onRequestClose={() => setIsErrorModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+            <Text style={styles.modalText2}>
+            Agression Level !
+              </Text>
+              <Text style={styles.modalText}>
+              {errorMessage}
+              </Text>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setIsErrorModalVisible(false)}>
+              
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal 
+          animationType="slide" 
+          transparent={true} 
+          visible={isShareErrorModalVisible} 
+          onRequestClose={() => setIsShareErrorModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+            <Text style={styles.modalText2}>
+            Error
+              </Text>
+              <Text style={styles.modalText}>
+              {errorMessagesss}
+              </Text>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setIsShareErrorModalVisible(false)}>
+              
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal 
+          animationType="slide" 
+          transparent={true} 
+          visible={isBackModalVisible} 
+          onRequestClose={() => setIsBackModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+            <Text style={styles.modalText2}>
+            Agression Level !
+              </Text>
+              <Text style={styles.modalText}>{errorMessage}</Text>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setIsBackModalVisible(false)}>
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        {/* Success Modal */}
+        <Modal 
+          animationType="slide" 
+          transparent={true} 
+          visible={isSuccessModalVisible} 
+          onRequestClose={() => setIsSuccessModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+            <Text style={styles.modalText2}>
+            Agression Level !
+              </Text>
+              <Text style={styles.modalText}>
+              {successMessage}
+              </Text>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setIsSuccessModalVisible(false)}>
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal 
+          animationType="slide" 
+          transparent={true} 
+          visible={isShareModalVisible} 
+          onRequestClose={() => setIsShareModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.shareModalContent}>
+              
+              <TouchableOpacity style={styles.modalButton} onPress={async () => {
+                await AsyncStorage.setItem('caseId', case_id);
+                navigation.navigate('SharecontactPage');
+              }}>
+                <Text style={styles.modalButtonText}>Share with My Group</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={async () => {
+                await AsyncStorage.setItem('caseId', case_id);
+                navigation.navigate('SharecontactPage');
+              }}>
+                <Text style={styles.modalButtonText}>Share with Selected Users</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={() => shareWithSpecificUser ()}>
+                <Text style={styles.modalButtonText}>Share with a Specific User</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setIsShareModalVisible(false)}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      
+        <Modal 
+          animationType="slide" 
+          transparent={true} 
+          visible={isErrorModalVisibless} 
+          onRequestClose={() => setIsErrorModalVisibless(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+            <Text style={styles.modalText2}>
+           Error
+              </Text>
+              <Text style={styles.modalText}>{errorMessagess}</Text>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setIsErrorModalVisibless(false)}>
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        {/* Generic Modal */}
+        <Modal 
+          animationType="slide" 
+          transparent={true} 
+          visible={isModalVisible} 
+          onRequestClose={toggleModal}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>
+                To advance to Best Practice Responses, you must first select elements in the Meter of Emerging Aggression.
+              </Text>
+              <TouchableOpacity style={styles.modalButton} onPress={toggleModal}>
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        
+<Modal
+  animationType="slide"
+  transparent={true}
+  visible={isShareSpecificUserModalVisible}
+  onRequestClose={() => setIsShareSpecificUserModalVisible(false)}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalText}>Enter the email address of the user you want to share with:</Text>
+      <TextInput
+        style={styles.textInput}
+        placeholder="Email"
+        placeholderTextColor={'grey'}
+        onChangeText={(email) => setEmail(email)}
+        value={email}
+      />
+      <TouchableOpacity style={styles.modalButton} onPress={() => handleShareWithSpecificUser (email)}>
+        <Text style={styles.modalButtonText}>Share</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('EditCaseScreen', { case_id: case_id })}>
-        <Image source={require('../assets/img/edit.png')} style={styles.footerIcon} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('MyCasePage', { token})}>
-        <Image source={require('../assets/img/document.png')} style={styles.footerIcon} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('CasesharedWith', { case_id: case_id })}>
-        <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('IntroductionScreen')}>
-        <Image source={require('../assets/img/check.png')} style={styles.footerIcon} />
+      <TouchableOpacity style={styles.modalButton} onPress={() => setIsShareSpecificUserModalVisible(false)}>
+        <Text style={styles.modalButtonText}>Cancel</Text>
       </TouchableOpacity>
     </View>
-    <ViewShot ref={viewShotRef} style={styles.container} options={{ format: 'jpg', quality: 0.9 }}>
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      <Text style={styles.namePlaceholder}>{suspectInfo.suspect_name} {suspectInfo.last_name}</Text>
-
-      <View style={styles.gridContainer}>
-        {pages.map((item, index) => (
-          <TouchableOpacity 
-            key={index} 
-            onPress={() => getQuestion(item)} 
-            style={[styles.gridItem, { backgroundColor: item.colors }]} // Apply the dynamic background color
-          >
-            
-          
-              <Image source={item.image} style={styles.infoIcon} />
-            
-            <Text style={styles.gridItemText}>{item.title.replace(/_/g, ' ')}</Text>
-            {item.rating && (
-              <Text style={styles.ratingText}>{item.rating}</Text>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <View style={styles.meterContainer}>
-        <Image source={meter} style={styles.meterImg} resizeMode="contain" />
-
-        <Animated.Image
-          source={green_ar}
-          style={[
-            styles.arrowImg,
-            {
-              transform: [
-                {
-                  rotate: rotateValue.interpolate({
-                    inputRange: [0, 360], // Adjust input range if needed
-                    outputRange: ['0deg', '360deg'],
-                  }),
-                },
-              ],
-            },
-          ]}
-          resizeMode="contain"
-        />
-        <Text style={styles.notification}>{avgRating}</Text>
-      </View>
-
-      <Text style={styles.meterText}>METER OF EMERGING AGGRESSION</Text>
-      <Text style={styles.meterTextInner}>
-        This CAPS Mobile App is fully protected by Copyrights, Trademarks and Patents. Any unauthorized use of this app or its methodologies in whole or in part without prior written permission from the Center for Aggression Management, Inc. is a Federal offense and will be prosecuted to the fullest extent of the law.
-      </Text>
-
-      {/* Modal */}
-      <Modal animationType="slide" transparent={true} visible={isModalVisible} onRequestClose={toggleModal}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>To advance to Best Practice Responses, you must first select elements in the Meter of Emerging Aggression.</Text>
-            <TouchableOpacity style={styles.modalButton} onPress={toggleModal}>
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
-    </ViewShot>
   </View>
+</Modal>
 
+        {/* "No Internet Connection" Modal */}
+        <Modal 
+          animationType="slide" 
+          transparent={true} 
+          visible={isNoInternetModalVisible} 
+          onRequestClose={() => { /* Prevent modal from closing on back press */ }}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.noInternetModalContent}>
+              <Text style={styles.modalText}>
+                No internet connection. Make sure Wi-Fi or cellular data is turned on, then try again.
+              </Text>
+              <TouchableOpacity style={styles.modalButton} onPress={retryLoadData}>
+                <Text style={styles.modalButtonText}>Retry</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        
+      </View>
+    </SafeAreaView>
   );
 };
 
+const { width, height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
   container: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
   },
-  scrollViewContent: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 5,
+  shareModalContent: {
+    backgroundColor: 'white',
+    padding: wp('5%'),
+    borderRadius: wp('2%'),
+    width: '80%',
   },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: '#B22222',
-    paddingVertical: 10,
-    width:'100%',
+    paddingVertical: hp('2%'),
+    width: '100%',
+  },
+  noInternetModalContent: { // New style for the "No Internet" modal
+    backgroundColor: 'white',
+    padding: wp('5%'),
+    borderRadius: wp('2%'),
+    width: '80%',
+    alignItems: 'center',
   },
   footerButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: wp('2%'),
+  },
+  textInput: {
+    paddingVertical: hp('1.5%'),
+    marginBottom:hp('1.5%'),
+    padding: wp('2%'),
+    color:'black',
+    borderRadius: wp('1.5%'),
+    borderColor:'#B22222',
+    borderWidth:1,
   },
   footerIcon: {
-    width: 22,
-    height: 22,
+    width: wp('5%'),
+    height: wp('5%'),
     tintColor: 'white',
+    resizeMode: 'contain',
+  },
+  viewShot: {
+    flex: 1,
+    padding: wp('1.5%'),
+    backgroundColor: '#f5f5f5',
+  },
+  scrollViewContent: {
+    paddingBottom: hp('5%'),
   },
   namePlaceholder: {
-    fontSize: 14, // Updated font size
-    color: '#737373', // Updated text color
-    marginBottom: 10, // Updated margin bottom
+    fontSize: wp('4.5%'),
+    color: '#737373',
+    marginBottom: hp('1%'),
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  gridItem: {
+    width: '26%',
+    height: hp('15%'),
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: hp('2%'),
+    margin:hp('0.8%'),
+    backgroundColor: 'rgba(102, 102, 102, 0.5)',
+    position: 'relative',
+  },
+  infoIcon: {
+    width: wp('8%'),
+    height: wp('8%'),
+    marginBottom: hp('1%'),
+    tintColor: 'white',
+    resizeMode: 'contain',
+  },
+  gridItemText: {
+    fontSize: wp('2.4%'),
+    color: 'white',
+    textTransform: 'uppercase',
     textAlign: 'center',
   },
   ratingText: {
     position: 'absolute',
-    textAlign:'center',
-    color: 'black', // React Native doesn't use 'color' for View components, it applies to Text components
-    backgroundColor: 'white', // Use 'backgroundColor' instead of 'background'
+    top: hp('-1%'),
+    right: wp('-1%'),
+    textAlign: 'center',
+    color: 'black',
+    backgroundColor: 'white',
     fontWeight: 'bold',
-    borderRadius: 20,
-    borderWidth: 3,
+    borderRadius: wp('3%'),
+    borderWidth: 1,
     borderColor: '#b7bcc1',
-    width: 27,
-    height: 27,
-    padding: 3,
-    zIndex: 2500,
-  bottom:72,
-   left:13,
-    marginHorizontal: 70,
-  },
-  
-  gridContainer: {
-    flex: 3,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-   
-  },
-  gridItem: {
-    width: '27%', // Updated width
-    height: 90, // Updated height
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 25,
-    backgroundColor: 'rgba(102, 102, 102, 0.5)', // Default color
-  },
-  infoIcon: {
-    width: 31, // Updated width
-    height: 31, // Updated height
-    marginTop: 5,
-    marginBottom: 10,
-    tintColor: 'white',
-  },
-  gridItemText: {
-    fontSize: 8.5, // Updated font size
-    color: 'white',
-    textTransform: 'uppercase', // Added text transform
+    width: wp('6%'),
+    height: wp('6%'),
+    lineHeight: wp('6%') - 2, // Adjust lineHeight to center the text
+    zIndex: 1,
   },
   meterContainer: {
-    position: 'absolute',
-    top: '40%', // Updated top position
-    left: '30%', // Updated left position
-    transform: [{ translateX: -50 }, { translateY: -50 }], // Added transform
-    width: 270, // Updated width
-    height: 157, // Updated height
+    alignItems: 'center',
+    marginVertical: hp('3%'),
   },
   meterImg: {
-    width: 295, // Updated width
-  },
-  meterArrowContainer: {
-    position: 'absolute',
-    top: '65%', // Updated top position
-    left: '30%', // Updated left position
+    width: wp('70%'),
+    
+    height: hp('30%'),
+    resizeMode: 'contain',
   },
   arrowImg: {
     position: 'absolute',
-    top: '135%', // Updated top position
-    left: '40%',// Updated left position
-    height: 93, // Updated height
-    transform: [{ rotate: '-50deg' }], // Added transform
-    transformOrigin: 'bottom', // Added transform origin
+    width: wp('24%'),
+    height: wp('24%'),
+    top: hp('11.5%'),
+    left: wp('36%'),
+    transform: [{ rotate: '-90deg' }], // Added transform
+transformOrigin: 'bottom', // Added transform origin
+
   },
   notification: {
-    fontSize: 15, // Updated font size
+    fontSize: wp('4%'),
     position: 'absolute',
-    top: '186%', // Updated top position
-    left: '53%',// Updated left position
-    color: 'white', // Updated text color
+    top: hp('22%'),
+    left: '52%',
+    transform: [{ translateX: -wp('3%') }],
+    color: 'white',
+   
   },
   meterText: {
-    fontSize: 17, // Updated font size
-    textAlign: 'center', // Updated text alignment
-    textTransform: 'uppercase', // Added text transform
-   
-    bottom:55,
-    color:'black'
+    fontSize: wp('4.5%'),
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    color: 'black',
+    marginTop: hp('2%'),
+    fontWeight: '600',
   },
   meterTextInner: {
-    fontSize: 10, // Updated font size
-    color:'black',
-    textAlign: 'center',// Updated text alignment
-    padding: 5, // Updated padding
-    bottom:30,
+    fontSize: wp('2.7%'),
+    color: 'black',
+    textAlign: 'center',
+    padding: wp('2%'),
+    marginTop: hp('3%'),
   },
   modalContainer: {
     flex: 1,
@@ -1271,22 +1757,78 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
+    padding: wp('5%'),
+    borderRadius: wp('2%'),
+    width: '80%',
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: wp('4%'),
+    marginBottom: hp('2%'),
+    textAlign: 'center',
+    color:'grey'
+  },
+  modalText2: {
+    fontSize: wp('4%'),
+    marginBottom: hp('2%'),
+    textAlign: 'center',
+    color:'black'
   },
   modalButton: {
-    backgroundColor: '#B22222',
-    padding: 10,
-    borderRadius: 5,
+    // backgroundColor: '#B22222',
+    paddingVertical: hp('1.5%'),
+    marginBottom:hp('1.5%'),
+    padding: wp('2%'),
+    borderRadius: wp('1.5%'),
+    borderColor:'#B22222',
+    borderWidth:1,
   },
   modalButtonText: {
-    color: 'white',
+    color: '#9d0808',
     textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: wp('4%'),
   },
 });
 
 export default AggressionMeterScreen;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -120,6 +120,7 @@ const CreditCardScan = ({ navigation, route }) => {
                   value={values.cardNumber}
                   keyboardType="numeric"
                   placeholder="Card number"
+                  placeholderTextColor={'grey'}
                 />
                 {touched.cardNumber && errors.cardNumber && <Text style={styles.error}>{errors.cardNumber}</Text>}
 
@@ -132,6 +133,7 @@ const CreditCardScan = ({ navigation, route }) => {
                   onBlur={handleBlur('expiryDate')}
                   value={values.expiryDate}
                   placeholder="Expiry Date (MM/YY)"
+                  placeholderTextColor={'grey'}
                   keyboardType="numeric"
                 />
                 {touched.expiryDate && errors.expiryDate && <Text style={styles.error}>{errors.expiryDate}</Text>}
@@ -143,6 +145,7 @@ const CreditCardScan = ({ navigation, route }) => {
                   value={values.cvv}
                   keyboardType="numeric"
                   placeholder="CVV"
+                  placeholderTextColor={'grey'}
                 />
                 {touched.cvv && errors.cvv && <Text style={styles.error}>{errors.cvv}</Text>}
 
@@ -241,6 +244,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderColor: '#cccccc',
     borderWidth: 1,
+    color:'black',
     borderRadius: 10,
     paddingHorizontal: 10,
     margin: 10,
@@ -301,6 +305,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
+    color: 'grey',
   },
   modalButton: {
     padding: 10,

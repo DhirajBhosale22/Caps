@@ -68,6 +68,7 @@ const ForgotPasswordScreen = () => {
             <TextInput
               style={styles.input}
               placeholder="Email"
+              placeholderTextColor={'grey'}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}

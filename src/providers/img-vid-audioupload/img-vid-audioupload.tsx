@@ -1,41 +1,36 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+// ImgVidAudiouploadProvider.tsx
+class ImgVidAudiouploadProvider {
+  private base64img: string = '';
+  private video: any = null;
+  private audio: any = null;
+  private url: string = 'https://vortexmobievotingapp.000webhostapp.com/imageUpload.php';
 
-/*
-  Generated class for the ImgVidAudiouploadProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-@Injectable()
-export class ImgVidAudiouploadProvider {
-
-  constructor(public http: HttpClient) {
-    
+  // Setters and Getters for Image
+  setImage(img: string) {
+    this.base64img = img;
   }
-  base64img:string='';
-  video:any;
-  audio:any;
-  url:'https://vortexmobievotingapp.000webhostapp.com/imageUpload.php';
 
- 
-  
-  setImage(img){
-    this.base64img=img;
-  }
-  getImage(){
+  getImage(): string {
     return this.base64img;
   }
-  setVideo(video){
-    this.video=video;
+
+  // Setters and Getters for Video
+  setVideo(video: any) {
+    this.video = video;
   }
-  getVideo(){
+
+  getVideo(): any {
     return this.video;
   }
-  setAudio(audio){
-    this.audio=audio;
+
+  // Setters and Getters for Audio
+  setAudio(audio: any) {
+    this.audio = audio;
   }
-  getAudio(){
+
+  getAudio(): any {
     return this.audio;
   }
 }
+
+export default new ImgVidAudiouploadProvider();

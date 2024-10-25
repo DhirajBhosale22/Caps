@@ -41,10 +41,17 @@ import RpTestBestPracticeResponseScreen from './src/pages/RpTestBestPracticeResp
 import EmergencyProcedure from './src/pages/EmergencyProcedure';
 import Sharedcases from './src/pages/SharedcasesPage';
 import EditCaseScreen from './src/pages/EditCaseScreen';
+import SharecontactPage from './src/pages/Sharecontact';
+import ImagePage from './src/pages/ImagePage';
+import AudioPage from './src/pages/AudioPage';
+import DocumentPage from './src/pages/DocumentPage';
+import VideoPage from './src/pages/VideoPage';
 import { handleNextAction } from '@stripe/stripe-react-native';
 import CasesharedWith from './src/pages/CasesharedWithPage';
 import FilesPage from './src/pages/FilePage';
+import Apploder from './src/pages/Apploder';
 import ExistingCases from './src/pages/ExistingCases';
+import InternetConnection from './src/pages/InternetConnection';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createStackNavigator();
 
@@ -55,9 +62,40 @@ const App = () => {
 
     <LoaderProvider>
     <NavigationContainer   theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator initialRouteName="home">
+      <InternetConnection/>
+      <Stack.Navigator initialRouteName="Apploder">
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+         <Stack.Screen name="Apploder" component={Apploder} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+           <Stack.Screen name="ImagePage" component={ImagePage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+          <Stack.Screen name="VideoPage" component={VideoPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="AudioPage" component={AudioPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+ <Stack.Screen name="DocumentPage" component={DocumentPage} options={{ 
+            headerShown: false, 
+            // cardStyle: { backgroundColor: 'red' } 
+          }}  
+        />
+        <Stack.Screen name="SharecontactPage" component={SharecontactPage} options={{ 
             headerShown: false, 
             // cardStyle: { backgroundColor: 'red' } 
           }}  

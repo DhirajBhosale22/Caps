@@ -32,8 +32,8 @@ export class DistributionlistProvider {
   }
 
   // Method to delete group contact
-  delete_group_contact(userInfo: any) {
-    return this.api.post('delete_group_contact', JSON.stringify(userInfo), {
+  delete_group_contact(distri_delete_info: any) {
+    return this.api.post('delete_group_contact', JSON.stringify(distri_delete_info), {
       headers: this.getHeaders(),
     });
   }
@@ -46,8 +46,8 @@ export class DistributionlistProvider {
   }
 
   // Method to edit distribution list
-  edit_list(edit_info: any) {
-    return this.api.post('edit_distribution_list', JSON.stringify(edit_info), {
+  edit_list(edit_contact: any) {
+    return this.api.post('edit_distribution_list', JSON.stringify(edit_contact), {
       headers: this.getHeaders(),
     });
   }
