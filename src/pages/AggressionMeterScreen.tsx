@@ -751,9 +751,9 @@ import { useLoader } from '../providers/loader/loader';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 // Import all images
-import info from '../assets/img/info.png';
+
 import meter from '../assets/img/meter.png';
-import back from '../assets/img/back.png';
+
 import green_ar from '../assets/img/green_ar.png';
 import man from '../assets/img/man.png';
 import tactic_movement from '../assets/img/tactic_movement.png';
@@ -768,7 +768,7 @@ import { Rating } from 'react-native-elements';
 import CustomModal from './CustomModal';
 
 const AggressionMeterScreen = ({ navigation, route }) => {
-  const { case_id, token, suspect_info, avg_rating } = route.params;
+  const { case_id, token, suspect_info, pageType, rating} = route.params;
 
   const api = new Api();
   const distributionProvider = new DistributionlistProvider(api);
@@ -854,13 +854,14 @@ const [shareData, setShareData] = useState(null);
     return true; // Prevent default behavior
   };
   useEffect(() => {
+    loadData(); // Load data only when component mounts
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       handleBackButtonPress
     );
-
+  
     return () => backHandler.remove(); // Cleanup the event listener on unmount
-  }, [agressionResult, pages]);
+  }, []); // Empty dependency array to ensure it runs only on mount
   const handleShareWithSpecificUser  = async (email) => {
     const validateObj = validateEmail(email);
     if (!validateObj.isValid) {
@@ -932,24 +933,24 @@ const [shareData, setShareData] = useState(null);
     }
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      loadData();
-      return () => {
-        setIsNoInternetModalVisible(false);
-        setIsModalVisible(false);
-        setIsShareModalVisible(false);
-      };
-    }, [])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     loadData();
+  //     return () => {
+  //       setIsNoInternetModalVisible(false);
+  //       setIsModalVisible(false);
+  //       setIsShareModalVisible(false);
+  //     };
+  //   }, [])
+  // );
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      loadData();
-    });
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     loadData();
+  //   });
 
-    return unsubscribe;
-  }, [navigation]);
+  //   return unsubscribe;
+  // }, [navigation]);
 
   useEffect(() => {
     if (avgRating !== '' && !isNaN(parseFloat(avgRating))) {
@@ -969,6 +970,30 @@ const [shareData, setShareData] = useState(null);
       setAvgRating('0');
     }
   }, [pages]);
+useEffect(() => {
+  // Check if the pageType matches any title in pages
+  setPages(prevPages => 
+    prevPages.map(page => {
+      if (page.title === pageType) {
+        let show_color = 'grey'; // Default color
+        const currentRating: string = rating; // Assuming rating is passed as prop, or it can be derived from the state
+
+        if (['1', '2', '3'].includes(rating)) {
+          show_color = 'rgb(58, 186, 128)'; // Green
+        } else if (['4', '5', '6'].includes(rating)) {
+          show_color = 'rgb(232, 185, 106)'; // Yellow
+        } else if (rating === '0') {
+          show_color = 'grey';
+        } else {
+          show_color = 'rgb(216, 108, 107)'; // Red
+        }
+
+        return { ...page, rating: currentRating, colors: show_color }; // Update the rating and color if it matches
+      }
+      return page; // Return unchanged page if no match
+    })
+  );
+}, [pageType, rating]);
 
   const fetchUserName = async () => {
     try {
@@ -1076,7 +1101,7 @@ const [shareData, setShareData] = useState(null);
     throw error; // Propagate error
   }
 };
-
+console.log(case_id);
   const getQuestion = async (item) => {
     showLoader();
     try {
@@ -1120,7 +1145,13 @@ const [shareData, setShareData] = useState(null);
           case_id: case_id,
           rating: item.rating, 
         };
-
+        console.log('Navigating to AggressionMeterScreen with values:', {
+          token: token,
+          user_id: user_id,
+          type,
+          case_id: case_id,
+          rating: item.rating, 
+        });
         navigation.navigate('QuestionPage', { data: myModalData });
       }
     } catch (error) {
@@ -1212,14 +1243,14 @@ const [shareData, setShareData] = useState(null);
       const uri = await viewShotRef.current.capture();
       const base64 = await RNFS.readFile(uri, 'base64');
       const casePhoto = `data:image/jpeg;base64,${base64}`;
-
+  
       // Check if data is available
       if (pages.every((page) => page.rating === '')) {
-       setErrorMessage('You must have to fill data in at least one aggression level');
-      setIsErrorModalVisible(true);
+        setErrorMessage('You must have to fill data in at least one aggression level');
+        setIsErrorModalVisible(true);
         return;
       }
-
+  
       // Show confirmation prompt
       Alert.alert(
         'Confirm',
@@ -1230,13 +1261,13 @@ const [shareData, setShareData] = useState(null);
             onPress: async () => {
               const userData = await AsyncStorage.getItem('user');
               const { user_id, token } = userData ? JSON.parse(userData) : {};
-
+  
               if (!user_id || !token) {
                 setErrorMessage('User  not authenticated');
                 setIsErrorModalVisible(true);
                 return;
               }
-
+  
               const caseAggressionLevelInfo = {
                 types: pages.map((page) => ({
                   type: page.title,
@@ -1250,13 +1281,22 @@ const [shareData, setShareData] = useState(null);
                 verification: 'yes',
                 client_id: 'your_client_id', // Replace with your client ID
               };
-
+  
+              // Debugging: Log the data being sent
+              console.log('Submitting case with data:', caseAggressionLevelInfo);
+  
+              // Save the case details via the API
               const response = await aggressionLevelProvider.createCaseAggressionLevel(caseAggressionLevelInfo);
-              if (response) {
+              console.log('Response from API:', response);
+  
+              if (response && response.data && response.data.msg === "Case not found") {
+                setErrorMessage('Failed to create case aggression level: Case not found');
+                setIsErrorModalVisible(true);
+              } else if (response && response.result === 'success') {
                 navigation.navigate('ExistingCases', { flag: 1 });
               } else {
-               setErrorMessage('Failed to create case aggression level');
-               setIsErrorModalVisible(true);
+                setErrorMessage('Failed to create case aggression level');
+                setIsErrorModalVisible(true);
               }
             },
           },
@@ -1287,10 +1327,11 @@ const [shareData, setShareData] = useState(null);
               };
 
               const response = await aggressionLevelProvider.createCaseAggressionLevel(caseAggressionLevelInfo);
-              if (response) { navigation.navigate('ExistingCases', { flag: 1 });
+            if (response && response.result === 'success') {
+              navigation.navigate('ExistingCases', { flag: 1 });
             } else {
-               setErrorMessage('Failed to create case aggression level');
-               setIsErrorModalVisible(true);
+              setErrorMessage('Failed to create case aggression level');
+              setIsErrorModalVisible(true);
             }
           },
         },
@@ -1298,9 +1339,9 @@ const [shareData, setShareData] = useState(null);
       { cancelable: false }
     );
   } catch (error) {
+    console.error('Error submitting case:', error);
     setErrorMessage('Failed to submit case');
     setIsErrorModalVisible(true);
-   
   }
 };
                
@@ -1791,44 +1832,4 @@ transformOrigin: 'bottom', // Added transform origin
 });
 
 export default AggressionMeterScreen;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

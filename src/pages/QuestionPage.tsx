@@ -1619,7 +1619,7 @@ const QuestionPage: React.FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedExplanation, setSelectedExplanation] = useState<string | null>(null);
   const [theme, setTheme] = useState(Appearance.getColorScheme());
-
+  const caseId = route.params?.data?.case_id; 
   useEffect(() => {
     const subscription = Appearance.addChangeListener(({ colorScheme }) => {
       setTheme(colorScheme);
@@ -1661,7 +1661,7 @@ const QuestionPage: React.FC = () => {
       setFirstName(userInfoResponse?.data?.firstname || 'Guest');
 
       const params = route as any;
-      const { token, user_id, type, case_id, rating } = params.params.data;
+      const { token, user_id, type, rating } = params.params.data;
 
       const pageTypeValue = getPageType(type);
       setPageType(pageTypeValue);
@@ -1669,7 +1669,7 @@ const QuestionPage: React.FC = () => {
         token,
         type: pageTypeValue,
         user_id,
-        case_id,
+        case_id:caseId,
       });
 
       
@@ -1729,8 +1729,20 @@ const QuestionPage: React.FC = () => {
   const handleSkip = () => {
     navigation.goBack();
   };
-
+ 
+  const mapPageType = (type) => {
+    switch (type) {
+        case 'facial_expression':
+            return 'facial expression';
+        case 'tactical_clothing':
+            return 'other concerning factors';
+        default:
+            return type; // Return the original type if no mapping is needed
+    }
+};
+const mappedPageType = mapPageType(pageType);
   const handleQuestionSelect = (selectedQuestion) => {
+    console.log('Selected Question:', selectedQuestion); // Log the selected question details
     setQuestions((prevQuestions) => {
       const updatedQuestions = prevQuestions.map((q) => ({
         ...q,
@@ -1743,10 +1755,16 @@ const QuestionPage: React.FC = () => {
 
       return [selected, ...others];
     });
+    console.log('Navigating to AggressionMeterScreen with values:', {
+      rating: selectedQuestion.rating,
+      pageType: mappedPageType,
+       case_id: caseId, 
+    });
     // Navigate back to AggressionMeterScreen with the selected item's rating and aggression type
     navigation.navigate('AggressionMeterScreen', {
       rating: selectedQuestion.rating,
-      pageType: pageType,
+      pageType: mappedPageType,
+       case_id: caseId, 
     });
   };
   
@@ -1794,23 +1812,16 @@ const QuestionPage: React.FC = () => {
             <Text style={styles.questionText}>{item.text || 'No question available'}</Text>
             
             <View style={styles.questionActions}>
-          <TouchableOpacity
-            onPress={() => {
-              handleQuestionSelect(item);
-              navigation.navigate('AggressionMeterScreen', {
-                avg_rating: item.rating
-               
-              });
-            }}
+            <TouchableOpacity
+  onPress={() => handleQuestionSelect(item)} // Call the updated function
   style={[
     item.is_selected === '1' ? styles.selectedButton : styles.selectButton,
-    
   ]}
 >
-           <Text style={item.is_selected === '1' ? styles.selectedButtonText : styles.selectButtonText}>
-             {item.is_selected === '1' ? 'Selected' : 'SELECT'}
-           </Text>
-     </TouchableOpacity>
+  <Text style={item.is_selected === '1' ? styles.selectedButtonText : styles.selectButtonText}>
+    {item.is_selected === '1' ? 'Selected' : 'SELECT'}
+  </Text>
+</TouchableOpacity>
             <Text style={styles.ratingBadge}>{item.rating}</Text>
           <TouchableOpacity onPress={() => handleInfoPress(item.explanation)}>
               <Image source={require('../assets/img/info.png')} style={styles.infoIcon} />

@@ -98,13 +98,13 @@ class AggressionLevelProvider {
     }
   }
 
-  async createCaseAggressionLevel(info: any) {
+  async createCaseAggressionLevel(caseAggressionLevelInfo: any) {
     const headers = {
       'Content-Type': 'application/json',
     };
 
     try {
-      const response = await this.api.post('create_case_aggression_level', JSON.stringify(info), { headers });
+      const response = await this.api.post('create_case_aggression_level', JSON.stringify(caseAggressionLevelInfo), { headers });
       return response.data;
     } catch (error) {
       console.error('Error creating case aggression level:', error);
