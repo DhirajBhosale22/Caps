@@ -647,7 +647,7 @@ const ExistingCases = ({ navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -676,60 +676,58 @@ const ExistingCases = ({ navigation }) => {
 };
  
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f2f2f2',
     },
     header: {
-        height: 60,
+        height: hp('8%'), // Responsive height
         backgroundColor: '#b71c1c',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 10,
+        paddingHorizontal: wp('2%'), // Responsive padding
     },
     headerText: {
         color: 'white',
-        fontSize: 20,
+        fontSize: wp('5%'), // Responsive font size
         fontWeight: 'bold',
         flex: 1,
         textAlign: 'center',
-        marginLeft: 50,
+        marginLeft: wp('10%'), // Responsive margin
     },
     menuIconContainer: {
         position: 'absolute',
-        left: 10,
+        left: wp('2%'), // Responsive left position
     },
     menuIcon: {
-        width: 35,
-        height: 35,
+        width: wp('8%'), // Responsive width
+        height: hp('4%'), // Responsive height
     },
     buttonContainer: {
         flex: 1,
-        //justifyContent: 'space-evenly',
-        //padding: 5,
     },
     footer: {
-        height: 60,
+        height: hp('8%'), // Responsive height
         backgroundColor: '#b71c1c',
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        marginTop: 100
-    },
-    footerButton: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    footerIcon: {
-        width: 21,
-        height: 21,
+      },
+      footerButton: {
+        padding: hp('1%'),
+      },
+      footerIcon: {
+        width: wp('6%'), // Width is 6% of the screen width
+        height: wp('6%'), // Height is 6% of the screen width
         tintColor: 'white',
-    },
+      },
     footerIcon1: {
-        width: 28,
-        height: 28,
+        width: wp('7%'), // Responsive width
+        height: hp('4%'), // Responsive height
         tintColor: 'white',
     },
     modalOverlay: {
@@ -741,58 +739,50 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
     },
-
-    //existing cases
-
     backIcon: {
-        width: 24,
-        height: 24,
+        width: wp('6%'), // Responsive width
+        height: hp('3%'), // Responsive height
         tintColor: '#ffffff',
-
     },
     caseItem: {
-        marginHorizontal: 1,
-        padding: 16,
+        marginHorizontal: wp('1%'), // Responsive margin
+        padding: hp('2%'), // Responsive padding
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-
     },
     caseLeft: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     caseIcon: {
-        width: 20,
-        height: 20,
-        marginRight: 10,
-        tintColor:'#B71C1C',
+        width: wp('5%'), // Responsive width
+        height: hp('3%'), // Responsive height
+        marginRight: wp('2%'), // Responsive margin
+        tintColor: '#B71C1C',
     },
     caseTitle: {
-        fontSize: 18,
+        fontSize: wp('4.5%'), // Responsive font size
         color: '#B71C1C',
-
     },
     caseDescription: {
-        fontSize: 15,
+        fontSize: wp('4%'), // Responsive font size
         color: 'black',
-
     },
     arrowIcon: {
-        width: 16,
-        height: 16,
-
+        width: wp('4%'), // Responsive width
+        height: hp('2%'), // Responsive height
     },
     centeredView: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-      },
-      modalView: {
-        margin: 20,
+    },
+    modalView: {
+        margin: wp('5%'), // Responsive margin
         backgroundColor: 'white',
         borderRadius: 10,
-        padding: 35,
+        padding: hp('4%'), // Responsive padding
         alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -800,41 +790,199 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         zIndex: 1000,
-      },
-      modalTitles: {
-        fontSize: 18,
+    },
+    modalTitles: {
+        fontSize: wp('5%'), // Adjusted for responsive font size
         fontWeight: 'bold',
-        marginBottom: 15,
-        color:'#fff',
-    
-      },
-      modalText: {
-        fontSize: 16,
-        marginBottom: 15,
+        marginBottom: hp('2%'), // Adjusted for responsive margin
         color: 'black',
-    
       },
-      modalButtonContainer: {
+    modalText: {
+        fontSize: wp('4%'), // Responsive font size
+        marginBottom: hp('2%'), // Responsive margin
+        color: 'black',
+    },
+    modalButtonContainer: {
         flexDirection: 'row',
-      },
-      modalButton: {
+    },
+    modalButton: {
         borderRadius: 5,
-        padding: 10,
-        marginHorizontal: 10,
+        padding: hp('2%'), // Responsive padding
+        marginHorizontal: wp('2%'), // Responsive margin
         backgroundColor: '#9d0808',
-      },
-      modalButtonText: {
+    },
+    modalButtonText: {
         color: 'white',
-        fontSize: 16,
-      },
-      ptext: {
-        fontSize: 16,
-        marginBottom: 20,
-       
+        fontSize: wp('4%'), // Responsive font size
+    },
+    ptext: {
+        fontSize: wp('4%'), // Responsive font size
+        marginBottom: hp('2%'), // Responsive margin
         textAlign: 'center',
-        
-    
-      },
+    },
 });
 
 export default ExistingCases;
+
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         backgroundColor: '#f2f2f2',
+//     },
+//     header: {
+//         height: 60,
+//         backgroundColor: '#b71c1c',
+//         flexDirection: 'row',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         paddingHorizontal: 10,
+//     },
+//     headerText: {
+//         color: 'white',
+//         fontSize: 20,
+//         fontWeight: 'bold',
+//         flex: 1,
+//         textAlign: 'center',
+//         marginLeft: 50,
+//     },
+//     menuIconContainer: {
+//         position: 'absolute',
+//         left: 10,
+//     },
+//     menuIcon: {
+//         width: 35,
+//         height: 35,
+//     },
+//     buttonContainer: {
+//         flex: 1,
+//         //justifyContent: 'space-evenly',
+//         //padding: 5,
+//     },
+//     footer: {
+//         height: 60,
+//         backgroundColor: '#b71c1c',
+//         flexDirection: 'row',
+//         justifyContent: 'space-around',
+//         alignItems: 'center',
+//         marginTop: 100
+//     },
+//     footerButton: {
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//     },
+//     footerIcon: {
+//         width: 21,
+//         height: 21,
+//         tintColor: 'white',
+//     },
+//     footerIcon1: {
+//         width: 28,
+//         height: 28,
+//         tintColor: 'white',
+//     },
+//     modalOverlay: {
+//         flex: 1,
+//         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//         justifyContent: 'flex-start',
+//     },
+//     overlayTouchable: {
+//         flex: 1,
+//         width: '100%',
+//     },
+
+//     //existing cases
+
+//     backIcon: {
+//         width: 24,
+//         height: 24,
+//         tintColor: '#ffffff',
+
+//     },
+//     caseItem: {
+//         marginHorizontal: 1,
+//         padding: 16,
+//         flexDirection: 'row',
+//         alignItems: 'center',
+//         justifyContent: 'space-between',
+
+//     },
+//     caseLeft: {
+//         flexDirection: 'row',
+//         alignItems: 'center',
+//     },
+//     caseIcon: {
+//         width: 20,
+//         height: 20,
+//         marginRight: 10,
+//         tintColor:'#B71C1C',
+//     },
+//     caseTitle: {
+//         fontSize: 18,
+//         color: '#B71C1C',
+
+//     },
+//     caseDescription: {
+//         fontSize: 15,
+//         color: 'black',
+
+//     },
+//     arrowIcon: {
+//         width: 16,
+//         height: 16,
+
+//     },
+//     centeredView: {
+//         flex: 1,
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//       },
+//       modalView: {
+//         margin: 20,
+//         backgroundColor: 'white',
+//         borderRadius: 10,
+//         padding: 35,
+//         alignItems: 'center',
+//         shadowColor: '#000',
+//         shadowOffset: { width: 0, height: 2 },
+//         shadowOpacity: 0.25,
+//         shadowRadius: 4,
+//         elevation: 5,
+//         zIndex: 1000,
+//       },
+//       modalTitles: {
+//         fontSize: 18,
+//         fontWeight: 'bold',
+//         marginBottom: 15,
+//         color:'#fff',
+    
+//       },
+//       modalText: {
+//         fontSize: 16,
+//         marginBottom: 15,
+//         color: 'black',
+    
+//       },
+//       modalButtonContainer: {
+//         flexDirection: 'row',
+//       },
+//       modalButton: {
+//         borderRadius: 5,
+//         padding: 10,
+//         marginHorizontal: 10,
+//         backgroundColor: '#9d0808',
+//       },
+//       modalButtonText: {
+//         color: 'white',
+//         fontSize: 16,
+//       },
+//       ptext: {
+//         fontSize: 16,
+//         marginBottom: 20,
+       
+//         textAlign: 'center',
+        
+    
+//       },
+// });
+
+// export default ExistingCases;

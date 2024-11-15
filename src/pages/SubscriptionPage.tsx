@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SubscriptionProvider } from '../../src/providers/subscription/SubscriptionProvider'; // Adjust the import path
 import { Api } from '../providers/api/api'; // Importing the API class
-
+import { useNavigation } from '@react-navigation/native';
 // Define the structure of a Subscription object
 interface Subscription {
   duration: string;
@@ -13,6 +13,7 @@ interface Subscription {
 }
 
 const SubscriptionPage = () => {
+  const navigation = useNavigation();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,24 +49,7 @@ const SubscriptionPage = () => {
   }, []);
 
   console.log(token);
-  const handleAddSubscription = (sub_info: Subscription) => {
-    const apiInstance = new SubscriptionProvider(new Api());
 
-    // Call the add_subscription method with the subscription info and token
-    if (token) {
-      apiInstance.add_subscription(sub_info, token)
-        .then(response => {
-          console.log('Subscription added successfully:', response);
-          // Perform any further actions based on the response, e.g., navigate to a confirmation page
-        })
-        .catch(err => {
-          console.error('Error adding subscription:', err);
-          setError('Failed to add subscription');
-        });
-    } else {
-      setError('User token is not available');
-    }
-  };
 
   if (loading) {
     return <ActivityIndicator size="large" color="#9d0808" style={styles.loader} />;
@@ -90,9 +74,13 @@ const SubscriptionPage = () => {
           <Text style={styles.descriptionText}>{subscription.normal_txt}</Text>
           <TouchableOpacity 
             style={styles.buttonContainer}
-            onPress={() => handleAddSubscription(subscription)}
-          >
-            <Text style={styles.buttonText}>Continue ({subscription.price}$)</Text>
+            
+            onPress={() => {
+              console.log('Navigating to credit');
+              navigation.navigate('credit');
+            }}>
+          
+            <Text style={styles.buttonText}>Continue ({subscription.price} $)</Text>
           </TouchableOpacity>
         </View>
       ))}
@@ -101,51 +89,54 @@ const SubscriptionPage = () => {
 };
 
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 16,
+    padding: wp('4%'), // Responsive padding
     backgroundColor: '#f0eff5',
   },
   subscriptionCard: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 16,
-    marginBottom: 16,
+    padding: wp('4%'), // Responsive padding
+    marginBottom: hp('2%'), // Responsive margin
     elevation: 2,
   },
   subscriptionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: hp('1%'), // Responsive margin
   },
   durationText: {
-    fontSize: 18,
+    fontSize: wp('5%'), // Responsive font size
     fontWeight: 'bold',
     color: '#4f4f4f',
   },
   discountText: {
-    fontSize: 16,
+    fontSize: wp('4.5%'), // Responsive font size
     color: '#9d0808',
     fontWeight: 'bold',
   },
   descriptionText: {
-    fontSize: 14,
+    fontSize: wp('3.5%'), // Responsive font size
     color: 'black',
-    marginBottom: 12,
-    fontWeight:'400',
-    marginTop:20,
+    marginBottom: hp('1.5%'), // Responsive margin
+    fontWeight: '400',
+    marginTop: hp('2%'), // Responsive margin
   },
   buttonContainer: {
     backgroundColor: '#9d0808',
     borderRadius: 30,
-    paddingVertical: 12,
+    paddingVertical: hp('2%'), // Responsive padding
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
     fontWeight: 'bold',
   },
   loader: {
@@ -160,8 +151,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    fontSize: 18,
+    fontSize: wp('5%'), // Responsive font size
   },
 });
 
-export default SubscriptionPage;
+export default SubscriptionPage; // Ensure you export the styles

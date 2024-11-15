@@ -569,6 +569,10 @@ const BestPracticeScreen = ({ navigation }) => {
   ];
 
   const handlePress = (title) => {
+   
+    if (title === 'Emergency Introduction') {
+      setShowEmergencyInfo((prev) => !prev); // Toggle the showEmergencyInfo state
+    } else {
     switch (title) {
       case 'Aggression Stage Zero':
         navigation.navigate('AggressionStageZeroScreen');
@@ -603,11 +607,9 @@ const BestPracticeScreen = ({ navigation }) => {
       case 'RpTestBestPracticeResponseScreen':
         navigation.navigate('RpTestBestPracticeResponseScreen');
         break;
-      case 'Emergency Introduction':
-        setShowEmergencyInfo(true);
-        break;
-      default:
-        console.warn(`No screen found for title: ${title}`);
+        default:
+          console.warn(`No screen found for title: ${title}`);
+      }
     }
   };
   const emergencyTextContent = (
@@ -722,7 +724,7 @@ const BestPracticeScreen = ({ navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -746,6 +748,8 @@ const BestPracticeScreen = ({ navigation }) => {
   );
 };
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -758,55 +762,56 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', // Light background color
   },
   header: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: wp('3%'), // Responsive horizontal padding
   },
   backButton: {
     position: 'absolute',
-    left: 10,
+    left: wp('3%'), // Responsive left position
   },
   backIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: hp('3%'), // Responsive height
     tintColor: 'white',
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: wp('5%'), // Responsive font size
     fontWeight: 'bold',
   },
   scrollContainer: {
-    padding: 1,
-    paddingBottom: 70,
+    padding: wp('2%'), // Responsive padding
+    paddingBottom: hp('10%'), // Responsive bottom padding
   },
   card: {
-    padding: 5,
-    marginVertical: 8,
-    marginRight: 5,
+    padding: wp('2%'), // Responsive padding
+    marginVertical: hp('1%'), // Responsive vertical margin
+    marginRight: wp('2%'), // Responsive right margin
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: hp('1%'), // Responsive vertical padding
   },
   textContainer: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: wp('2%'), // Responsive left margin
   },
   title: {
-    fontSize: 17,
+    fontSize: wp('5.7%'), // Responsive font size
     color: '#9d0808',
+    marginTop: wp('0%'),
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: wp('4.3%'), // Responsive font size
     color: 'black',
   },
   level: {
-    fontSize: 13,
+    fontSize: wp('4.5%'), // Responsive font size
     color: 'black',
   },
   levelBold: {
@@ -816,12 +821,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   arrowIcon: {
-    width: 10,
-    height: 10,
+    width: wp('5%'), // Responsive width
+    height: hp('2.5%'), // Responsive height
     tintColor: '#9d0808',
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -832,71 +837,66 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 22,
-    height: 22,
+    width: wp('6%'), // Responsive width
+    height: hp('3%'), // Responsive height
     tintColor: 'white',
   },
   icon: {
-    width: 20,
-    height: 18,
+    width: wp('5%'), // Responsive width
+    height: hp('3%'), // Responsive height
     tintColor: '#9d0808',
-    marginBottom: 50,
-    marginLeft: 20,
-    marginRight: 20
+    marginBottom: hp('5%'), // Responsive bottom margin
+    marginLeft: wp('5%'), // Responsive left margin
+    marginRight: wp('5%'), // Responsive right margin
   },
   aggressionStageZeroIcon: {
-    width: 18,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: hp('3%'), // Responsive height
     tintColor: '#9d0808',
-    marginBottom: 20,
-    marginLeft: 20,
-    marginRight: 20
-
+    marginBottom: hp('2%'), // Responsive bottom margin
+    marginLeft: wp('5%'), // Responsive left margin
+    marginRight: wp('5%'), // Responsive right margin
   },
   emergencyIntroductionIcon: {
-    width: 18,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: hp('3%'), // Responsive height
     tintColor: '#9d0808',
-    marginBottom: 2,
-    marginLeft: 20,
-    marginRight: 5,
+    marginBottom: hp('1%'), // Responsive bottom margin
+    marginLeft: wp('5%'), // Responsive left margin
+    marginRight: wp('2%'), // Responsive right margin
   },
   emergencyInfo: {
-    padding: 16,
-    marginVertical: 8,
-
+    padding: wp('4%'), // Responsive padding
+    marginVertical: hp('1%'), // Responsive vertical margin
   },
   emergencyText: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
     color: 'black',
-    lineHeight: 25,
+    lineHeight: hp('3%'), // Responsive line height
     textAlign: 'justify',
-    paddingLeft: 30,
-
+    paddingLeft: wp('5%'), // Responsive left padding
   },
   emergencyTitle: {
-    fontSize: 24,
+    fontSize: wp('5%'), // Responsive font size
     color: 'black',
     fontWeight: 'bold',
-
   },
   bold: {
     fontWeight: 'bold',
   },
   spacer: {
-    height: 10, // Adjust the height for desired spacing
+    height: hp('2%'), // Responsive height for spacing
   },
-
   centeredView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Responsive margin
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: wp('5%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -906,38 +906,34 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Responsive bottom margin
     color: 'black',
-
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive bottom margin
     color: 'grey',
-
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: wp('3%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive horizontal margin
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
   },
   ptext: {
-    fontSize: 16,
-    marginBottom: 20,
-
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive bottom margin
     textAlign: 'center',
-
-
   },
 });
+
 export default BestPracticeScreen;

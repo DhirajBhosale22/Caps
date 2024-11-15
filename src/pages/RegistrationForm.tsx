@@ -2037,99 +2037,86 @@ const RegistrationForm = ({ navigation }) => {
   );
 };
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
   scrollViewContent: {
-    paddingVertical: 20, // Vertical padding for the entire content inside ScrollView
-
+    paddingVertical: hp('2.5%'), // Adjusted for vertical padding
   },
-
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
+    padding: wp('4%'), // Adjusted padding
     backgroundColor: '#9d0808',
-
   },
   backButton: {
-    marginRight: 1,
+    marginRight: wp('1%'), // Adjusted margin
   },
   backIcon: {
-    width: 22,
-    height: 22,
-    tintColor: 'white'
+    width: wp('5.5%'), // Adjusted size
+    height: wp('5.5%'), // Adjusted size
+    tintColor: 'white',
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: wp('5.5%'), // Adjusted font size
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
   },
-
-
   itemText: {
-    fontSize: 15,
+    fontSize: wp('4%'), // Adjusted font size
     color: 'black',
   },
-
   trial: {
-    fontSize: 20,
-    //marginTop: '1%',
-    marginBottom: 10,
+    fontSize: wp('5%'), // Adjusted font size
+    marginBottom: hp('1%'), // Adjusted margin
     color: 'black',
     textAlign: 'center',
-    fontWeight: '600'
+    fontWeight: '300',
   },
   inputContainer: {
-    margin: 10,
+    margin: wp('2.5%'), // Adjusted margin
     position: 'relative',
     borderWidth: 1,
     borderColor: '#ccc',
   },
   input: {
     color: 'black',
-    padding: 10,
-    marginLeft: 30,
-    height: 45,
-    fontSize: 15,
-
+    padding: wp('2.5%'), // Adjusted padding
+    marginLeft: wp('7%'), // Adjusted margin
+    height: hp('6%'), // Adjusted height
+    fontSize: wp('4%'), // Adjusted font size
   },
-
   eyeIcon: {
     position: 'absolute',
-    right: 10,
-    top: 15,
-    tintColor: '#9d0808'
+    right: wp('2.5%'), // Adjusted position
+    top: hp('2%'), // Adjusted position
+    tintColor: '#9d0808',
   },
-
   eyeImage: {
-    width: 20, // Adjust the size
-    height: 20,
-    tintColor: '#9d0808'
+    width: wp('5%'), // Adjusted size
+    height: wp('5%'), // Adjusted size
+    tintColor: '#9d0808',
   },
-
   eyeIconContainer: {
-    padding: 10,
+    padding: wp('2.5%'), // Adjusted padding
   },
   error: {
     color: 'red',
-    fontSize: 12,
-    marginLeft: 10,
-
+    fontSize: wp('3%'), // Adjusted font size
+    marginLeft: wp('2.5%'), // Adjusted margin
   },
-
-  // country state picker
   pickerContainer: {
-    margin: 1,
-
+    margin: wp('1%'), // Adjusted margin
   },
   pickerButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 8,
+    padding: wp('2%'), // Adjusted padding
     borderColor: '#ccc',
     borderRadius: 5,
   },
@@ -2140,27 +2127,24 @@ const styles = StyleSheet.create({
   dropdownIconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 5, // Adjust to add some padding if needed
+    paddingHorizontal: wp('1%'), // Adjusted padding
   },
   dropdownIcon: {
-    width: 12,
-    height: 12,
+    width: wp('3%'), // Adjusted size
+    height: wp('3%'), // Adjusted size
   },
-
   pickerText: {
-    padding: 1,
-    marginLeft: 30,
-    fontSize: 15,
-    color: 'white'
-
+    padding: hp('0.5%'), // Adjusted padding
+    marginLeft: wp('7%'), // Adjusted margin
+    fontSize: wp('4%'), // Adjusted font size
+    color: 'white',
   },
   pickerTextnew: {
-    fontSize: 15,
+    fontSize: wp('4%'), // Adjusted font size
     color: '#000',
-
   },
   labelContainer: {
-    flex: 1, // Takes up available space on the left
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -2168,21 +2152,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
-
   valueContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1, // Takes available space but allows the icon to stay on the right
-    justifyContent: 'flex-end', // Ensures the text is aligned properly before the icon
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   pickerTextValue: {
-    color: '#000', // Text color
-    fontSize: 16,
-    marginRight: 8, // Space between text and icon
-    maxWidth: '85%', // Limits the width of the text container so it doesn't overlap with the icon
-    flexShrink: 1, // Shrinks the text if it's too long
+    color: '#000',
+    fontSize: wp('4%'), // Adjust fontSize: wp('4%'), // Adjusted font size
+    marginRight: wp('2%'), // Adjusted margin
+    maxWidth: '85%',
+    flexShrink: 1,
   },
-
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
@@ -2199,193 +2181,167 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     top: -1,
     bottom: 0,
-
-
   },
-
   header: {
-    alignItems: 'center', // Vertically centers both items
-    marginTop: 1,
+    alignItems: 'center',
+     marginTop: hp('0.1%'), // Adjusted margin
     backgroundColor: 'brown',
-    paddingTop: 10,
-    paddingBottom: 1,
-    paddingHorizontal: 10,
+    paddingTop: hp('2.5%'), // Adjusted padding
+    paddingBottom: hp('0.5%'), // Adjusted padding
+    paddingHorizontal: wp('2.5%'), // Adjusted padding
     position: 'relative',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   headerTop: {
     flexDirection: 'row',
     alignItems: 'center',
-
   },
   countryTitle: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: wp('5%'), // Adjusted font size
     fontWeight: 'bold',
     textAlign: 'center',
   },
   closeButton: {
-    top: 8,
+    top: hp('1%'), // Adjusted position
     left: '54%',
     position: 'absolute',
-
-
-
   },
   close: {
-    width: 13,
-    height: 13,
+    width: wp('4%'), // Adjusted size
+    height: wp('4%'), // Adjusted size
     tintColor: 'white',
-    marginRight: 50,
-
+    marginRight: wp('12.5%'), // Adjusted margin
   },
-
-  //search
   searchInputContainer: {
-    marginTop: 30,
+    height: wp('12%'),
+    marginTop: hp('3%'), // Adjusted margin
     backgroundColor: '#fff',
     flexDirection: 'row',
     borderRadius: 3,
-    paddingHorizontal: 15,
-    marginBottom: 10,
-
-
+    paddingHorizontal: wp('4%'), // Adjusted padding
+    marginBottom: hp('1%'), // Adjusted margin
   },
   searchicon: {
-    width: 17,
-    height: 18,
+    width: wp('4.5%'), // Adjusted size
+    height: wp('4.5%'), // Adjusted size
     tintColor: '#515151',
-    marginRight: 15,
-    marginTop: 16,
-
+    marginRight: wp('4%'), // Adjusted margin
+    marginTop: hp('2.2%'), // Adjusted margin
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted font size
     color: '#000',
-
   },
-
   noItemsFoundContainer: {
     flex: 1,
-    //justifyContent: 'flex-start',
-    //alignItems: 'flex-start',
   },
   noItemsFoundText: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted font size
     color: '#333',
-    marginLeft: 20,
-    marginTop: -260,
-
+    marginLeft: wp('5%'), // Adjusted margin
+    marginTop: hp('-30%'), // Adjusted margin
   },
-  //country list
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: hp('2.5%'), // Adjusted padding
     borderBottomColor: '#E0E0E0',
   },
   itemText1: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted font size
     color: '#000',
-    marginLeft: 15, // Adjust for spacing between image and text
+    marginLeft: wp('4%'), // Adjusted margin
   },
   radioButton: {
     margin: 1,
     padding: 1,
-    paddingHorizontal: 10, // Add padding to adjust click area
-
+    paddingHorizontal: wp('2.5%'), // Adjusted padding
   },
   radioButtonImage: {
-    width: 20, // Adjust the size of the image
-    height: 20, // Adjust the size of the image
+    width: wp('5%'), // Adjusted size
+    height: wp('5%'), // Adjusted size
   },
   countryContainer: {
-    flex: 1, // Ensures the country name and divider take up the remaining space
+    flex: 1,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
-    paddingBottom: 10, // Adjust space between the name and the line
-    marginLeft: 15, // This separates the country name from the image
+    paddingBottom: hp('2.5%'), // Adjusted padding
+    marginLeft: wp('4%'), // Adjusted margin
   },
   rowContainer: {
-    flexDirection: 'row',  // Align circle and country name in a row
-    alignItems: 'center',  // Vertically center align the items
-
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-
   dividerAligned: {
-    height: 1, // Line height
-    backgroundColor: '#E0E0E0', // Divider color
-    marginTop: 5, // Space between the country name and divider
-    marginLeft: 40, // Ensure this aligns with the start of the country text
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    marginTop: hp('1%'), // Adjusted margin
+    marginLeft: wp('10%'), // Adjusted margin
   },
-
   checkBoxContainer: {
     margin: 1,
   },
-
   agreementText: {
     textAlign: 'left',
-    marginLeft: 10,
-    marginRight: 10,
-    fontSize: 15,
+    marginLeft: wp('2.5%'), // Adjusted margin
+    marginRight: wp('2.5%'), // Adjusted margin
+    fontSize: wp('4%'), // Adjusted font size
     color: 'black',
-    marginTop: 5,
-    marginBottom: 25,
-
+    marginTop: hp('1%'), // Adjusted margin
+    marginBottom: hp('3%'), // Adjusted margin
   },
-
   link: {
     color: '#800000',
+    
   },
   bold: {
     color: 'black',
-    fontSize: 16,
-    fontWeight: '700'
+    fontSize: wp('3.8%'), // Adjusted font size
+    fontWeight: '700',
   },
   icon: {
-    width: 18,
-    height: 18,
-    marginRight: 10,
-    marginTop: 15,
-    marginLeft: 10,
+    width: wp('4.5%'), // Adjusted size
+    height: wp('4.5%'), // Adjusted size
+    marginRight: wp('2.5%'), // Adjusted margin
+    marginTop: hp('2%'), // Adjusted margin
+    marginLeft: wp('2.5%'), // Adjusted margin
     position: 'absolute',
-    tintColor: '#9d0808'
+    tintColor: '#9d0808',
   },
   icon1: {
-    width: 22,
-    height: 22,
-    marginRight: 10,
-    marginTop: 15,
-    marginLeft: 10,
+    width: wp('5%'), // Adjusted size
+    height: wp('5%'), // Adjusted size
+    marginRight: wp('2.5%'), // Adjusted margin
+    marginTop: hp('2%'), // Adjusted margin
+    marginLeft: wp('2.5%'), // Adjusted margin
     position: 'absolute',
-    tintColor: '#9d0808'
+    tintColor: '#9d0808',
   },
   icon2: {
-    width: 25,
-    height: 25,
-    marginRight: 10,
-    marginTop: 10,
-    marginLeft: 10,
+    width: wp('5.5%'), // Adjusted size
+    height: wp('5.5%'), // Adjusted size
+    marginRight: wp('2.5%'), // Adjusted margin
+    marginTop: hp('1.5%'), // Adjusted margin
+    marginLeft: wp('2.5%'), // Adjusted margin
     position: 'absolute',
-    tintColor: '#9d0808'
+    tintColor: '#9d0808',
   },
   labelText: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted font size
     color: '#B22222',
-    marginRight: 10,
+    marginRight: wp('2.5%'), // Adjusted margin
   },
-
   container1: {
-    padding: 10,
+    padding: wp('2.5%'), // Adjusted padding
   },
-  // Outer container for the custom checkbox with border and padding
   customCheckboxContainer: {
-    borderColor: '#D3D3D3', // Light grey border color
+    borderColor: '#D3D3D3',
     borderWidth: 1,
-    padding: 10,
-    backgroundColor: '#F5F5F5', // Slightly off-white background
-    borderRadius: 4, // Rounded corners similar to the image
+    padding: wp('2.5%'), // Adjusted padding
+    backgroundColor: '#F5F5F5',
+    borderRadius: 4,
   },
   checkBoxContainer1: {
     flexDirection: 'row',
@@ -2393,27 +2349,24 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   imageStyle: {
-    width: 18,
-    height: 18, // Default checkbox size
-    marginRight: 10, // Space between image and text
-    tintColor: '#9d0808'
+    width: wp('4%'), // Adjusted size
+    height: wp('4%'), // Adjusted size
+    marginRight: wp('2.5%'), // Adjusted margin
+    tintColor: '#9d0808',
   },
-  // Style for when the checkbox is checked
   checkedImage: {
-    tintColor: 'blue', // You can change this to any color to indicate it's checked
+    tintColor: 'blue',
   },
   checkBoxText: {
-    fontSize: 15,
+    fontSize: wp('4%'), // Adjusted font size
     color: '#555',
   },
-
   nextButton: {
-    padding: 15,
+    padding: wp('3%'), // Adjusted padding
     borderRadius: 5,
-    width: 200,
-    height: 50,
-    alignSelf: 'center', // Horizontally center the button
-
+    width: wp('50%'), // Adjusted width
+    height: hp('7%'), // Adjusted height
+    alignSelf: 'center',
   },
   nextButtonEnabled: {
     backgroundColor: 'darkred',
@@ -2424,20 +2377,417 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted font size
     fontWeight: 'bold',
-
   },
-
-  //network modal
-
-
-
-
 });
 
 export default RegistrationForm;
+
 function setAllFieldsValid(arg0: any) {
   throw new Error('Function not implemented.');
 }
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#f5f5f5',
+//   },
+//   scrollViewContent: {
+//     paddingVertical: 20, // Vertical padding for the entire content inside ScrollView
+
+//   },
+
+//   headerContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     padding: 15,
+//     backgroundColor: '#9d0808',
+
+//   },
+//   backButton: {
+//     marginRight: 1,
+//   },
+//   backIcon: {
+//     width: 22,
+//     height: 22,
+//     tintColor: 'white'
+//   },
+//   headerTitle: {
+//     fontSize: 22,
+//     fontWeight: 'bold',
+//     color: 'white',
+//     textAlign: 'center',
+//   },
+
+
+//   itemText: {
+//     fontSize: 15,
+//     color: 'black',
+//   },
+
+//   trial: {
+//     fontSize: 20,
+//     //marginTop: '1%',
+//     marginBottom: 10,
+//     color: 'black',
+//     textAlign: 'center',
+//     fontWeight: '600'
+//   },
+//   inputContainer: {
+//     margin: 10,
+//     position: 'relative',
+//     borderWidth: 1,
+//     borderColor: '#ccc',
+//   },
+//   input: {
+//     color: 'black',
+//     padding: 10,
+//     marginLeft: 30,
+//     height: 45,
+//     fontSize: 15,
+
+//   },
+
+//   eyeIcon: {
+//     position: 'absolute',
+//     right: 10,
+//     top: 15,
+//     tintColor: '#9d0808'
+//   },
+
+//   eyeImage: {
+//     width: 20, // Adjust the size
+//     height: 20,
+//     tintColor: '#9d0808'
+//   },
+
+//   eyeIconContainer: {
+//     padding: 10,
+//   },
+//   error: {
+//     color: 'red',
+//     fontSize: 12,
+//     marginLeft: 10,
+
+//   },
+
+//   // country state picker
+//   pickerContainer: {
+//     margin: 1,
+
+//   },
+//   pickerButton: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     padding: 8,
+//     borderColor: '#ccc',
+//     borderRadius: 5,
+//   },
+//   CountrypickerButton: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+//   dropdownIconContainer: {
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     paddingHorizontal: 5, // Adjust to add some padding if needed
+//   },
+//   dropdownIcon: {
+//     width: 12,
+//     height: 12,
+//   },
+
+//   pickerText: {
+//     padding: 1,
+//     marginLeft: 30,
+//     fontSize: 15,
+//     color: 'white'
+
+//   },
+//   pickerTextnew: {
+//     fontSize: 15,
+//     color: '#000',
+
+//   },
+//   labelContainer: {
+//     flex: 1, // Takes up available space on the left
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+//   pickerTextcon: {
+//     justifyContent: 'space-between',
+//     flexDirection: 'row',
+//   },
+
+//   valueContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     flex: 1, // Takes available space but allows the icon to stay on the right
+//     justifyContent: 'flex-end', // Ensures the text is aligned properly before the icon
+//   },
+//   pickerTextValue: {
+//     color: '#000', // Text color
+//     fontSize: 16,
+//     marginRight: 8, // Space between text and icon
+//     maxWidth: '85%', // Limits the width of the text container so it doesn't overlap with the icon
+//     flexShrink: 1, // Shrinks the text if it's too long
+//   },
+
+//   modalOverlay: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//     alignItems: 'center',
+//     width: '100%',
+//     height: '100%',
+//     position: 'absolute',
+//   },
+//   modalContent: {
+//     width: '100%',
+//     height: '100%',
+//     backgroundColor: '#FFF',
+//     paddingVertical: 0,
+//     top: -1,
+//     bottom: 0,
+
+
+//   },
+
+//   header: {
+//     alignItems: 'center', // Vertically centers both items
+//     marginTop: 1,
+//     backgroundColor: 'brown',
+//     paddingTop: 10,
+//     paddingBottom: 1,
+//     paddingHorizontal: 10,
+//     position: 'relative',
+//     justifyContent: 'center'
+//   },
+//   headerTop: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+
+//   },
+//   countryTitle: {
+//     color: '#FFFFFF',
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//     textAlign: 'center',
+//   },
+//   closeButton: {
+//     top: 8,
+//     left: '54%',
+//     position: 'absolute',
+
+
+
+//   },
+//   close: {
+//     width: 13,
+//     height: 13,
+//     tintColor: 'white',
+//     marginRight: 50,
+
+//   },
+
+//   //search
+//   searchInputContainer: {
+//     marginTop: 30,
+//     backgroundColor: '#fff',
+//     flexDirection: 'row',
+//     borderRadius: 3,
+//     paddingHorizontal: 15,
+//     marginBottom: 10,
+
+
+//   },
+//   searchicon: {
+//     width: 17,
+//     height: 18,
+//     tintColor: '#515151',
+//     marginRight: 15,
+//     marginTop: 16,
+
+//   },
+//   searchInput: {
+//     flex: 1,
+//     fontSize: 16,
+//     color: '#000',
+
+//   },
+
+//   noItemsFoundContainer: {
+//     flex: 1,
+//     //justifyContent: 'flex-start',
+//     //alignItems: 'flex-start',
+//   },
+//   noItemsFoundText: {
+//     fontSize: 16,
+//     color: '#333',
+//     marginLeft: 20,
+//     marginTop: -260,
+
+//   },
+//   //country list
+//   item: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     paddingVertical: 10,
+//     borderBottomColor: '#E0E0E0',
+//   },
+//   itemText1: {
+//     fontSize: 16,
+//     color: '#000',
+//     marginLeft: 15, // Adjust for spacing between image and text
+//   },
+//   radioButton: {
+//     margin: 1,
+//     padding: 1,
+//     paddingHorizontal: 10, // Add padding to adjust click area
+
+//   },
+//   radioButtonImage: {
+//     width: 20, // Adjust the size of the image
+//     height: 20, // Adjust the size of the image
+//   },
+//   countryContainer: {
+//     flex: 1, // Ensures the country name and divider take up the remaining space
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#E0E0E0',
+//     paddingBottom: 10, // Adjust space between the name and the line
+//     marginLeft: 15, // This separates the country name from the image
+//   },
+//   rowContainer: {
+//     flexDirection: 'row',  // Align circle and country name in a row
+//     alignItems: 'center',  // Vertically center align the items
+
+//   },
+
+//   dividerAligned: {
+//     height: 1, // Line height
+//     backgroundColor: '#E0E0E0', // Divider color
+//     marginTop: 5, // Space between the country name and divider
+//     marginLeft: 40, // Ensure this aligns with the start of the country text
+//   },
+
+//   checkBoxContainer: {
+//     margin: 1,
+//   },
+
+//   agreementText: {
+//     textAlign: 'left',
+//     marginLeft: 10,
+//     marginRight: 10,
+//     fontSize: 15,
+//     color: 'black',
+//     marginTop: 5,
+//     marginBottom: 25,
+
+//   },
+
+//   link: {
+//     color: '#800000',
+//   },
+//   bold: {
+//     color: 'black',
+//     fontSize: 16,
+//     fontWeight: '700'
+//   },
+//   icon: {
+//     width: 18,
+//     height: 18,
+//     marginRight: 10,
+//     marginTop: 15,
+//     marginLeft: 10,
+//     position: 'absolute',
+//     tintColor: '#9d0808'
+//   },
+//   icon1: {
+//     width: 22,
+//     height: 22,
+//     marginRight: 10,
+//     marginTop: 15,
+//     marginLeft: 10,
+//     position: 'absolute',
+//     tintColor: '#9d0808'
+//   },
+//   icon2: {
+//     width: 25,
+//     height: 25,
+//     marginRight: 10,
+//     marginTop: 10,
+//     marginLeft: 10,
+//     position: 'absolute',
+//     tintColor: '#9d0808'
+//   },
+//   labelText: {
+//     fontSize: 16,
+//     color: '#B22222',
+//     marginRight: 10,
+//   },
+
+//   container1: {
+//     padding: 10,
+//   },
+//   // Outer container for the custom checkbox with border and padding
+//   customCheckboxContainer: {
+//     borderColor: '#D3D3D3', // Light grey border color
+//     borderWidth: 1,
+//     padding: 10,
+//     backgroundColor: '#F5F5F5', // Slightly off-white background
+//     borderRadius: 4, // Rounded corners similar to the image
+//   },
+//   checkBoxContainer1: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'flex-start',
+//   },
+//   imageStyle: {
+//     width: 18,
+//     height: 18, // Default checkbox size
+//     marginRight: 10, // Space between image and text
+//     tintColor: '#9d0808'
+//   },
+//   // Style for when the checkbox is checked
+//   checkedImage: {
+//     tintColor: 'blue', // You can change this to any color to indicate it's checked
+//   },
+//   checkBoxText: {
+//     fontSize: 15,
+//     color: '#555',
+//   },
+
+//   nextButton: {
+//     padding: 15,
+//     borderRadius: 5,
+//     width: 200,
+//     height: 50,
+//     alignSelf: 'center', // Horizontally center the button
+
+//   },
+//   nextButtonEnabled: {
+//     backgroundColor: 'darkred',
+//   },
+//   nextButtonDisabled: {
+//     backgroundColor: '#d1919b',
+//   },
+//   nextButtonText: {
+//     color: '#fff',
+//     textAlign: 'center',
+//     fontSize: 16,
+//     fontWeight: 'bold',
+
+//   },
+
+//   //network modal
+
+
+
+
+// });
+
+// export default RegistrationForm;
+// function setAllFieldsValid(arg0: any) {
+//   throw new Error('Function not implemented.');
+// }
 

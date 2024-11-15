@@ -87,6 +87,9 @@ const CustomPicker = ({ placeholder, items, selectedValue, setSelectedValue }) =
               </View>
 
               <View style={styles.searchInputContainer}>
+              <Image
+                  source={require('../assets/img/search.png')}
+                  style={styles.searchicon} />
                 <TextInput
                   style={styles.searchInput}
                   placeholder="Search"
@@ -145,6 +148,7 @@ const EditProfileScreen = () => {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [showFooter, setShowFooter] = useState(true);
   const [isFormComplete, setIsFormComplete] = useState(false);
+  const [formChanged, setFormChanged] = useState(false);
   const fname = watch('fname');
   const lname = watch('lname');
   const email = watch('email');
@@ -156,17 +160,22 @@ const EditProfileScreen = () => {
 
   const [isSaveModalVisible, setSaveModalVisible] = useState(false);
  
+  useEffect(() => {
+    const subscription = watch(() => {
+      setFormChanged(true); // Set to true if any field changes
+    });
+    return () => subscription.unsubscribe(); // Cleanup subscription
+  }, [watch]);
+
+  
   const backAction = () => {
-    if (isFormComplete) {
-      // Show confirmation dialog
-      setBackModalVisible(true);
+    if (formChanged) {
+      setBackModalVisible(true); // Show confirmation dialog
       return true; // Prevent default back action
     } else {
       return false; // Allow default back action if no changes
     }
   };
-
-
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -175,10 +184,7 @@ const EditProfileScreen = () => {
     );
 
     return () => backHandler.remove(); // Clean up the event listener
-  }, [isFormComplete]);
-
-
-
+  }, [formChanged]);
 
   const handleBackConfirmation = (action) => {
     if (action === "discard") {
@@ -543,7 +549,7 @@ const EditProfileScreen = () => {
           {errors.Organization && <Text style={styles.errorText}>{errors.Organization.message}</Text>}
 
           <View style={styles.inputContainer1}>
-            <Image source={require('../assets/img/word.png')} style={styles.icon} />
+            <Image source={require('../assets/img/state.png')} style={styles.icon4} />
             <Text style={styles.subTitle}>Country</Text>
             <Controller
               control={control}
@@ -551,7 +557,7 @@ const EditProfileScreen = () => {
               render={({ field: { onChange, value } }) => (
 
                 <CustomPicker
-                placeholder={<Text style={{ color: 'white' }}>Country</Text>}
+                placeholder={<Text style={{ color: '#f5f5f5' }}>Country</Text>}
                   items={countries}
                   selectedValue={selectedCountry}
                   setSelectedValue={(item) => {
@@ -564,14 +570,14 @@ const EditProfileScreen = () => {
           </View>
 
           <View style={styles.inputContainer1}>
-            <Image source={require('../assets/img/state.png')} style={styles.icon} />
+            <Image source={require('../assets/img/state.png')} style={styles.icon4} />
             <Text style={styles.subTitle}>State</Text>
             <Controller
               control={control}
               name="state"
               render={({ field: { onChange, value } }) => (
                 <CustomPicker
-                placeholder={<Text style={{ color: 'white' }}>State</Text>}
+                placeholder={<Text style={{ color: '#f5f5f5' }}>State</Text>}
                   items={states}
                   selectedValue={selectedState}
 
@@ -610,7 +616,7 @@ const EditProfileScreen = () => {
           {errors.Profession && <Text style={styles.errorText}>{errors.Profession.message}</Text>}
 
 
-          {/* <Text style={{ fontWeight: 'bold', fontSize: 18 }} >Subscription</Text> */}
+          <Text style={{ fontWeight: '400',  fontSize: wp('3.4%'), color:'black' }} >Subscription</Text>
           <Controller
             control={control}
             name="subscriptionEndDate"
@@ -678,7 +684,7 @@ const EditProfileScreen = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -761,6 +767,9 @@ const EditProfileScreen = () => {
   );
 };
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -768,107 +777,109 @@ const styles = StyleSheet.create({
   },
 
   itemText: {
-    fontSize: 15,
+    fontSize: wp('3.6%'), // Adjust font size based on screen width
     color: 'black',
+    marginTop: hp('2%'),
   },
-
 
   scrollContainer: {
     flexGrow: 1,
-    padding: 40,  // Ionic typically uses consistent padding
-    backgroundColor: '#f8f9fa',  // Light background color for Ionic apps
+    padding: wp('10%'), // Adjust padding based on screen width
+    backgroundColor: '#f8f9fa',
   },
   headerContainer: {
     position: 'absolute',
-    top: 0, // position from the top
-    left: 0, // position from the left
-    right: 0, // position from the right
+    top: hp('0%'), // position from the top
+    left: wp('0%'), // position from the left
+    right: wp('0%'), // position from the right
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
+    padding: wp('4%'), // Adjust padding based on screen width
     backgroundColor: '#9d0808',
   },
   backButton: {
-    marginRight: 1,
+    marginRight: wp('0.5%'), // Adjust margin based on screen width
   },
   backIcon: {
-    width: 22,
-    height: 22,
+    width: wp('5.5%'), // Adjust size based on screen width
+    height: wp('5.5%'), // Adjust size based on screen width
     tintColor: 'white'
   },
   blur: {
     opacity: 0.5,
     backgroundColor: 'red',
-    padding: 5,
-    borderRadius: 10,
-    width: 180,
-    height: 50,
-
+    padding: wp('2%'), // Adjust padding based on screen width
+    borderRadius: wp('2%'), // Adjust border radius based on screen width
+    width: wp('45%'), // Adjust width based on screen width
+    height: hp('6%'), // Adjust height based on screen height
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: wp('5.5%'), // Adjust font size based on screen width
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
   },
   input: {
-    borderRadius: 5,
-    height: 50,
-    fontSize: 18,
+    borderRadius: wp('1%'), // Adjust border radius based on screen width
+    height: hp('6%'), // Adjust height based on screen height
+    fontSize: wp('3.2%'), // Adjust font size based on screen width
   },
   dropdownIcon: {
-    width: 15,
-    height: 15,
-    tintColor:'black',
+    width: wp('3.5%'), // Adjust size based on screen width
+    height: wp('3.5%'), // Adjust size based on screen width
+    tintColor: 'black',
   },
 
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: hp('1%'), // Adjust margin based on screen height
     backgroundColor: '#f2f2f2',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 3,
+    paddingVertical: hp('0.5%'), // Adjust padding based on screen height
+    paddingHorizontal: wp('2.5%'), // Adjust padding based on screen width
+    borderRadius: wp('1%'), // Adjust border radius based on screen width
     flex: 2,
     position: 'relative',
     marginLeft: 'auto',
-    padding: 10,
-    gap: 5,
-    // Set a consistent width for all containers
+    padding: wp('2%'), // Adjust padding based on screen width
+    gap: wp('1%'), // Adjust gap based on screen width
     alignSelf: 'center',
-
   },
 
   icon: {
-    width: 18,
-    height: 18,
-    marginRight: 10,
+    width: wp('4.5%'), // Adjust size based on screen width
+    height: wp('4.5%'), // Adjust size based on screen width
+    marginRight: wp('2%'), // Adjust margin based on screen width
+    tintColor: '#9d0808',
+  },
+  icon4: {
+    width: wp('4%'), // Adjust size based on screen width
+    height: wp('4%'), // Adjust size based on screen width
+    marginRight: wp('2%'), // Adjust margin based on screen width
     tintColor: '#9d0808',
   },
 
   textContainer: {
-    flex: 1,  // Takes up remaining space
+    flex: 1,
     position: 'relative',
-    marginLeft: 'auto',  // Pushes the container to the right side
-    padding: 10,  // Add some padding for space within the container
-    backgroundColor: '#f0f0f0',  // Add a background color to differentiate the containers
-    borderRadius: 8,  // Optional: Add rounded corners
-    marginBottom: 10,
+    marginLeft: 'auto',
+    padding: wp('2%'), // Adjust padding based on screen width
+    backgroundColor: '#f0f0f0',
+    borderRadius: wp('2%'), // Adjust border radius based on screen width
+    marginBottom: hp('1%'), // Adjust margin based on screen height
   },
 
   subTitle: {
-    fontSize: 16,
+    fontSize: wp('3.3%'), // Adjust font size based on screen width
     color: 'black',
-    marginRight:2,
-    width:'24%'
+    marginRight: wp('0.5%'), // Adjust margin based on screen width
+    width: '24%'
   },
   errorText: {
     color: 'red',
-    fontSize: 14,
-    marginTop: -5,
-    marginLeft: 15,
-
+    fontSize: wp('3.5 %'), // Adjust font size based on screen width
+    marginTop: -hp('0.5%'), // Adjust margin based on screen height
+    marginLeft: wp('2%'), // Adjust margin based on screen width
   },
   blurEffect: {
     opacity: 0.5, // Reduce the opacity to create a blur effect
@@ -876,88 +887,86 @@ const styles = StyleSheet.create({
   },
 
   textInput: {
+    fontSize: wp('3.4%'),
     flex: 1, // Ensures the text input takes up all available space
     borderColor: '#f0f0f0',
     borderWidth: 1,
-    marginLeft: 18,
-    padding: 6,
+    marginLeft: wp('4%'), // Adjust margin based on screen width
+    padding: hp('1%'), // Adjust padding based on screen height
     textAlign: 'left',
     width: '100%',
   },
 
-
-
   profileImageWrapper: {
     alignItems: 'center',
-    marginBottom: 30,  // Slightly larger margin for spacing
-    top: 30,
-
+    marginBottom: hp('1%'), // Slightly larger margin for spacing
+   
   },
   profileImage: {
-    width: 100,  // Larger, rounder profile image
-    height: 100,
-    borderRadius: 60,
-    borderColor: '#f0f0f0',  // Add light border similar to Ionic
+    width: wp('25%'), // Larger, rounder profile image
+    height: wp('25%'),
+    borderRadius: wp('12%'),
+    borderColor: '#f0f0f0', // Add light border similar to Ionic
     borderWidth: 2,
-    shadowColor: '#000',  // Subtle shadow for the image
+    shadowColor: '#000', // Subtle shadow for the image
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    marginTop: hp('5%'),
   },
   profileImagePlaceholder: {
-    width: 120,
-    height: 120,
+    width: wp('30%'),
+    height: wp('30%'),
     backgroundColor: '#ccc',
-    borderRadius: 60,
+    borderRadius: wp('15%'),
     justifyContent: 'center',
+     marginTop: hp('5%'),
     alignItems: 'center',
   },
   formContainer: {
     width: '117%',
-    right: 30,
-    top: 5,   // Slightly more compact margin for a cleaner look
-    // Consistent horizontal padding for input fields
+    right: wp('7%'),
+    top: hp('1%'), // Slightly more compact margin for a cleaner look
   },
   item: {
-    marginBottom: 16,  // Reduce bottom margin for a more compact form
+    marginBottom: hp('2%'), // Reduce bottom margin for a more compact form
   },
   radioImage: {
-    width: 24,  // Adjust size as needed
-    height: 24,
-    marginRight: 10,
-    tintColor:'brown', // Space between image and text
+    width: wp('4%'), // Adjust size as needed
+    height: wp('4%'),
+    marginTop: hp('2%'),
+    marginRight: wp('6%'), // Space between image and text
   },
-
 
   picker: {
-    height: 50,
+    height: hp('6%'),
     width: '50%',
-    color: '#000',  // Default text color for picker
-    backgroundColor: '#fff',  // White background for pickers
-    borderRadius: 8,  // Rounded corners to match input fields
-    borderColor: '#ccc',  // Border similar to input fields
+    color: '#000', // Default text color for picker
+    backgroundColor: '#fff', // White background for pickers
+    borderRadius: wp('2%'), // Rounded corners to match input fields
+    borderColor: '#ccc', // Border similar to input fields
     borderWidth: 1,
-    left: 110,  // Add some space between text and picker
+    left: wp('30%'), // Add some space between text and picker
   },
   button: {
-    backgroundColor: '#007bff',  // Ionic's signature blue button
-    paddingVertical: 12,
-    borderRadius: 8,  // Rounded button corners
+    backgroundColor: '#007bff', // Ionic's signature blue button
+    paddingVertical: hp('1.5%'), // Adjust padding based on screen height
+    borderRadius: wp('2%'), // Rounded button corners
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',  // Subtle shadow for button
+    shadowColor: '#000', // Subtle shadow for button
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
   },
   buttonText: {
-    color: 'white',  // White text for contrast on blue button
-    fontSize: 16,  // Standard button font size
-    fontWeight: '600',  // Semi-bold text
+    color: 'white', // White text for contrast on blue button
+    fontSize: wp('4%'), // Standard button font size
+    fontWeight: '600', // Semi-bold text
   },
 
   footer: {
-    height: 60,
+    height: hp('8%'),
     backgroundColor: '#b71c1c',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -971,8 +980,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'),
+    height: wp('6%'),
     tintColor: 'white',
   },
   centeredView: {
@@ -981,10 +990,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'),
     backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 35,
+    borderRadius: wp('2%'),
+    padding: hp('4%'),
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -992,120 +1001,105 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+
   modalTitles: {
-    fontSize: 18,
-    // fontWeight: 'bold',
-    marginBottom: 15,
-    color:'black'
+    fontSize: wp('4.5%'),
+    marginBottom: hp('2%'),
+    color: 'black'
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 15,
-    color:'grey',
+    fontSize: wp('4%'),
+    marginBottom: hp('2%'),
+    color: 'grey',
   },
   modalText1: {
-    fontSize: 16,
-    marginBottom: 15,
-    color:'grey',
+    fontSize: wp('4%'),
+    marginBottom: hp('2%'),
+    color: 'grey',
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
-    borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    borderRadius: wp('1%'),
+    padding: hp('2%'),
+    marginHorizontal: wp('2%'),
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'),
   },
   ptext: {
-    fontSize: 18,
-    marginBottom: 20,
+    fontSize: wp('4.5%'),
+    marginBottom: hp('2%'),
     fontWeight: 'bold',
     textAlign: 'center',
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 60,
-
+    marginTop: hp('2%'),
+    marginBottom: hp('6%'),
   },
   createButton: {
     backgroundColor: 'red',
-    borderRadius: 5,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    width: 200, // Set your desired width here
-    alignItems: 'center', // Center the text horizontally
-    justifyContent: 'center', // Center the text vertically
+    borderRadius: wp('1%'),
+    paddingVertical: hp('2%'),
+    paddingHorizontal: wp('8%'),
+    width: wp('50%'), // Set your desired width here
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  // country state picker
   pickerContainer: {
     flex: 1,
-
-    borderRadius: 10,
+    borderRadius: wp('2%'),
     borderWidth: 1,
     borderColor: '#f0f0f0',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingHorizontal: wp('4%'),
+    paddingVertical: hp('1%'),
     justifyContent: 'center',
     backgroundColor: '#f2f2f2',
-
   },
   pickerButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
-
   },
   CountrypickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   pickerText: {
-    fontSize: 14,
+    fontSize: wp('3.5%'),
     color: '#999',
-   
-
-
   },
   pickerTextnew: {
-    fontSize: 15,
+    fontSize: wp('4%'),
     color: '#000',
-
   },
   labelContainer: {
-    flex: 1, // Takes up available space on the left
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-
   },
   pickerTextcon: {
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
-
   valueContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1, // Takes available space but allows the icon to stay on the right
-    justifyContent: 'flex-end', // Ensures the text is aligned properly before the icon
+    flex: 1,
+    justifyContent: 'flex-end',
     backgroundColor: '#f5f5f5',
   },
   pickerTextValue: {
-    color: '#000', // Text color
-    fontSize: 16,
-    marginRight: 8, // Space between text and icon
-    width: '100%', // Limits the width of the text container so it doesn't overlap with the icon
-    flexShrink: 1, // Shrinks the text if it's too long
-
+    color: '#000',
+    fontSize: wp('3.5%'),
+    marginRight: wp('2%'),
+    width: '100%',
+    flexShrink: 1,
   },
-
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
@@ -1118,13 +1112,10 @@ const styles = StyleSheet.create({
   modalContent: {
     flex: 1,
     width: '100%',
-    //height:'100%',
     backgroundColor: '#FFF',
     borderRadius: 0,
-    paddingVertical: 15,
-
-    marginTop: -100
-
+    paddingVertical: hp('4%'),
+    marginTop: hp('-15%')
   },
   modalOverlay1: {
     width: '100%',
@@ -1136,142 +1127,634 @@ const styles = StyleSheet.create({
   modalContent1: {
     width: '70%',
     backgroundColor: '#FFF',
-    borderRadius: 10,
-    paddingVertical: 55,
+    borderRadius: wp('2%'),
+    paddingVertical: hp('10%'),
     alignItems: 'center',
-
   },
-
   header: {
-    alignItems: 'center', // Vertically centers both items
-    marginTop: 80,
+    alignItems: 'center',
+    marginTop: hp('10%'),
     backgroundColor: 'brown',
-    paddingTop: 10,
-    paddingBottom: 1,
-    paddingHorizontal: 10,
+    paddingTop: hp('2%'),
+    paddingBottom: hp('1%'),
+    paddingHorizontal: wp('2%'),
     position: 'relative',
     justifyContent: 'center'
-
-
   },
   headerTop: {
     flexDirection: 'row',
     alignItems: 'center',
-
   },
   countryTitle: {
     color: 'white',
-    fontSize: 20,
+    fontSize: wp('5%'),
     fontWeight: 'bold',
     textAlign: 'center',
   },
   closeButton: {
-
-    top: 8,
-    left: '55%',
+    top: hp('1%'),
+    left: '50%',
     position: 'absolute',
-
-
   },
   close: {
-    width: 14,
-    height: 14,
+    width: wp('3%'),
+    height: wp('3%'),
     tintColor: 'white',
-
   },
 
-  //search
   searchInputContainer: {
-    marginTop: 30,
+    marginTop: hp('3%'),
+    height: wp('11%'),
     backgroundColor: '#fff',
     flexDirection: 'row',
-    borderRadius: 3,
-    paddingHorizontal: 15,
-    marginBottom: 10,
-
+    borderRadius: wp('1%'),
+    paddingHorizontal: wp('4%'),
+    marginBottom: hp('2%'),
   },
   searchicon: {
-    width: 16,
-    height: 16,
-    marginRight: 15,
-    marginTop: 15,
-
+    width: wp('3.5%'),
+    height: wp('3.5%'),
+    marginRight: wp('4%'),
+    marginTop: hp('2%'),
   },
   searchInput: {
+    
     flex: 1,
-    fontSize: 16,
-
-
+    fontSize: wp('3.5%'),
+    color:'black',
   },
-  //country list
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    paddingHorizontal: 10,
+    padding: wp('2%'),
+    paddingHorizontal: wp('4%'),
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
   radioButton: {
-    margin: 1,
-    padding: 1,
+    margin: wp('1%'),
+    padding: wp('1%'),
   },
   checkBoxContainer: {
-    margin: 1,
+    margin: wp('1%'),
   },
   inputContainer1: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 10,
-
+    borderRadius: wp('2%'),
+    padding: wp('2%'),
+    marginVertical: hp('1%'),
   },
   input1: {
     backgroundColor: '#f5f5f5',
-    fontSize: 16, // **Adjust font size for clarity**
+    fontSize: wp('4%'),
     color: '#333',
-    // **Dark text color for better readability**
-    // **Center text vertically**
-
   },
-
   inputContainer2: {
     backgroundColor: '#f2f2f2',
-    padding: 8,
-    borderRadius: 8,
-    marginTop: 10,
+    padding: wp('2%'),
+    borderRadius: wp('2%'),
+    marginTop: hp('1%'),
     borderColor: 'black',
-
-
   },
   iconAndSubtitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   icon2: {
-    width: 18,
-    height: 18,
-    marginRight: 8,
-    color: '#F0F8FF'
+    width: wp('4%'),
+    height: wp('4%'),
+    marginRight: wp('2%'),
+    color: '#F0F8FF',
   },
   subTitle2: {
-    fontSize: 16,
-    color:'black',
-    fontWeight: '500',
-
+    fontSize: wp('3.4%'),
+    color: 'black',
+    fontWeight: '300',
   },
   textInput2: {
     backgroundColor: '#f2f2f2',
-    padding: 15,
-    borderRadius: 8,
-    fontWeight: 'bold',
-
+    padding: wp('3%'),
+    borderRadius: wp('2%'),
+    fontWeight: '400',
+    fontSize: wp('3.4%'),
   },
 });
 
 export default EditProfileScreen;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#f5f5f5',
+//   },
+
+//   itemText: {
+//     fontSize: 15,
+//     color: 'black',
+//   },
+
+
+//   scrollContainer: {
+//     flexGrow: 1,
+//     padding: 40,  // Ionic typically uses consistent padding
+//     backgroundColor: '#f8f9fa',  // Light background color for Ionic apps
+//   },
+//   headerContainer: {
+//     position: 'absolute',
+//     top: 0, // position from the top
+//     left: 0, // position from the left
+//     right: 0, // position from the right
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     padding: 15,
+//     backgroundColor: '#9d0808',
+//   },
+//   backButton: {
+//     marginRight: 1,
+//   },
+//   backIcon: {
+//     width: 22,
+//     height: 22,
+//     tintColor: 'white'
+//   },
+//   blur: {
+//     opacity: 0.5,
+//     backgroundColor: 'red',
+//     padding: 5,
+//     borderRadius: 10,
+//     width: 180,
+//     height: 50,
+
+//   },
+//   headerTitle: {
+//     fontSize: 22,
+//     fontWeight: 'bold',
+//     color: 'white',
+//     textAlign: 'center',
+//   },
+//   input: {
+//     borderRadius: 5,
+//     height: 50,
+//     fontSize: 18,
+//   },
+//   dropdownIcon: {
+//     width: 15,
+//     height: 15,
+//     tintColor:'black',
+//   },
+
+//   inputContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     marginVertical: 10,
+//     backgroundColor: '#f2f2f2',
+//     paddingVertical: 4,
+//     paddingHorizontal: 10,
+//     borderRadius: 3,
+//     flex: 2,
+//     position: 'relative',
+//     marginLeft: 'auto',
+//     padding: 10,
+//     gap: 5,
+//     // Set a consistent width for all containers
+//     alignSelf: 'center',
+
+//   },
+
+//   icon: {
+//     width: 18,
+//     height: 18,
+//     marginRight: 10,
+//     tintColor: '#9d0808',
+//   },
+
+//   textContainer: {
+//     flex: 1,  // Takes up remaining space
+//     position: 'relative',
+//     marginLeft: 'auto',  // Pushes the container to the right side
+//     padding: 10,  // Add some padding for space within the container
+//     backgroundColor: '#f0f0f0',  // Add a background color to differentiate the containers
+//     borderRadius: 8,  // Optional: Add rounded corners
+//     marginBottom: 10,
+//   },
+
+//   subTitle: {
+//     fontSize: 16,
+//     color: 'black',
+//     marginRight:2,
+//     width:'24%'
+//   },
+//   errorText: {
+//     color: 'red',
+//     fontSize: 14,
+//     marginTop: -5,
+//     marginLeft: 15,
+
+//   },
+//   blurEffect: {
+//     opacity: 0.5, // Reduce the opacity to create a blur effect
+//     transform: [{ scale: 0.95 }], // Optional: slightly reduce the size
+//   },
+
+//   textInput: {
+//     flex: 1, // Ensures the text input takes up all available space
+//     borderColor: '#f0f0f0',
+//     borderWidth: 1,
+//     marginLeft: 18,
+//     padding: 6,
+//     textAlign: 'left',
+//     width: '100%',
+//   },
+
+
+
+//   profileImageWrapper: {
+//     alignItems: 'center',
+//     marginBottom: 30,  // Slightly larger margin for spacing
+//     top: 30,
+
+//   },
+//   profileImage: {
+//     width: 100,  // Larger, rounder profile image
+//     height: 100,
+//     borderRadius: 60,
+//     borderColor: '#f0f0f0',  // Add light border similar to Ionic
+//     borderWidth: 2,
+//     shadowColor: '#000',  // Subtle shadow for the image
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 4,
+//   },
+//   profileImagePlaceholder: {
+//     width: 120,
+//     height: 120,
+//     backgroundColor: '#ccc',
+//     borderRadius: 60,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   formContainer: {
+//     width: '117%',
+//     right: 30,
+//     top: 5,   // Slightly more compact margin for a cleaner look
+//     // Consistent horizontal padding for input fields
+//   },
+//   item: {
+//     marginBottom: 16,  // Reduce bottom margin for a more compact form
+//   },
+//   radioImage: {
+//     width: 24,  // Adjust size as needed
+//     height: 24,
+//     marginRight: 10,
+//     tintColor:'brown', // Space between image and text
+//   },
+
+
+//   picker: {
+//     height: 50,
+//     width: '50%',
+//     color: '#000',  // Default text color for picker
+//     backgroundColor: '#fff',  // White background for pickers
+//     borderRadius: 8,  // Rounded corners to match input fields
+//     borderColor: '#ccc',  // Border similar to input fields
+//     borderWidth: 1,
+//     left: 110,  // Add some space between text and picker
+//   },
+//   button: {
+//     backgroundColor: '#007bff',  // Ionic's signature blue button
+//     paddingVertical: 12,
+//     borderRadius: 8,  // Rounded button corners
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     shadowColor: '#000',  // Subtle shadow for button
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 3,
+//   },
+//   buttonText: {
+//     color: 'white',  // White text for contrast on blue button
+//     fontSize: 16,  // Standard button font size
+//     fontWeight: '600',  // Semi-bold text
+//   },
+
+//   footer: {
+//     height: 60,
+//     backgroundColor: '#b71c1c',
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//     alignItems: 'center',
+//     position: 'absolute',
+//     bottom: 0,
+//     width: '100%',
+//   },
+//   footerButton: {
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   footerIcon: {
+//     width: 24,
+//     height: 24,
+//     tintColor: 'white',
+//   },
+//   centeredView: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   modalView: {
+//     margin: 20,
+//     backgroundColor: 'white',
+//     borderRadius: 10,
+//     padding: 35,
+//     alignItems: 'center',
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.25,
+//     shadowRadius: 4,
+//     elevation: 5,
+//   },
+//   modalTitles: {
+//     fontSize: 18,
+//     // fontWeight: 'bold',
+//     marginBottom: 15,
+//     color:'black'
+//   },
+//   modalText: {
+//     fontSize: 16,
+//     marginBottom: 15,
+//     color:'grey',
+//   },
+//   modalText1: {
+//     fontSize: 16,
+//     marginBottom: 15,
+//     color:'grey',
+//   },
+//   modalButtonContainer: {
+//     flexDirection: 'row',
+//   },
+//   modalButton: {
+//     borderRadius: 5,
+//     padding: 10,
+//     marginHorizontal: 10,
+//     backgroundColor: '#9d0808',
+//   },
+//   modalButtonText: {
+//     color: 'white',
+//     fontSize: 16,
+//   },
+//   ptext: {
+//     fontSize: 18,
+//     marginBottom: 20,
+//     fontWeight: 'bold',
+//     textAlign: 'center',
+//   },
+//   buttonContainer: {
+//     alignItems: 'center',
+//     marginTop: 20,
+//     marginBottom: 60,
+
+//   },
+//   createButton: {
+//     backgroundColor: 'red',
+//     borderRadius: 5,
+//     paddingVertical: 15,
+//     paddingHorizontal: 30,
+//     width: 200, // Set your desired width here
+//     alignItems: 'center', // Center the text horizontally
+//     justifyContent: 'center', // Center the text vertically
+//   },
+//   // country state picker
+//   pickerContainer: {
+//     flex: 1,
+
+//     borderRadius: 10,
+//     borderWidth: 1,
+//     borderColor: '#f0f0f0',
+//     paddingHorizontal: 15,
+//     paddingVertical: 10,
+//     justifyContent: 'center',
+//     backgroundColor: '#f2f2f2',
+
+//   },
+//   pickerButton: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+
+
+//   },
+//   CountrypickerButton: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+
+//   pickerText: {
+//     fontSize: 14,
+//     color: '#999',
+   
+
+
+//   },
+//   pickerTextnew: {
+//     fontSize: 15,
+//     color: '#000',
+
+//   },
+//   labelContainer: {
+//     flex: 1, // Takes up available space on the left
+//     flexDirection: 'row',
+//     alignItems: 'center',
+
+//   },
+//   pickerTextcon: {
+//     justifyContent: 'space-between',
+//     flexDirection: 'row',
+//   },
+
+//   valueContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     flex: 1, // Takes available space but allows the icon to stay on the right
+//     justifyContent: 'flex-end', // Ensures the text is aligned properly before the icon
+//     backgroundColor: '#f5f5f5',
+//   },
+//   pickerTextValue: {
+//     color: '#000', // Text color
+//     fontSize: 16,
+//     marginRight: 8, // Space between text and icon
+//     width: '100%', // Limits the width of the text container so it doesn't overlap with the icon
+//     flexShrink: 1, // Shrinks the text if it's too long
+
+//   },
+
+//   modalOverlay: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//     width: '100%',
+//     height: '100%',
+//     position: 'absolute'
+//   },
+//   modalContent: {
+//     flex: 1,
+//     width: '100%',
+//     //height:'100%',
+//     backgroundColor: '#FFF',
+//     borderRadius: 0,
+//     paddingVertical: 15,
+
+//     marginTop: -100
+
+//   },
+//   modalOverlay1: {
+//     width: '100%',
+//     flex: 1,
+//     justifyContent: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//     alignItems: 'center',
+//   },
+//   modalContent1: {
+//     width: '70%',
+//     backgroundColor: '#FFF',
+//     borderRadius: 10,
+//     paddingVertical: 55,
+//     alignItems: 'center',
+
+//   },
+
+//   header: {
+//     alignItems: 'center', // Vertically centers both items
+//     marginTop: 80,
+//     backgroundColor: 'brown',
+//     paddingTop: 10,
+//     paddingBottom: 1,
+//     paddingHorizontal: 10,
+//     position: 'relative',
+//     justifyContent: 'center'
+
+
+//   },
+//   headerTop: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+
+//   },
+//   countryTitle: {
+//     color: 'white',
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//     textAlign: 'center',
+//   },
+//   closeButton: {
+
+//     top: 8,
+//     left: '55%',
+//     position: 'absolute',
+
+
+//   },
+//   close: {
+//     width: 14,
+//     height: 14,
+//     tintColor: 'white',
+
+//   },
+
+//   //search
+//   searchInputContainer: {
+//     marginTop: 30,
+//     backgroundColor: '#fff',
+//     flexDirection: 'row',
+//     borderRadius: 3,
+//     paddingHorizontal: 15,
+//     marginBottom: 10,
+
+//   },
+//   searchicon: {
+//     width: 16,
+//     height: 16,
+//     marginRight: 15,
+//     marginTop: 15,
+
+//   },
+//   searchInput: {
+//     flex: 1,
+//     fontSize: 16,
+
+
+//   },
+//   //country list
+//   item: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     padding: 10,
+//     paddingHorizontal: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   radioButton: {
+//     margin: 1,
+//     padding: 1,
+//   },
+//   checkBoxContainer: {
+//     margin: 1,
+//   },
+//   inputContainer1: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     backgroundColor: '#f5f5f5',
+//     borderRadius: 10,
+//     padding: 10,
+//     marginVertical: 10,
+
+//   },
+//   input1: {
+//     backgroundColor: '#f5f5f5',
+//     fontSize: 16, // **Adjust font size for clarity**
+//     color: '#333',
+//     // **Dark text color for better readability**
+//     // **Center text vertically**
+
+//   },
+
+//   inputContainer2: {
+//     backgroundColor: '#f2f2f2',
+//     padding: 8,
+//     borderRadius: 8,
+//     marginTop: 10,
+//     borderColor: 'black',
+
+
+//   },
+//   iconAndSubtitleContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+//   icon2: {
+//     width: 18,
+//     height: 18,
+//     marginRight: 8,
+//     color: '#F0F8FF'
+//   },
+//   subTitle2: {
+//     fontSize: 16,
+//     color:'black',
+//     fontWeight: '500',
+
+//   },
+//   textInput2: {
+//     backgroundColor: '#f2f2f2',
+//     padding: 15,
+//     borderRadius: 8,
+//     fontWeight: 'bold',
+
+//   },
+// });
+
+// export default EditProfileScreen;
 
 
 

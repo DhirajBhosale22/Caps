@@ -1596,6 +1596,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, StyleSheet, Modal, ScrollView, Image,  Appearance} from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { Api } from '../providers/api/api';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AgressionMeterQuestionProvider from '../providers/agressionmeter-question/agressionmeter-question';
 import { useNavigation } from '@react-navigation/native';
 import ProfileProvider from '../providers/profile/profile';
@@ -1819,7 +1820,7 @@ const mappedPageType = mapPageType(pageType);
   ]}
 >
   <Text style={item.is_selected === '1' ? styles.selectedButtonText : styles.selectButtonText}>
-    {item.is_selected === '1' ? 'Selected' : 'SELECT'}
+    {item.is_selected === '1' ? 'Selected' : 'Select'}
   </Text>
 </TouchableOpacity>
             <Text style={styles.ratingBadge}>{item.rating}</Text>
@@ -1850,7 +1851,7 @@ const mappedPageType = mapPageType(pageType);
 
         </TouchableOpacity>
               <Text style={styles.modalheading1}>EXPLORE THIS STAGE OF AGGRESSION!</Text>
-              <RenderHTML contentWidth={400} source={{ html: selectedExplanation }} baseStyle={{ fontSize: 18 }} />
+              <RenderHTML contentWidth={400} source={{ html: selectedExplanation }} baseStyle={{  fontSize: wp('4%'), color:'#666'}} />
   </ScrollView>
            
           </View>
@@ -1863,7 +1864,7 @@ const mappedPageType = mapPageType(pageType);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: wp('4%'), // Responsive padding
     backgroundColor: '#F7F7F7',
   },
   containerDark: { flex: 1, backgroundColor: '#121212' },
@@ -1884,77 +1885,70 @@ const styles = StyleSheet.create({
    fontSize: 20,
   },
   modalheading1:{
-    color:'black',
+    color:'rgba(77, 77, 77, 1)',
     textAlign:'center',
-    fontSize: 28,
+    fontSize: wp('7%'),
+    fontFamily:'robotoblack', 
     marginBottom: 15,
       },
- title: {
-  fontSize: 20,
+      title: {
+        fontSize: wp('5%'), // Responsive font size
+        textAlign: 'center',
+        marginBottom: hp('2%'), // Responsive margin
+        marginVertical: hp('2%'),
+        color: Appearance.getColorScheme() === 'dark' ? 'white' : '#000',
+      },
+titleDark: {
+  fontSize: wp('5%'), // Responsive font size
   textAlign: 'center',
-  marginBottom: 10,
-  marginVertical: 20,
- 
-  color: Appearance.getColorScheme() === 'dark' ? 'white' : '#000',
+  marginBottom: hp('2%'), // Responsive margin
+  marginVertical: hp('2%'),
+  color: 'black',
 },
-  titleDark: {
-    fontSize: 20,
-    textAlign: 'center',
-    marginBottom: 10,
-    marginVertical: 20,
-   
-    color: 'black',
-  },
   titleContainer: {
     marginBottom: 10, // Adds spacing below the title
     alignItems: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
     textAlign: 'center',
-    marginBottom: 30,
-    marginTop: -10,
- 
-    color: '#000', // default color
+    marginBottom: hp('3%'), // Responsive margin
+    marginTop: hp('-1%'),
+    color: '#000',
   },
   subtitleDark: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
     textAlign: 'center',
-    marginBottom: 30,
-    marginTop: -10,
-    color: 'black', // color for dark mode
+    marginBottom: hp('3%'), // Responsive margin
+    marginTop: hp('-1%'),
+    color: 'black',
   },
   questionContainer: {
-    backgroundColor: '#f9f9f9', // Light background for each item
-    borderRadius: 10, // Add border radius for the container
-    padding: 10, // Padding inside the box
-    marginBottom: 8,// Space between items
-    borderColor: 'white', // Optional: Border color
-    borderWidth: 1, // Optional: Border width
-    shadowColor: 'grey', // Shadow color
-    
-    shadowOffset: { width: 2, height: 3 }, // Shadow offset
-    shadowOpacity: 20, // Shadow opacity
-    shadowRadius: 15, // Shadow blur radius
-    elevation: 40, // Elevation for Android shadow
-
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    padding: wp('3%'), // Responsive padding
+    marginBottom: hp('1%'), // Responsive margin
+    borderColor: 'white',
+    borderWidth: 1,
+    shadowColor: 'grey',
+    shadowOffset: { width: 2, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 4,
   },
  
   skipButton: {
     alignSelf: 'flex-end',
     backgroundColor: 'white',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: wp('5%'), // Responsive padding
+    paddingVertical: hp('1.5%'), // Responsive padding
     borderRadius: 2,
-    borderWidth:1,
-    borderColor:'red'
-    
-
-   
-    
+    borderWidth: 1,
+    borderColor: 'red',
   },
   skipButtonText: {
     color: 'red',
+    fontSize: wp('4%'),
   },
   questionItem: {
     padding: 10,
@@ -1962,66 +1956,57 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   questionText: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
     color: 'black',
-    marginBottom:10,
+    marginBottom: hp('1%'), // Responsive margin
   },
   questionActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:'space-between',
-    marginTop: 5,
-     
-      borderTopWidth: 0.5,
-      borderBottomWidth:0.5,
-      borderColor: '#ccc', 
-     
-     
+    justifyContent: 'space-between',
+    marginTop: hp('1%'), // Responsive margin
+    borderTopWidth: 0.5,
+    borderBottomWidth: 0.5,
+    borderColor: '#ccc',
   },
   selectButton: {
     backgroundColor: 'brown',
-    padding: 8,
+    padding: hp('1%'), // Responsive padding
     borderRadius: 10,
-    paddingHorizontal: 20,
-    color:'white',
-    marginTop:15,
-    marginBottom:15,
-    
+    paddingHorizontal: wp('5%'), // Responsive padding
+    color: 'white',
+    marginTop: hp('1%'), // Responsive margin
+    marginBottom: hp('1%'), // Responsive margin
   },
   selectedButton: {
-     backgroundColor: 'white',
-     padding: 8,
-     borderRadius: 10,
-     borderColor:'red',
-     borderWidth:1,
-     marginTop:15,
-     marginBottom:15,
+    backgroundColor: 'white',
+    padding: hp('1%'), // Responsive padding
+    borderRadius: 10,
+    borderColor: 'red',
+    borderWidth: 1,
     
+    marginTop: hp('1%'), // Responsive margin
+    marginBottom: hp('1%'), // Responsive margin
   },
   ratingBadge: {
-    marginLeft: 90,
-    fontSize: 16,
-    marginTop:15,
+    marginLeft: wp('10%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    marginTop: hp('1%'), // Responsive margin
     color: 'brown',
-    paddingHorizontal:8,
-    
-    // paddingVertical:8,
-    marginBottom:15,
-   
-   borderRadius:10,
+    paddingHorizontal: wp('2%'), // Responsive padding
+    marginBottom: hp('1%'), // Responsive margin
+    borderRadius: 10,
     borderColor: 'brown',
-    borderWidth:1,
+    borderWidth: 1,
   },
     
     
   infoIcon: {
-    width: 24, // Fixed size for better scaling
-  height: 24,
-  marginLeft: 80,
-  tintColor: 'brown',
-  alignSelf: 'center', 
-    
-    
+    width: wp('6%'), // Responsive size
+    height: wp('6%'), // Responsive size
+    marginLeft: wp('10%'), // Responsive margin
+    tintColor: 'brown',
+    alignSelf: 'center',
   },
   aggressionType: {
     color: '#555',
@@ -2035,7 +2020,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginBottom: 16,
+    marginBottom: hp('2%'), // Responsive margin
   },
   modalContainer: {
     flex: 1,
@@ -2048,7 +2033,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
+    padding: wp('5%'), // Responsive padding
     alignItems: 'center',
   },
   closeButton: {
@@ -2062,22 +2047,26 @@ const styles = StyleSheet.create({
   closeButton1: {
     alignSelf: 'flex-end',
     backgroundColor: 'white',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: wp('4%'), // Responsive padding
+    paddingVertical: hp('1.5%'), // Responsive padding
     borderRadius: 2,
-    borderWidth:1,
-    borderColor:'red',
-    marginBottom:15,
+    borderWidth: 1,
+    borderColor: 'red',
+    marginBottom: hp('2%'), // Responsive margin
   },
   closeButtonText1: {
     color: 'red',
+    fontSize: wp('4%'),
+    
   },
    selectButtonText: {
-    color: 'white', // Text color for "SELECT" button
+    color: 'white',
+    fontSize: wp('4%'), // Text color for "SELECT" button
   },
   
   selectedButtonText: {
-    color: 'red', // Text color for "Selected" button
+    color: 'red',
+    fontSize: wp('4%'), // Text color for "Selected" button
   },
 });
 

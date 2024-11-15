@@ -1544,12 +1544,13 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView, Image, Modal, StatusBar,Linking } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView, Image, Modal, StatusBar,Linking,KeyboardAvoidingView, Platform } from 'react-native';
 import { Api } from '../providers/api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RadioButton } from 'react-native-paper';
 import * as Yup from 'yup';
 import { useLoader } from '../providers/loader/loader';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const contactFormSchema = Yup.object().shape({
   title: Yup.string()
@@ -1607,26 +1608,26 @@ const ContactUsPage = ({ navigation }) => {
                     text: 'Cancel',
                     onPress: () => {
                       AsyncStorage.setItem('user', null);
-                      navigation.replace('LoginScreen');
+                      navigation.replace('Login');
                     }
                   },
                   {
                     text: 'Continue',
                     onPress: () => {
-                      navigation.replace('SubscriptionScreen');
+                      navigation.replace('sub');
                     }
                   }
                 ]
               );
             } else {
-              navigation.replace('SubscriptionScreen');
+              navigation.replace('sub');
             }
           } else if (data.subscriptionFlag === 1 && parsedResult.client_id === '1') {
             AsyncStorage.setItem('user', null);
-            navigation.replace('LoginScreen');
+            navigation.replace('Login');
           } else if (data.msg === 'Your account is deactivated, please contact support.') {
             AsyncStorage.setItem('user', null);
-            navigation.replace('LoginScreen');
+            navigation.replace('Login');
           }
         })
         .catch((error) => {
@@ -1760,7 +1761,7 @@ const ContactUsPage = ({ navigation }) => {
 
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <StatusBar backgroundColor="#9d0808" barStyle="light-content" />
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -1768,8 +1769,12 @@ const ContactUsPage = ({ navigation }) => {
         </TouchableOpacity>
         <Text style={styles.headerText}>Contact Us</Text>
       </View>
-
-      <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.contentContainer}>
+<ScrollView 
+contentContainerStyle={styles.scrollViewContent}
+keyboardShouldPersistTaps="handled"
+showsVerticalScrollIndicator={false}
+>
         <View style={styles.inputContainer}>
           <Image source={require('../assets/img/clipboard.png')} style={styles.icon} />
           <TextInput
@@ -1789,7 +1794,7 @@ const ContactUsPage = ({ navigation }) => {
           <Image source={require('../assets/img/location.png')} style={styles.icon1} />
           <View style={styles.pickerWrapper}>
             <Text style={styles.pickerText}>
-              {contactForm.Contact || "Contact Reasonnn"}
+              {contactForm.Contact || "Contact Reason"}
             </Text>
           </View>
           <TouchableOpacity style={styles.dropdownButton} onPress={() => setReasonModalVisible(true)}>
@@ -1811,7 +1816,7 @@ const ContactUsPage = ({ navigation }) => {
             multiline
           />
         </View>
-         <Text style={styles.errorText}>Max 250 characters allowed.</Text>
+         <Text style={styles.errorText1}>Max 250 characters allowed.</Text>
          {errors.message && <Text style={styles.errorText}>{errors.message}</Text>}
          
         <View style={styles.buttonContainer}>
@@ -1825,8 +1830,7 @@ const ContactUsPage = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      {/* Logout Modal */}
-      {showFooter && (
+    
         <View style={styles.footer}>
           <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('home')}>
             <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
@@ -1844,7 +1848,8 @@ const ContactUsPage = ({ navigation }) => {
             <Image source={require('../assets/img/logout.png')} style={styles.footerIcon} />
           </TouchableOpacity>
         </View>
-      )}
+        </View>
+      
       <Modal
         animationType="slide"
         transparent={true}
@@ -1942,7 +1947,7 @@ const ContactUsPage = ({ navigation }) => {
         </View>
         
       </Modal>
-    </View>
+ </KeyboardAvoidingView>
   );
 };
     
@@ -1952,126 +1957,130 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f2f2f2',
   },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingBottom: 100, // Add padding to avoid overlap with the footer
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'space-between', // Ensure space is distributed between scrollable content and footer
+  },
   header: {
-    height: 60,
+    height: hp('8%'), // Height is 8% of the screen height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom:15,
-
+    marginBottom: hp('2%'), // Margin bottom is 2% of the screen height
   },
   backButton: {
     position: 'absolute',
-    left: 10,
+    left: wp('2%'), // Left margin is 2% of the screen width
   },
   backIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Width is 6% of the screen width
+    height: wp('6%'), // Height is 6% of the screen width
     tintColor: 'white',
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: wp('5%'), // Font size is 5% of the screen width
     fontWeight: 'bold',
   },
   inputContainer: {
-    marginVertical: 10,
-     marginHorizontal: 15,
+    marginVertical: hp('1%'), // Vertical margin is 1% of the screen height
+    marginHorizontal: wp('4%'), // Horizontal margin is 4% of the screen width
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
-    // padding: 5,
     backgroundColor: '#fff',
   },
   icon: {
-    width: 15,
-    height: 15,
-    marginRight: 20,
-    marginLeft: 10,
-    tintColor:'#9d0808',
+    width: wp('4%'), // Width is 4% of the screen width
+    height: wp('4%'), // Height is 4% of the screen width
+    marginRight: wp('5%'), // Right margin is 5% of the screen width
+    marginLeft: wp('2%'), // Left margin is 2% of the screen width
+    tintColor: '#9d0808',
   },
   icon1: {
-    width: 15,
-    height: 15,
-    marginRight: 20,
+    width: wp('4%'),
+    height: wp('4%'),
+    marginRight: wp('5%'),
     marginLeft: 0,
-    tintColor:'#9d0808',
+    tintColor: '#9d0808',
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color:'black'
+    fontSize: wp('4%'), // Font size is 4% of the screen width
+    color: 'black',
   },
   error: {
     color: '#9d0808',
-    marginLeft: 20,
+    marginLeft: wp('5%'), // Left margin is 5% of the screen width
   },
   pickerContainer: {
-    flexDirection: 'row', // Align items horizontally
-    alignItems: 'center', // Align items vertically in the center
-    padding: 7, 
-    marginVertical: 5,
-    marginHorizontal: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: hp('1%'), // Padding is 1% of the screen height
+    marginVertical: hp('1%'),
+    marginHorizontal: wp('4%'),
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
-    backgroundColor: '#fff',  
-          // Add padding around the container
+    backgroundColor: '#fff',
   },
   pickerWrapper: {
-    flex: 1,              // Make the picker take the remaining space
+    flex: 1,
   },
   pickerText: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Font size is 4% of the screen width
     color: '#333',
   },
   textArea: {
-    height: 100,
- 
+    height: hp('15%'), // Height is 15% of the screen height
   },
   icone: {
-    width: 18,
-    height: 18,
-    marginRight: 10,
-    tintColor:'#9d0808',
-    
+    width: wp('5%'), // Width is 5% of the screen width
+    height: wp('5%'), // Height is 5% of the screen width
+    marginRight: wp('2%'),
+    tintColor: '#9d0808',
   },
   characterLimit: {
-    marginHorizontal:  20,
+    marginHorizontal: wp('5%'), // Horizontal margin is 5% of the screen width
     color: '#9d0808',
   },
   buttonContainer: {
-    marginTop: 20,
-    marginHorizontal: 20,
+    marginTop: hp('2%'), // Top margin is 2% of the screen height
+    marginHorizontal: wp('5%'), // Horizontal margin is 5% of the screen width
   },
   createButton: {
     backgroundColor: '#9d0808',
-    paddingVertical: 15,
-    marginHorizontal:85,
+    paddingVertical: hp('2%'), // Vertical padding is 2% of the screen height
+    marginHorizontal: wp('24%'), // Horizontal margin is  20% of the screen width
     borderRadius: 10,
     alignItems: 'center',
   },
   createButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: wp('4%'), // Font size is 5% of the screen width
     fontWeight: 'bold',
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Height is 8% of the screen height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
   },
   footerButton: {
-    padding: 10,
+    padding: hp('1%'), // Padding is 1% of the screen height
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Width is 6% of the screen width
+    height: wp('6%'), // Height is 6% of the screen width
     tintColor: 'white',
   },
   centeredView: {
@@ -2080,31 +2089,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Margin is 5% of the screen width
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: hp('5%'), // Padding is 5% of the screen height
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   modalTitles: {
-    fontSize: 20,
+    fontSize: wp('5%'), // Font size is 5% of the screen width
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'black'
+    marginBottom: hp('2%'), // Margin bottom is 2% of the screen height
+    color: 'black',
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 15,
-    color:'black'
+    fontSize: wp('4%'), // Font size is 4% of the screen width
+    marginBottom: hp('2%'), // Margin bottom is 2% of the screen height
+    color: 'black',
   },
   modalText1: {
-    fontSize: 16,
-    marginBottom: 15,
+    fontSize: wp('4%'), // Font size is 4% of the screen width
+    marginBottom: hp('2%'), // Margin bottom is 2% of the screen height
     fontWeight: 'bold',
   },
   modalButtonContainer: {
@@ -2112,62 +2121,63 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Padding is 2% of the screen height
+    marginHorizontal: wp('8%'), // Horizontal margin is 2% of the screen width
     backgroundColor: '#9D0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Font size is 4% of the screen width
   },
   radioButtonContainer: {
     width: '100%',
-    
   },
   radioButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 5,
+    marginVertical: hp('1%'), // Vertical margin is 1% of the screen height
   },
   thankYouText: {
-    fontSize: 20,
-    marginBottom: 20,
+    fontSize: wp('5%'), // Font size is 5% of the screen width
+    marginBottom: hp('2%'), // Margin bottom is 2% of the screen height
   },
   dropdownButton: {
-    padding: 10,
+    padding: hp('1%'), // Padding is 1% of the screen height
     color: 'black',
-    
   },
- 
-  dropdownIcon:{
-    width: 18,
-    height: 18,
-    tintColor:'grey',
-    alignItems:'flex-end'
-    
+  dropdownIcon: {
+    width: wp('5%'), // Width is 5% of the screen width
+    height: wp('5%'), // Height is 5% of the screen width
+    tintColor: 'grey',
+    alignItems: 'flex-end',
   },
   errorText: {
     color: 'red',
-    // marginBottom: 10,
-    marginLeft:15,
+    marginLeft: wp('5%'),
+    fontSize: wp('3%'), // Left margin is 5% of the screen width
+  },
+  errorText1: {
+    color: 'red',
+    marginBottom: hp('2%'), 
+    marginLeft: wp('5%'),
+    fontSize: wp('3%'), // Left margin is 5% of the screen width
   },
   modalButtonContainer1: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    borderTopColor:'#000',
-    top:15, 
+    borderTopColor: '#000',
+    top: hp('2%'), // Top margin is 2% of the screen height
   },
   modalButton1: {
     borderRadius: 5,
-    padding: 15,
-    paddingHorizontal:50,
-    top:10,
-  
+    padding: hp('2%'), // Padding is 2% of the screen height
+    paddingHorizontal: wp('10%'), // Horizontal padding is 10% of the screen width
+    top: hp('1%'), // Top margin is 1% of the screen height
   },
   modalButtonText1: {
     color: '#9d0808',
-    fontSize: 18,
-    fontWeight:'bold',
+ fontSize: wp('4%'), // Font size is 4% of the screen width
+    fontWeight: 'bold',
   },
   successButton: {
     backgroundColor: '#9d0808',

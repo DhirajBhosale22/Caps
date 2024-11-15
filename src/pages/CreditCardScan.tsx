@@ -184,6 +184,9 @@ const CreditCardScan = ({ navigation, route }) => {
   );
 };
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -195,7 +198,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: '#9d0808',
-    padding: 10,
+    padding: hp('2%'), // Adjusted padding to be responsive
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 1, // Ensure header stays above other content
@@ -210,69 +213,70 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   extraScrollArea: {
-    height: 60, // Adjust the height as needed
+    height: hp('7%'), // Adjusted height to be responsive
   },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   backIcon: {
-    width: 25,
-    height: 25,
+    width: wp('7%'), // Adjusted width to be responsive
+    height: wp('7%'), // Adjusted height to be responsive
     tintColor: 'white',
   },
   headerTitle: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: wp('5.5%'), // Adjusted font size to be responsive
     flex: 1,
     textAlign: 'center',
   },
   cardImage: {
-    width: '93%',
-    height: 250, // Fixed height
+    width: wp('94%'), // Responsive width
+    height: hp('33%'), // Adjusted height to be responsive
     resizeMode: 'contain', // Ensure image maintains aspect ratio
-    margin: 15,
+    margin: wp('4%'), // Adjusted margin to be responsive
   },
   paymentText: {
-    fontSize: 18,
-    marginVertical: 10,
+    fontSize: wp('4.5%'), // Adjusted font size to be responsive
+    marginVertical: hp('1%'), // Adjusted vertical margin to be responsive
     textAlign: 'center',
     color: 'black',
   },
   input: {
-    width: '92%',
-    height: 50,
+    width: wp('92%'), // Responsive width
+    height: hp('7%'), // Adjusted height to be responsive
     borderColor: '#cccccc',
     borderWidth: 1,
-    color:'black',
+    color: 'black',
     borderRadius: 10,
-    paddingHorizontal: 10,
-    margin: 10,
-    marginLeft: 15,
+    paddingHorizontal: wp('2.5%'), // Adjusted padding to be responsive
+    margin: wp('2%'), // Adjusted margin to be responsive
+    marginLeft: wp('4%'), // Adjusted margin to be responsive
   },
   error: {
     color: '#ed1c24',
-    fontSize: 12,
-    paddingVertical: 2,
+    fontSize: wp('3%'), // Adjusted font size to be responsive
+    marginLeft: wp('4%'),
+    paddingVertical: hp('0.5%'), // Adjusted vertical padding to be responsive
   },
   button: {
-    width: '35%',
+    width: wp('35%'), // Responsive width
     borderRadius: 7,
-    height: 50,
+    height: hp('7%'), // Adjusted height to be responsive
     backgroundColor: '#9d0808',
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: '30%',
-    marginTop: 10,
+    marginLeft: wp('30%'), // Adjusted margin to be responsive
+    marginTop: hp('2%'), // Adjusted margin to be responsive
   },
   buttonText: {
     color: '#fff',
-    fontSize: 17,
+    fontSize: wp('4.5%'), // Adjusted font size to be responsive
   },
   boldText: {
     fontWeight: 'bold',
-    color:'black',
-    fontSize: 15,
+    color: 'black',
+    fontSize: wp('4%'), // Adjusted font size to be responsive
   },
   modalContainer: {
     flex: 1,
@@ -281,10 +285,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    width: 300,
+    width: wp('80%'), // Adjusted width to be responsive
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
+    padding: wp('5%'), // Adjusted padding to be responsive
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -296,19 +300,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: wp('4.5%'), // Adjusted font size to be responsive
+ fontWeight: 'bold',
+    marginBottom: hp('1%'), // Adjusted margin to be responsive
     color: 'black',
   },
   modalMessage: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted font size to be responsive
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: hp('2%'), // Adjusted margin to be responsive
     color: 'grey',
   },
   modalButton: {
-    padding: 10,
+    padding: hp('1%'), // Adjusted padding to be responsive
     borderRadius: 5,
   },
   errorButton: {
@@ -319,19 +323,19 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted font size to be responsive
   },
   errorText1: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Adjusted font size to be responsive
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: hp('1%'), // Adjusted margin to be responsive
     color: 'black',
   },
   noteText: {
     textAlign: 'center',
-    marginTop: 16,
-    color:'black',
-    fontSize: 14,
+    marginTop: hp('2%'), // Adjusted margin to be responsive
+    color: 'black',
+    fontSize: wp('4%'), // Adjusted font size to be responsive
   },
 });
 

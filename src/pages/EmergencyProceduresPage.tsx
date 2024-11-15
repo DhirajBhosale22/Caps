@@ -490,6 +490,9 @@ Procedure (SOPs) for a suicide bomber attack, you should always follow those SOP
   );
 };
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -497,12 +500,12 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Adjusted padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: wp('5.5%'), // Responsive font size
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
@@ -516,24 +519,24 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   info: {
-    marginTop:20,
-    fontSize: 22,
-    lineHeight: 25,
+    marginTop: hp('2%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3%'), // Responsive line height
     color: '#666',
-    textAlign:'justify'
+    textAlign: 'justify',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    padding: 10,
-  tintColor: 'white'
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
+    tintColor: 'white',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive padding
   },
   card: {
-    marginTop: 30,
-    marginBottom: 30,
+    marginTop: hp('4%'), // Responsive margin
+    marginBottom: hp('4%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
     elevation: 0,
@@ -542,64 +545,58 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-   
     backgroundColor: 'white',
   },
   clip: {
-    width: 18,
-    height: 18,
-    
-   
-   
+    width: wp('4%'), // Responsive width
+    height: wp('4%'), // Responsive height
   },
   cardTitle: {
     fontWeight: '700',
     color: '#454545',
-    fontSize: 28,
-    marginLeft: 15,
+    fontSize: wp('6%'), // Responsive font size
+    marginLeft: wp('4%'), // Responsive margin
     flex: 1,
   },
   arrow: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     marginLeft: 'auto',
     transform: [{ rotate: '0deg' }], // Arrow pointing up
   },
   arrowDown: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     marginLeft: 'auto',
     transform: [{ rotate: '90deg' }], // Arrow pointing down
   },
   cardContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: wp('4%'), // Responsive padding
+    paddingVertical: hp('2%'), // Responsive padding
   },
-
   footer: {
-    padding: 10,
+    padding: hp('2%'), // Responsive padding
     alignItems: 'center',
     backgroundColor: 'white',
   },
   footerText: {
-    fontSize: 14,
+    fontSize: wp('3%'), // Responsive font size
     color: 'black',
-    marginBottom: 10,
+    marginBottom: hp('1%'), // Responsive margin
     fontWeight: '500',
-    textAlign:'center',
-    marginLeft:10,
-    marginRight:10,
+    textAlign: 'center',
+    marginLeft: wp('2%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
   },
   registrationButton: {
     backgroundColor: '#9d0808', // Customize the background color of the button
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     borderRadius: 5,
     alignItems: 'center',
   },
   registrationButtonText: {
     color: 'white',
-    fontSize: 18,
-  
+    fontSize: wp('4.5%'), // Responsive font size
   },
 });
 

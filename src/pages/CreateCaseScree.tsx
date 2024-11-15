@@ -1490,6 +1490,7 @@ const CreateCaseScreen = () => {
   const informationRef = useRef<TextInput>(null);
 
   const [theme, setTheme] = useState(Appearance.getColorScheme());
+  
 
   useEffect(() => {
     Appearance.addChangeListener(() => {
@@ -1575,56 +1576,61 @@ const CreateCaseScreen = () => {
   };
 
   const handleWeightChange = (text) => {
-    if (/^\d*$/.test(text)) {
-      setWeight(text);
-    }
-  };
+    const formattedText = text.replace(/[^0-9]/g, ''); // Allow only digits
+    setWeight(formattedText);
+};
 
-  const handleAgeChange = (text) => {
-    if (/^\d*$/.test(text)) {
-      setAge(text);
-    }
-  };
+const handleAgeChange = (text) => {
+  const formattedText = text.replace(/[^0-9]/g, ''); // Allow only digits
+  setAge(formattedText);
+};
 
   const handleFirstNameChange = (text) => {
     setLoading(true); // Start loading
-    setFirstName(text);
-    if (/^[a-zA-Z]*$/.test(text) || text === '') {
-      setFirstName(text);
-      if (text === '') {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          firstName: 'First name cannot be empty'
-        }));
-      } else {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          firstName: ''
-        }));
-      }
-    }
-    setLoading(false); 
-  };
-
-
-  const handleLastNameChange = (text) => {
-    setLoading(true); // Start loading
-    setLastName(text);
-    if (/^[a-zA-Z]*$/.test(text) || text === '') {
-    setLastName(text);
-    if (text === '') {
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        lastName: 'Last name cannot be empty'
-      }));
+    const formattedText = text.replace(/[^a-zA-Z]/g, ''); // Allow only letters
+    if (formattedText.length > 0) {
+        const capitalizedText = formattedText.charAt(0).toUpperCase() + formattedText.slice(1);
+        setFirstName(capitalizedText);
     } else {
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        lastName: ''
-      }));
+        setFirstName('');
     }
-  }
-  setLoading(false);
+    setErrors(prevErrors => ({
+        ...prevErrors,
+        firstName: formattedText === '' ? 'First name cannot be empty' : ''
+    }));
+    setLoading(false); 
+};
+
+const handleLastNameChange = (text) => {
+    setLoading(true); // Start loading
+    const formattedText = text.replace(/[^a-zA-Z]/g, ''); // Allow only letters
+    if (formattedText.length > 0) {
+        const capitalizedText = formattedText.charAt(0).toUpperCase() + formattedText.slice(1);
+        setLastName(capitalizedText);
+    } else {
+        setLastName('');
+    }
+    setErrors(prevErrors => ({
+        ...prevErrors,
+        lastName: formattedText === '' ? 'Last name cannot be empty' : ''
+    }));
+    setLoading(false);
+};
+
+
+const handleSkinToneChange = (text) => {
+  const formattedText = text.replace(/[^a-zA-Z\s]/g, ''); // Allow only letters and spaces
+  setSkinTone(formattedText);
+};
+
+const handleEyeColorChange = (text) => {
+  const formattedText = text.replace(/[^a-zA-Z\s]/g, ''); // Allow only letters and spaces
+  setEyeColor(formattedText);
+};
+
+const handleHairColorChange = (text) => {
+  const formattedText = text.replace(/[^a-zA-Z\s]/g, ''); // Allow only letters and spaces
+  setHairColor(formattedText);
 };
 
   const handleCreate = () => {
@@ -1793,6 +1799,9 @@ const CreateCaseScreen = () => {
         setInformation('');
       }
     }
+    
+
+    
   };
   return (
 
@@ -1905,7 +1914,7 @@ const CreateCaseScreen = () => {
                 style={styles.put}
                 placeholder="Skin Tone"
                 value={skinTone}
-                onChangeText={setSkinTone}
+                onChangeText={handleSkinToneChange}
                 returnKeyType="next"
                 onSubmitEditing={() => eyeColorRef.current.focus()}
                 ref={skinToneRef}
@@ -1918,7 +1927,7 @@ const CreateCaseScreen = () => {
                 style={styles.put}
                 placeholder="Eye Color"
                 value={eye_color}
-                onChangeText={setEyeColor}
+                onChangeText={handleEyeColorChange}
                 returnKeyType="next"
                 onSubmitEditing={() => hairColorRef.current.focus()}
                 ref={eyeColorRef}
@@ -1931,7 +1940,7 @@ const CreateCaseScreen = () => {
                 style={styles.put}
                 placeholder="Hair Color"
                 value={hair_color}
-                onChangeText={setHairColor}
+                onChangeText={handleHairColorChange}
                 returnKeyType="next"
                 onSubmitEditing={() => weightRef.current.focus()}
                 ref={hairColorRef}
@@ -1943,16 +1952,16 @@ const CreateCaseScreen = () => {
                 style={styles.buttonLikeInput}
                 onPress={() => setIsHeightPickerVisible(true)}
               >
-                <Text style={styles.buttonText}>Height</Text>
-                <Text style={styles.buttonText}>{height}</Text>
+                <Text style={styles.buttonText1}>Height</Text>
+                <Text style={styles.buttonText1}>{height}</Text>
                 <Image source={require('../assets/img/dropdownarrow.png')} style={styles.dropdownIcon} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonLikeInput}
                 onPress={() => setIsInchPickerVisible(true)}
               >
-                <Text style={styles.buttonText}>Inch</Text>
-                <Text style={styles.buttonText}>{inch}</Text>
+                <Text style={styles.buttonText1}>Inch</Text>
+                <Text style={styles.buttonText1}>{inch}</Text>
                 <Image source={require('../assets/img/dropdownarrow.png')} style={styles.dropdownIcon} />
               </TouchableOpacity>
             </View>
@@ -2070,7 +2079,7 @@ const CreateCaseScreen = () => {
             </View>
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={styles.createButton}
+                style={[styles.createButton, !isCreateEnabled && styles.disabledButton]}
                 disabled={!isCreateEnabled}
                 onPress={handleCreate}
               >
@@ -2109,7 +2118,7 @@ const CreateCaseScreen = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -2148,224 +2157,210 @@ const CreateCaseScreen = () => {
 
 
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+//import { Appearance } from 'react-native';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Appearance.getColorScheme() === 'dark' ? '#f2f2f2' : '#f2f2f2',
   },
   errorText: {
-    color: '#9d0808', // Set the color for error messages
-    fontSize: 12,
-    
-   // Add some space above the error text
+    color: '#9d0808',
+    fontSize: wp('3%'), // Adjusted for responsiveness
   },
   scrollContainer: {
     flexGrow: 1,
-    padding: 16,
-    marginBottom: '30%',
+    padding: wp('4%'), // Adjusted for responsiveness
+    marginBottom: hp('5%'), // Adjusted for responsiveness
   },
   header: {
-    height: 60,
+    height: hp('8%'), // Adjusted for responsiveness
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: wp('2%'), // Adjusted for responsiveness
   },
   backButton: {
     position: 'absolute',
-    left: 10,
+    left: wp('2%'), // Adjusted for responsiveness
   },
   backIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Adjusted for responsiveness
+    height: wp('6%'), // Adjusted for responsiveness
     tintColor: 'white',
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: wp('5%'), // Adjusted for responsiveness
     fontWeight: 'bold',
   },
-
   checkboxContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 20,
-    marginTop: 20,
-    
+    marginBottom: hp('2.5%'), // Adjusted for responsiveness
+    marginTop: hp('2.5%'), // Adjusted for responsiveness
   },
   checkbox: {
-    marginRight: 8,
+    marginRight: wp('2%'), // Adjusted for responsiveness
     tintColor: Appearance.getColorScheme() === 'dark' ? 'red' : '#007BFF',
-      // Change border color based on theme
   },
-  
   label: {
-    fontSize: 16,
-    marginLeft: 10,
+    fontSize: wp('4%'), // Adjusted for responsiveness
+    marginLeft: wp('2%'), // Adjusted for responsiveness
     color: Appearance.getColorScheme() === 'dark' ? 'black' : '#000',
-
   },
   input: {
-    borderColor: Appearance.getColorScheme() === 'dark' ? 'black' : '#ccc',
-    height: 40,
-   
+    borderColor: Appearance.getColorScheme() === 'dark' ? 'white' : '#ccc',
+    height: hp('5%'),
     borderWidth: 1,
     borderRadius: 5,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    backgroundColor: 'white',
+    marginBottom: hp('2%'),
+    paddingHorizontal: wp('2%'),
+    backgroundColor: Appearance.getColorScheme() === 'dark' ? '#444' : 'white', // Change background for dark mode
   },
   submitButton: {
     backgroundColor: '#9d0808',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: hp('2%'), // Adjusted for responsiveness
+    paddingHorizontal: wp('5%'), // Adjusted for responsiveness
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 10,
+    marginVertical: hp('1%'), // Adjusted for responsiveness
   },
   submitButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted for responsiveness
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
   genderContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
-
+    marginBottom: hp('2.5%'), // Adjusted for responsiveness
   },
   genderOption: {
     borderColor: Appearance.getColorScheme() === 'dark' ? 'lightgrey' : '#ddd',
-
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
     borderWidth: 1,
-    padding: 15,
+    padding: hp('2%'), // Adjusted for responsiveness
     borderRadius: 5,
-    marginHorizontal: 0,
+    marginHorizontal: wp('1%'), // Adjusted for responsiveness
     backgroundColor: Appearance.getColorScheme() === 'dark' ? 'white' : '#fff',
-
-
-  },
-  selectedGenderOption: {
-    //backgroundColor: '',
-
   },
   genderLabel: {
-    fontSize: 16,
-    marginRight: 70,
+    fontSize: wp('4%'), // Adjusted for responsiveness
+    marginRight: wp('10%'), // Adjusted for responsiveness
     color: Appearance.getColorScheme() === 'dark' ? 'black' : '#000',
   },
-  selectedGenderLabel: {
-    color: '#9d0808',
-  },
   radioCircle: {
-    height: 16,
-    width: 16,
+    height: hp('2%'), // Adjusted for responsiveness
+    width: hp('2 %'), // Adjusted for responsiveness
     borderRadius: 10,
     borderWidth: 2,
     borderColor: Appearance.getColorScheme() === 'dark' ? 'grey' : 'black',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 10
+    marginLeft: wp('2%'), // Adjusted for responsiveness
   },
   selectedRb: {
-    width: 12,
-    height: 12,
+    width: hp('1.5%'), // Adjusted for responsiveness
+    height: hp('1.5%'), // Adjusted for responsiveness
     borderRadius: 6,
     borderColor: '#9d0808',
     backgroundColor: '#9d0808',
   },
   icon: {
     position: 'absolute',
-    left: 10,
-    width: 15,
-    height: 15,
-    marginTop: 24,
+    left: wp('2%'), // Adjusted for responsiveness
+    width: wp('4%'), // Adjusted for responsiveness
+    height: wp('4%'), // Adjusted for responsiveness
+    marginTop: hp('2%'), // Adjusted for responsiveness
     tintColor: Appearance.getColorScheme() === 'dark' ? '#9d0808' : '#9d0808',
   },
   put: {
     flex: 1,
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted for responsiveness
     color: Appearance.getColorScheme() === 'dark' ? 'black' : 'grey',
     textAlignVertical: 'top',
-    paddingLeft: 40,
-    marginLeft: 20,
+    paddingLeft: wp('10%'), // Adjusted for responsiveness
+    marginLeft: wp('5%'), // Adjusted for responsiveness
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Adjusted for responsiveness
     borderWidth: 1,
-    borderColor: Appearance.getColorScheme() === 'dark' ? 'lightgrey' : 'black', // Change the border color based on the app's color scheme
+    borderColor: Appearance.getColorScheme() === 'dark' ? 'lightgrey' : 'black',
     borderRadius: 5,
     backgroundColor: Appearance.getColorScheme() === 'dark' ? 'white' : '#fff',
   },
-
   heightInchContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
-
+    marginBottom: hp('2.5%'), // Adjusted for responsiveness
   },
-  buttonLikeInput: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Appearance.getColorScheme() === 'dark' ? 'grey' : '#ddd',
-    borderRadius: 3,
-    paddingVertical: 14,
-    paddingHorizontal: 15,
-    flex: 1,
-   
-    backgroundColor: Appearance.getColorScheme() === 'dark' ? 'white' : '#fff',
-
-  },
+ buttonLikeInput: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  borderWidth: 1,
+  borderColor: Appearance.getColorScheme() === 'dark' ? 'lightgrey' : '#ddd',
+  borderRadius: 3,
+  paddingVertical: hp('2%'),
+  paddingHorizontal: wp('4%'),
+  flex: 1,
+  backgroundColor:'white'
+ 
+},
   buttonText: {
-    fontSize: 16,
-    color: Appearance.getColorScheme() === 'dark' ? 'grey' : 'grey',
+    fontSize: wp('5%'), // Adjusted for responsiveness
+    color:'white',
     flex: 1,
-   
+    fontWeight:'600'
+  },
+  buttonText1: {
+    fontSize: wp('4%'), // Adjusted for responsiveness
+    color:'black',
+    flex: 1,
+  
   },
   dropdownIcon: {
-    width: 14,
-    height: 14,
+    width: wp('4%'), // Adjusted for responsiveness
+    height: wp('4%'), // Adjusted for responsiveness
     tintColor: Appearance.getColorScheme() === 'dark' ? 'lightgrey' : 'grey',
   },
   checkboxWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    
+    marginBottom: hp('2.5%'), // Adjusted for responsiveness
   },
   buttonContainer: {
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 60,
+    marginTop: hp('1%'), // Adjusted for responsiveness
+    marginBottom: hp('10%'), // Adjusted for responsiveness
   },
   createButton: {
     backgroundColor: '#9d0808',
     borderRadius: 8,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    width: 170, // Set your desired width here
-    alignItems: 'center', // Center the text horizontally
-    justifyContent: 'center', // Center the text vertically
+    paddingVertical: hp('1.5%'), // Adjusted for responsiveness
+    paddingHorizontal: wp('8%'), // Adjusted for responsiveness
+    width: wp('43%'), // Adjusted for responsiveness
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   disabledButton: {
     opacity: 0.5,
   },
   createButtonText: {
-    color: '#fff',
-    fontSize: 16,
-   
+    color: 'white',
+    fontSize: wp('4%'), // Adjusted for responsiveness
   },
   footer: {
-    height: 60,
+    height: hp('7.5%'), // Adjusted for responsiveness
     backgroundColor: '#b71c1c',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -2379,8 +2374,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Adjusted for responsiveness
+    height : wp('6%'), // Adjusted for responsiveness
     tintColor: 'white',
   },
   centeredView: {
@@ -2389,10 +2384,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Adjusted for responsiveness
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: wp('8%'), // Adjusted for responsiveness
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -2402,38 +2397,34 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: wp('5%'), // Adjusted for responsiveness
     fontWeight: 'bold',
-    marginBottom: 15,
-    color: Appearance.getColorScheme() === 'dark' ? '#fff' : '#000',
-
+    marginBottom: hp('2%'), // Adjusted for responsiveness
+    color:'black'
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    fontSize: wp('4%'), // Adjusted for responsiveness
+    marginBottom: hp('2%'), // Adjusted for responsiveness
     color: Appearance.getColorScheme() === 'dark' ? 'black' : '#000',
-
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: wp('3%'), // Adjusted for responsiveness
+    marginHorizontal: wp('2%'), // Adjusted for responsiveness
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted for responsiveness
   },
   ptext: {
-    fontSize: 16,
-    marginBottom: 20,
-   
+    fontSize: wp('4%'), // Adjusted for responsiveness
+    marginBottom: hp('2%'), // Adjusted for responsiveness
     textAlign: 'center',
     color: Appearance.getColorScheme() === 'dark' ? 'black' : '#000',
-
   },
 });
 

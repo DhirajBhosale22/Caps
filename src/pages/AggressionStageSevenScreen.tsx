@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, StatusBar, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, StatusBar, Linking, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 interface Item {
@@ -9,13 +9,15 @@ interface Item {
 }
 
 const AggressionStageSevenScreen: React.FC = () => {
+  const [showFooter, setShowFooter] = useState(true);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const navigation = useNavigation();
   const [items, setItems] = useState<Item[]>([
     {
-      title: ( <Text>
-        <Text  style={{ fontSize: 24 }}>Introduction</Text>{"\n"}
+      title: ( <View>
+        <Text style={{ fontSize: wp('6.5%'), color:'black', fontWeight:'bold' }}>Introduction</Text>
         <Text style={styles.titleSub}>Stage Seven Introduction</Text>
-      </Text>), explanation: (  <Text style={styles.info}>This aggressor has gone beyond ideation to Operational preparation (Planning and Preparing for Attack) and has therefore now entered the Emergency/Crisis Phase of the Meter of Emerging Aggression. He is fully "tactical" in his behavior! This is often the logistical phase before an actual attack. Remember "tactical" can be well thought-out but doesn't need to be; it means that the aggressor has identified his target and is committed to its destruction.
+        </View>), explanation: (  <Text style={styles.info}>This aggressor has gone beyond ideation to Operational preparation (Planning and Preparing for Attack) and has therefore now entered the Emergency/Crisis Phase of the Meter of Emerging Aggression. He is fully "tactical" in his behavior! This is often the logistical phase before an actual attack. Remember "tactical" can be well thought-out but doesn't need to be; it means that the aggressor has identified his target and is committed to its destruction.
         {'\n\n'}<Text style={styles.info}>A few examples include attack surveillance or operational preparatory behavior. Those include inexplicable purchasing of weapons or explosive components, taping or taking pictures, finding out what kind of weapons police or security carries or what their response time to an incident would be. It is possible that you are observing a "dry run" for a future attack. This aggressor is a Complicit Tactician (an accomplice), who is completely complicit with the Murderer or perpetrator of Murder/Suicide but does not intend to murder his victim nor become a casualty to his cause. Typically, this aggressor will either inspire others to the 8th and 9th stages of theMeter of Emerging Aggression or will aid them in their logistics. They also could be the future 8th and 9th stage aggressors who are currently reconnoitering or surveying their target prior to affecting their violence. Aggressors may conduct surveillance of their target many times, offering multiple opportunities to identify them. Strategically, for some aggressors, this is their last opportunity to intimidate their victim into submission prior to an actual attack. This type of aggressor will often blame their victim for not becoming submissive. 
         </Text>
         {'\n\n'}<Text style={{ fontWeight: 'bold' }}>Strategic Responses</Text>
@@ -38,6 +40,17 @@ const AggressionStageSevenScreen: React.FC = () => {
   const showAlert = (result: string, msg: string) => {
     Alert.alert(result, msg, [{ text: 'OK' }]);
   };
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('user');
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Login'}],
+    });
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -46,7 +59,7 @@ const AggressionStageSevenScreen: React.FC = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Introduction To CAPS</Text>
+        <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Aggression Stage Seven</Text>
       </View>
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
       <View style={styles.logoi}>
@@ -71,30 +84,59 @@ const AggressionStageSevenScreen: React.FC = () => {
           </View>
         ))}
       </ScrollView>
-      <Footer navigation={navigation} />
+      {showFooter && (
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('home')}>
+            <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => Linking.openURL('tel:911')}>
+            <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('SharegroupPage')}>
+            <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('EditProfile')}>
+            <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => setLogoutModalVisible(true)}>
+            <Image source={require('../assets/img/logout.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+        </View>
+      )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={logoutModalVisible}
+        onRequestClose={() => setLogoutModalVisible(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitles}>Logout</Text>
+            <Text style={styles.modalText}>Are you sure you want to log out?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogout}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogoutCancel}
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-const Footer = ({ navigation }) => (
-  <View style={styles.footer}>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Home')}>
-      <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
-      <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Notifications')}>
-      <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Messages')}>
-      <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Settings')}>
-      <Image source={require('../assets/img/logout_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-  </View>
-);
+
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   container: {
@@ -103,13 +145,13 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: wp('5.8%'), // Adjusted font size to be responsive
+    fontWeight: '500',
     color: '#fff',
     textAlign: 'center',
   },
@@ -118,114 +160,68 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   link: {
-    color: '#1E90FF', // Customize the color of the link
+    color: '#1E90FF',
     textDecorationLine: 'underline',
   },
   info: {
-    marginTop:20,
-    fontSize: 16,
-    lineHeight: 25,
+    marginTop: hp('2.5%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3.5%'), // Responsive line height
     color: '#666',
-    textAlign:'justify'
+    textAlign: 'justify',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    padding: 10,
-  tintColor: '#fff'
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
+    tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
   },
   card: {
-    marginTop: 30,
-    marginBottom: 30,
+    marginTop: hp('2%'), // Responsive margin
+    marginBottom: hp('3%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
     elevation: 0,
     shadowOpacity: 0,
-    
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-   
-    
   },
   clip: {
-    width: 20,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: wp('5%'), // Responsive height
     tintColor: '#b71c1c',
     resizeMode: 'contain',
-    marginLeft: 15,
-    marginRight: 10,
-    marginBottom:20
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
   },
   cardTitle: {
     fontWeight: 'bold',
     color: '#333',
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     flex: 1,
   },
   arrow: {
-    width: 15,
-    height: 15,
-    tintColor: '#b71c1c', // Arrow pointing up
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
+    tintColor: '#b71c1c',
   },
   arrowDown: {
-    width: 15,
-    height: 15,
-    marginLeft: 'auto',
-    transform: [{ rotate: '90deg' }], // Arrow pointing down
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
+    transform: [{ rotate: '90deg' }],
   },
   cardContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
+    paddingVertical: hp('1.5%'), // Responsive vertical padding
   },
-
   footer: {
-    padding: 10,
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  footerText: {
-    fontSize: 14,
-    color: 'black',
-    marginBottom: 10,
-    fontWeight: '500',
-    textAlign:'center',
-    marginLeft:10,
-    marginRight:10,
-  },
-  registrationButton: {
-    backgroundColor: '#9d0808', // Customize the background color of the button
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  registrationButtonText: {
-    color: 'white',
-    fontSize: 18,
-  
-  },
-  logoicon: {
-    width: 100,
-    height:100 ,
-    marginHorizontal: 140,
-    backgroundColor: 'white',
-},
-// logoi: {
-//     flex:1,
-//     justifyContent: 'center',
-//     alignItems: 'center',    
-// },
-titleSub: {
-    fontSize: 14, // or your preferred smaller size
-    color: 'gray', // optional, for styling the subtext differently
-  },
-
-  footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -236,9 +232,60 @@ titleSub: {
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: wp('5%'), // Responsive margin
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: hp('4%'), // Responsive padding
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 1000,
+  },
+  modalTitles: {
+    fontSize: wp('4.5%'), // Responsive font size
+    fontWeight: 'bold',
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
+  },
+ modalText: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+  },
+  modalButton: {
+    borderRadius: 5,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
+    backgroundColor: '#9d0808',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: wp('4%'), // Responsive font size
+  },
+  ptext: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
+    textAlign: 'center',
+  },
+  titleSub: {
+    fontSize: wp('4.2%'), // Adjusted font size to be responsive
+    color: 'black',
   },
 });
 

@@ -1231,163 +1231,304 @@ const confirmOptOut = async () => {
   );
 };
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-     backgroundColor: '#fff',
-   },
-   containerDark: { flex: 1, backgroundColor: '#121212' },
-   divider: {
+    backgroundColor: '#fff',
+  },
+  containerDark: {
+    flex: 1,
+    backgroundColor: '#121212',
+  },
+  divider: {
     width: '100%', // Full width
-    height: 1,     // Height of the line
+    height: 1, // Height of the line
     backgroundColor: '#ccc', // Gray line color
-    marginBottom: 10, // Space between the line and the next element
+    marginBottom: hp('1%'), // Space between the line and the next element
   },
   header: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     alignItems: 'center',
-    // justifyContent: 'left',
-    paddingHorizontal: 20,
-    
-    
+    paddingHorizontal: wp('5%'), // Responsive padding
   },
   headerText: {
-    fontSize: 20,
+    fontSize: wp('5%'), // Responsive font size
     color: '#fff',
     fontWeight: 'bold',
-    textAlign: 'center', 
-    flex:1,
-    marginVertical:10,
-    marginBottom: 8,
+    textAlign: 'center',
+    flex: 1,
+    marginVertical: hp('1%'), // Responsive margin
+    marginBottom: hp('1%'),
   },
   content: {
-    padding: 20,
+    padding: wp('5%'), // Responsive padding
   },
   section: {
-   
-    top:4,
-    
-   
+    top: hp('1%'), // Responsive top
   },
   sectionTitle: {
-    fontSize: 18,
-    color:'black',
-    marginBottom: 20,
-    paddingBottom:20,
-    top:10,  
+    fontSize: wp('4.5%'), // Responsive font size
+    color: 'black',
+    marginBottom: hp('2%'), // Responsive margin
+    paddingBottom: hp('2%'),
+    top: hp('2%'),
     alignItems: 'center',
   },
   item: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: hp('2%'), // Responsive padding
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    
-   
   },
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-   
   },
   icon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
-    tintColor:'brown'
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    marginRight: wp('2%'), // Responsive margin
+    tintColor: 'brown',
   },
   icon1: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
-    tintColor:'white'
-  }, 
-    backIcon: {
-    tintColor:'white'
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    marginRight: wp('2%'), // Responsive margin
+    tintColor: 'white',
+  },
+  backIcon: {
+    tintColor: 'white',
   },
   settingName: {
-    fontSize: 18,
-    textAlign:'center',
-    color:'black'
-   
-   
-    
-    
-  
+    fontSize: wp('4.5%'), // Responsive font size
+    textAlign: 'center',
+    color: 'black',
   },
   versionText: {
-    fontSize:18,
+    fontSize: wp('4.5%'), // Responsive font size
     color: 'black', // Color for the version text
-    marginLeft:10,
-    
-
+    marginLeft: wp('2%'), // Responsive margin
   },
-
   versionContainer: {
-     padding: 2,
+    padding: hp('1%'), // Responsive padding
     backgroundColor: '#f0f0f0', // Optional background color
     justifyContent: 'flex-start', // Align to the start of the container
-   
   },
   sectionTitle1: {
-    fontSize: 16,
-    color:'black',
-    marginBottom: 22,
-    paddingBottom:25,
-    top:22,
-  }, 
+    fontSize: wp('4%'), // Responsive font size
+    color: 'black',
+    marginBottom: hp('2%'), // Responsive margin
+    paddingBottom: hp('2%'),
+    top: hp('3%'),
+  },
   versionText2: {
-    fontSize:18,
+    fontSize: wp('4.5%'), // Responsive font size
     color: 'black', // Color for the version text
-    marginLeft:10,
-    
-
+    marginLeft: wp('2%'), // Responsive margin
   },
   sectionTitle2: {
-    fontSize: 18,
-    color:'black', 
+    fontSize: wp('4.5%'), // Responsive font size
+    color: 'black',
     alignItems: 'center',
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    alignItems:'center',
+    alignItems: 'center',
   },
   modalContent: {
-    width: '80%',
+    width: wp('80%'), // Responsive width
     backgroundColor: '#FFF',
     borderRadius: 10,
-    paddingVertical: 30,
+    paddingVertical: hp('5%'), // Responsive padding
     alignItems: 'center',
   },
   modalText1: {
-    fontSize: 16,
-   
-   
-    color:'black',
+    fontSize: wp('4 .5%'), // Responsive font size
+    color: 'black',
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 30,
-   
-    color:'grey'
+    fontSize: wp('4.5%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
+    color: 'grey',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
   },
-    
 });
 
 export default SettingsPage;
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//      backgroundColor: '#fff',
+//    },
+//    containerDark: { flex: 1, backgroundColor: '#121212' },
+//    divider: {
+//     width: '100%', // Full width
+//     height: 1,     // Height of the line
+//     backgroundColor: '#ccc', // Gray line color
+//     marginBottom: 10, // Space between the line and the next element
+//   },
+//   header: {
+//     height: 60,
+//     backgroundColor: '#9d0808',
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     // justifyContent: 'left',
+//     paddingHorizontal: 20,
+    
+    
+//   },
+//   headerText: {
+//     fontSize: 20,
+//     color: '#fff',
+//     fontWeight: 'bold',
+//     textAlign: 'center', 
+//     flex:1,
+//     marginVertical:10,
+//     marginBottom: 8,
+//   },
+//   content: {
+//     padding: 20,
+//   },
+//   section: {
+   
+//     top:4,
+    
+   
+//   },
+//   sectionTitle: {
+//     fontSize: 18,
+//     color:'black',
+//     marginBottom: 20,
+//     paddingBottom:20,
+//     top:10,  
+//     alignItems: 'center',
+//   },
+//   item: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     paddingVertical: 15,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+    
+   
+//   },
+//   itemLeft: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+   
+//   },
+//   icon: {
+//     width: 24,
+//     height: 24,
+//     marginRight: 10,
+//     tintColor:'brown'
+//   },
+//   icon1: {
+//     width: 24,
+//     height: 24,
+//     marginRight: 10,
+//     tintColor:'white'
+//   }, 
+//     backIcon: {
+//     tintColor:'white'
+//   },
+//   settingName: {
+//     fontSize: 18,
+//     textAlign:'center',
+//     color:'black'
+   
+   
+    
+    
+  
+//   },
+//   versionText: {
+//     fontSize:18,
+//     color: 'black', // Color for the version text
+//     marginLeft:10,
+    
+
+//   },
+
+//   versionContainer: {
+//      padding: 2,
+//     backgroundColor: '#f0f0f0', // Optional background color
+//     justifyContent: 'flex-start', // Align to the start of the container
+   
+//   },
+//   sectionTitle1: {
+//     fontSize: 16,
+//     color:'black',
+//     marginBottom: 22,
+//     paddingBottom:25,
+//     top:22,
+//   }, 
+//   versionText2: {
+//     fontSize:18,
+//     color: 'black', // Color for the version text
+//     marginLeft:10,
+    
+
+//   },
+//   sectionTitle2: {
+//     fontSize: 18,
+//     color:'black', 
+//     alignItems: 'center',
+//   },
+//   modalOverlay: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//     alignItems:'center',
+//   },
+//   modalContent: {
+//     width: '80%',
+//     backgroundColor: '#FFF',
+//     borderRadius: 10,
+//     paddingVertical: 30,
+//     alignItems: 'center',
+//   },
+//   modalText1: {
+//     fontSize: 16,
+   
+   
+//     color:'black',
+//   },
+//   modalText: {
+//     fontSize: 16,
+//     marginBottom: 30,
+   
+//     color:'grey'
+//   },
+//   modalButton: {
+//     borderRadius: 5,
+//     padding: 10,
+//     marginHorizontal: 10,
+//     backgroundColor: '#9d0808',
+//   },
+//   modalButtonText: {
+//     color: 'white',
+//     fontSize: 18,
+//   },
+    
+// });
+
+// export default SettingsPage;

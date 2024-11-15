@@ -14,7 +14,7 @@
 //     {
 //       title: (
 //         <Text>
-//           <Text style={{ fontSize: 20,fontWeight: 'bold' }}>Introduction</Text>{"\n"}
+//           <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold' }}>Introduction</Text>{"\n"}
 //           <Text style={styles.titleSub}>Stage Two Introduction</Text>
 //         </Text>
 //       ),
@@ -34,7 +34,7 @@
 //     {
 //       title: (
 //         <Text>
-//           <Text style={{ fontSize: 20,fontWeight: 'bold'}}>Perspective One</Text>{"\n"}
+//           <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold'}}>Perspective One</Text>{"\n"}
 //           <Text style={styles.titleSub}>What if you are the aggressor?</Text>
 //         </Text>
 //       ),
@@ -50,7 +50,7 @@
 //     {
 //       title: (
 //         <Text>
-//           <Text style={{ fontSize: 20,fontWeight: 'bold'}}>Perspective Two</Text>{"\n"}
+//           <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold'}}>Perspective Two</Text>{"\n"}
 //           <Text style={styles.titleSub}>What if you are observing an aggressor?</Text>
 //         </Text>
 //       ),
@@ -73,7 +73,7 @@
 //     {
 //       title: (
 //         <Text>
-//           <Text style={{ fontSize: 20,fontWeight: 'bold' }}>Perspective Three</Text>{"\n"}
+//           <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold' }}>Perspective Three</Text>{"\n"}
 //           <Text style={styles.titleSub}>Illustrates CAPS Trust Tenet</Text>
 //         </Text>
 //       ),
@@ -265,7 +265,7 @@ const navigation = useNavigation();
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20,fontWeight: 'bold', color:'black' }}>Introduction</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold', color:'black' }}>Introduction</Text>{"\n"}
           <Text style={styles.titleSub}>Stage Two Introduction</Text>
         </Text>
       ),
@@ -285,7 +285,7 @@ const navigation = useNavigation();
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20,fontWeight: 'bold',color:'black' }}>Perspective One</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black' }}>Perspective One</Text>{"\n"}
           <Text style={styles.titleSub}>What if you are the aggressor?</Text>
         </Text>
       ),
@@ -301,7 +301,7 @@ const navigation = useNavigation();
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20,fontWeight: 'bold',color:'black' }}>Perspective Two</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black' }}>Perspective Two</Text>{"\n"}
           <Text style={styles.titleSub}>What if you are observing an aggressor?</Text>
         </Text>
       ),
@@ -324,7 +324,7 @@ const navigation = useNavigation();
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20,fontWeight: 'bold',color:'black'  }}>Perspective Three</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black'  }}>Perspective Three</Text>{"\n"}
           <Text style={styles.titleSub}>Illustrates CAPS Trust Tenet</Text>
         </Text>
       ),
@@ -415,7 +415,7 @@ const navigation = useNavigation();
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -438,20 +438,23 @@ const navigation = useNavigation();
   );
 };
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
-  container: {
+   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: wp('5.8%'), // Adjusted font size to be responsive
+    fontWeight: '500',
     color: '#fff',
     textAlign: 'center',
   },
@@ -464,21 +467,24 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   info: {
-    fontSize: 16,
-    lineHeight: 22,
+    marginTop: hp('2.5%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3.5%'), // Responsive line height
     color: '#666',
     textAlign: 'justify',
   },
   backIcon: {
-    width: 25,
-    height: 25,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
     tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
   },
   card: {
-    marginVertical: 15,
+    marginTop: hp('2%'), // Responsive margin
+    marginBottom: hp('3%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
     elevation: 0,
@@ -489,32 +495,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   clip: {
-    width: 20,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: wp('5%'), // Responsive height
     tintColor: '#b71c1c',
     resizeMode: 'contain',
-   marginRight:10,
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
+  },
+  cardTitle: {
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: wp('4.5%'), // Responsive font size
+    flex: 1,
   },
   arrow: {
-    width: 15,
-    height: 15,
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
     tintColor: '#b71c1c',
   },
   arrowDown: {
-    width: 15,
-    height: 15,
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
     transform: [{ rotate: '90deg' }],
   },
   cardContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  titleSub: {
-    fontSize: 14,
-    color: 'gray',
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
+    paddingVertical: hp('1.5%'), // Responsive vertical padding
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -525,8 +535,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 22,
-    height: 22,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
   },
   centeredView: {
@@ -535,10 +545,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Responsive margin
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: hp('4%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -548,38 +558,37 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'#fff',
-
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Responsive margin
     color: 'black',
-
+  },
+ modalText: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
   },
   ptext: {
-    fontSize: 16,
-    marginBottom: 20,
-   
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
     textAlign: 'center',
-    
-
+  },
+  titleSub: {
+    fontSize: wp('4.2%'), // Adjusted font size to be responsive
+    color: 'black',
   },
 });
 

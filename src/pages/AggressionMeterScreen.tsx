@@ -801,6 +801,7 @@ const AggressionMeterScreen = ({ navigation, route }) => {
   const [isErrorModalVisibless, setIsErrorModalVisibless] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorMessagess, setErrorMessagess] = useState('');
+  const [isLoading, setIsLoading] = useState(true); // State to track loading status
   const [errorMessagesss, setErrorMessagesss] = useState('');
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -841,13 +842,17 @@ const [shareData, setShareData] = useState(null);
     }
   };
   const handleBackButtonPress = () => {
+    console.log(pages);
+    console.log(pages.some(page => page.image !== ''));
     if (agressionResult && agressionResult.aggression_level_details === 'No content') {
       setErrorMessage('You cannot go back, you must have to fill data in at least one aggression level.');
       setIsBackModalVisible(true);
-    } else if (pages.some(page => page.rating !== '')) {
+
+    } else if (pages.some(page => page.image !== '')) {
       setErrorMessage('You cannot go back until you submit this case.');
-      setIsBackModalVisible(true);
-    } else {
+      setIsBackModalVisible(true); //da
+    } 
+    else {
       // If no conditions are met, allow back navigation
       navigation.goBack();
     }
@@ -860,8 +865,11 @@ const [shareData, setShareData] = useState(null);
       handleBackButtonPress
     );
   
-    return () => backHandler.remove(); // Cleanup the event listener on unmount
-  }, []); // Empty dependency array to ensure it runs only on mount
+    return () => {
+      backHandler.remove(); // Cleanup the event listener on unmount
+      setIsBackModalVisible(false); // Reset the back modal state when unmounting
+    };
+  }, []);// Empty dependency array to ensure it runs only on mount
   const handleShareWithSpecificUser  = async (email) => {
     const validateObj = validateEmail(email);
     if (!validateObj.isValid) {
@@ -906,9 +914,10 @@ const [shareData, setShareData] = useState(null);
     loadShareData(); // Call to load share_data when component mounts
   }, []);
   const handleShareButtonPress = () => {
-    if (agressionResult && agressionResult.aggression_level_details === 'No content') {
-      showErrorModalsss('You can share case details only after submitting the case.'); // Show share error modal
-    } else if (shareData === 1) {
+    // if (agressionResult && agressionResult.aggression_level_details === 'No content') {
+    //   showErrorModalsss('You can share case details only after submitting the case.'); // Show share error modal
+    // } else 
+    if (shareData === 1) {
       setIsShareModalVisible(true); // Show share modal
     } else {
       showErrorModalss('Sharing cases is not allowed. To enable this feature, go to settings -> Enable Sharing'); // Show error message modal
@@ -1118,9 +1127,29 @@ console.log(case_id);
         if (!hasRating) {
           setIsModalVisible(true);
         } else {
-          navigation.navigate('EmergencyProcedure', { token, user_id, case_id });
+          // Determine the maxRating
+          const maxRating = Math.max(...pages.map(page => parseInt(page.rating) || 0));
+  
+          // Navigate based on maxRating
+          if (maxRating === 0) {
+            navigation.navigate('AggressionStageZeroScreen', { token, user_id, case_id });
+          } else if (maxRating === 1) {
+            navigation.navigate('AggressionStageOneScreen', { token, user_id, case_id });
+          } else if (maxRating === 2) {
+            navigation.navigate('AggressionStageTwoScreen', { token, user_id, case_id });
+          } else if (maxRating === 3) {
+            navigation.navigate('AggressionStageThreeScreen', { token, user_id, case_id });
+          }   else if (maxRating === 4) {
+            navigation.navigate('AggressionStageFourScreen', { token, user_id, case_id });
+          }else if (maxRating === 5) {
+            navigation.navigate('AggressionStageFiveScreen', { token, user_id, case_id });
+          } else if (maxRating === 6) {
+            navigation.navigate('AggressionStageSixScreen', { token, user_id, case_id });
+          } else {
+            navigation.navigate('EmergencyProcedure', { token, user_id, case_id });
+          }
         }
-      }  else if (item.title.toLowerCase() === 'files') {
+      } else if (item.title.toLowerCase() === 'files') {
         // Navigate to FilesPage with the necessary parameters
         navigation.navigate('FilesPage', { 
           token, 
@@ -1185,18 +1214,12 @@ console.log(case_id);
   };
 
   const generatePDF = async () => {
-    const hasPermission = await requestStoragePermission();
-    if (!hasPermission) {
-      Alert.alert('Permission denied', 'Cannot save PDF without storage permission.');
-      return;
-    }
-
     try {
       // Capture screenshot
       const uri = await viewShotRef.current.capture();
       console.log('Screenshot captured at:', uri);
       const base64 = await RNFS.readFile(uri, 'base64');
-
+  
       // Convert HTML to PDF
       let options = {
         html: `
@@ -1212,22 +1235,30 @@ console.log(case_id);
         fileName: `AggressionMeter_${case_id}`,
         directory: 'Documents',
       };
-
+  
       const pdf = await RNHTMLtoPDF.convert(options);
-
-      // Get the directory path
-      const directory = RNFS.DownloadDirectoryPath;
-
-      // Create the file path
-      const filePath = `${directory}/AggressionMeter_${case_id}.pdf`;
-
-      // Write the PDF to the file path
-      await RNFS.moveFile(pdf.filePath, filePath);
-
-      Alert.alert('PDF Generated', `PDF file has been saved to: ${filePath}`);
+  
+      // Return the generated PDF file path
+      return pdf.filePath;
     } catch (error) {
       console.error('Error generating PDF:', error);
-      Alert.alert('Error', 'Failed to generate PDF.');
+      throw new Error('Failed to generate PDF.'); // Throw error for handling in download method
+    }
+  };
+  
+  // Handle download click
+  const handleDownload = async () => {
+    try {
+      const pdfPath = await generatePDF(); // Generate the PDF
+      console.log('Generated PDF Path:', pdfPath); // Log the generated PDF path
+  
+      // Move the file to Downloads folder
+      const destinationPath = `${RNFS.DownloadDirectoryPath}/AggressionMeter_${case_id}.pdf`;
+      await RNFS.moveFile(pdfPath, destinationPath);
+      Alert.alert('Success', 'File downloaded to: ' + destinationPath); // Notify success
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      Alert.alert('Error', 'Failed to download the file.'); // Notify error
     }
   };
 
@@ -1354,7 +1385,7 @@ console.log(case_id);
 
         {/* Top Bar */}
         <View style={styles.topBar}>
-          <TouchableOpacity style={styles.footerButton} onPress={generatePDF}>
+          <TouchableOpacity style={styles.footerButton} onPress={handleDownload}>
             <Image source={require('../assets/img/download.png')} style={styles.footerIcon} />
           </TouchableOpacity>
           {/* Share Modal Trigger */}
@@ -1394,7 +1425,10 @@ console.log(case_id);
                   style={[styles.gridItem, { backgroundColor: item.colors }]}
                 >
                   <Image source={item.image} style={styles.infoIcon} />
-                  <Text style={styles.gridItemText}>{item.title.replace(/_/g, ' ')}</Text>
+                  <Text style={styles.gridItemText}>{item.title.replace(/_/g, ' ')}
+                  {item.title === 'best practices' && avgRating !== undefined ? ` ${avgRating}` : ''}
+                  </Text>
+                  
                   {item.rating && (
                     <Text style={styles.ratingText}>{item.rating}</Text>
                   )}

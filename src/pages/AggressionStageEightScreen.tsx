@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, StatusBar, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, StatusBar, Linking,Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 interface Item {
@@ -10,11 +10,13 @@ interface Item {
 
 const AggressionStageEightScreen: React.FC = () => {
   const navigation = useNavigation();
+  const [showFooter, setShowFooter] = useState(true);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [items, setItems] = useState<Item[]>([
     {
       title: (
         <View>
-          <Text style={{ fontSize: 24 }}>Introduction</Text>
+          <Text style={{ fontSize: wp('6.5%'), color:'black', fontWeight:'bold' }}>Introduction</Text>
           <Text style={styles.titleSub}>Stage Eight Introduction</Text>
         </View>
       ),
@@ -50,6 +52,15 @@ const AggressionStageEightScreen: React.FC = () => {
     Alert.alert(result, msg, [{ text: 'OK' }]);
   };
 
+  const handleLogout = () => {
+    setLogoutModalVisible(false);
+    Alert.alert('Logged Out', 'You have been logged out.');
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
@@ -57,10 +68,10 @@ const AggressionStageEightScreen: React.FC = () => {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Introduction To CAPS</Text>
+        <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Aggression Stage Eight</Text>
       </View>
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
-        <View style={styles.logoi}></View>
+       
         {items.map((item, index) => (
           <View key={index} style={styles.card}>
             <TouchableOpacity onPress={() => expandItem(item)} style={styles.cardHeader}>
@@ -79,30 +90,58 @@ const AggressionStageEightScreen: React.FC = () => {
           </View>
         ))}
       </ScrollView>
-      <Footer navigation={navigation} />
+      {showFooter && (
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('home')}>
+            <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => Linking.openURL('tel:911')}>
+            <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('SharegroupPage')}>
+            <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('EditProfile')}>
+            <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => setLogoutModalVisible(true)}>
+            <Image source={require('../assets/img/logout.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+        </View>
+      )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={logoutModalVisible}
+        onRequestClose={() => setLogoutModalVisible(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitles}>Logout</Text>
+            <Text style={styles.modalText}>Are you sure you want to log out?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogout}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogoutCancel}
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-const Footer = ({ navigation }) => (
-  <View style={styles.footer}>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Home')}>
-      <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
-      <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Notifications')}>
-      <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Messages')}>
-      <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Settings')}>
-      <Image source={require('../assets/img/logout_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-  </View>
-);
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   container: {
@@ -111,13 +150,13 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: wp('5.8%'), // Adjusted font size to be responsive
+    fontWeight: '500',
     color: '#fff',
     textAlign: 'center',
   },
@@ -130,24 +169,24 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   info: {
-    marginTop: 20,
-    fontSize: 16,
-    lineHeight: 25,
+    marginTop: hp('2.5%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3.5%'), // Responsive line height
     color: '#666',
     textAlign: 'justify',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    padding: 10,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
     tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
   },
   card: {
-    marginTop: 30,
-    marginBottom: 30,
+    marginTop: hp('2%'), // Responsive margin
+    marginBottom: hp('3%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
     elevation: 0,
@@ -158,37 +197,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   clip: {
-    width: 20,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: wp('5%'), // Responsive height
     tintColor: '#b71c1c',
     resizeMode: 'contain',
-    marginLeft: 15,
-    marginRight: 10,
-    marginBottom: 20,
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
   },
   cardTitle: {
     fontWeight: 'bold',
     color: '#333',
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     flex: 1,
   },
   arrow: {
-    width: 15,
-    height: 15,
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
     tintColor: '#b71c1c',
   },
   arrowDown: {
-    width: 15,
-    height: 15,
-    marginLeft: 'auto',
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
     transform: [{ rotate: '90deg' }],
   },
   cardContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
+    paddingVertical: hp('1.5%'), // Responsive vertical padding
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -199,13 +237,60 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: wp('5%'), // Responsive margin
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: hp('4%'), // Responsive padding
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 1000,
+  },
+  modalTitles: {
+    fontSize: wp('4.5%'), // Responsive font size
+    fontWeight: 'bold',
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
+  },
+ modalText: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+  },
+  modalButton: {
+    borderRadius: 5,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
+    backgroundColor: '#9d0808',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: wp('4%'), // Responsive font size
+  },
+  ptext: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
+    textAlign: 'center',
+  },
   titleSub: {
-    fontSize: 14,
-    color: 'gray',
+    fontSize: wp('4.2%'), // Adjusted font size to be responsive
+    color: 'black',
   },
 });
 

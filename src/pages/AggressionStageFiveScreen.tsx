@@ -311,10 +311,10 @@ const AggressionStageFiveScreen: React.FC = () => {
   const [items, setItems] = useState([
     {
       title: (
-        <Text>
-          <Text style={{fontSize: 20, fontWeight: 'bold',color:'black' }}>Introduction</Text>{"\n"}
+       <View>
+          <Text style={{fontSize: wp('6.3%'), fontWeight: 'bold',color:'black' }}>Introduction</Text>
           <Text style={styles.titleSub}>Stage Five Introduction</Text>
-        </Text>
+          </View>
       ),
       explanation: (
         <Text style={styles.info}> In Stage Five we observe this Emerging Aggressor coming out from behind his curtain, publicly and deliberately damaging the reputation of his victim. At this point typically our Emerging Aggressor, by Planting the Seed of Distrust, has discredited his victim and created alliances with his victim's community (see description in Stage four). Now this emerging aggressor feels the confidence to come out from behind his curtain and join with the victim's community to take action against his victim. This would be an excellent time for Cycle Breathing. You don't want to become part of the problem by getting caught up in the adrenaline rush!
@@ -327,10 +327,10 @@ const AggressionStageFiveScreen: React.FC = () => {
       </Text>), expanded: false
     },
     {
-      title: (<Text>
-        <Text style={{fontSize: 20, fontWeight: 'bold',color:'black' }}>Prespective One</Text>{"\n"}
+      title: (<View>
+        <Text style={{fontSize: wp('6.3%'), fontWeight: 'bold',color:'black' }}>Prespective One</Text>
         <Text style={styles.titleSub}>What if you are the aggressor?</Text>
-      </Text>), explanation: (<Text style={styles.info}>{'\n\n'}
+        </View>), explanation: (<Text style={styles.info}>{'\n\n'}
         How should you respond if you are the aggressor?
         {'\n\n'} Get help from a trusted advocate or Mental Health Professional.
         {'\n\n'} The higher you find yourself on the Aggression Continuum, the more you lose your quality of judgment. It may be time to get help from a trusted advocate, colleague or professional counselor.
@@ -341,10 +341,10 @@ const AggressionStageFiveScreen: React.FC = () => {
     },
 
     {
-      title: (<Text>
-        <Text style={{ fontSize: 20, fontWeight: 'bold',color:'black'}}>Prespective Two</Text>{"\n"}
+      title: (<View>
+        <Text style={{ fontSize: wp('6.3%'), fontWeight: 'bold',color:'black'}}>Prespective Two</Text>
         <Text style={styles.titleSub}>What if you are observing an aggressor?</Text>
-      </Text>), explanation: (<Text style={styles.info}>{'\n\n'}How should you respond if you are observing another or others that are aggressive?
+        </View>), explanation: (<Text style={styles.info}>{'\n\n'}How should you respond if you are observing another or others that are aggressive?
         {'\n\n'}Think of how you're going to persuade this person to come over to your side.
         {'\n\n'}This person now appears angry, bitter, frustrated and even desperate.
         {'\n\n'}To better understand and respond with the Critical Aggression Prevention System (CAPS), we highly recommend taking <Text style={styles.link}
@@ -374,10 +374,10 @@ const AggressionStageFiveScreen: React.FC = () => {
     },
 
     {
-      title: (<Text>
-        <Text style={{ fontSize: 20, fontWeight: 'bold',color:'black'}}>Prespective Three</Text>{"\n"}
+      title: (<View>
+        <Text style={{ fontSize: wp('6.3%'), fontWeight: 'bold',color:'black'}}>Prespective Three</Text>
         <Text style={styles.titleSub}>Illustrates CAPS Trust Tenet</Text>
-      </Text>), explanation: (<Text style={styles.info}>{'\n\n'}The understanding of "The Unmagnificent Seven Personalities" and the use of the "Five Universal Approaches" are positive and constructive approaches that can quickly establish rapport and trust with an emerging aggressor.
+        </View>), explanation: (<Text style={styles.info}>{'\n\n'}The understanding of "The Unmagnificent Seven Personalities" and the use of the "Five Universal Approaches" are positive and constructive approaches that can quickly establish rapport and trust with an emerging aggressor.
         {'\n\n'}Adapted from Robert Bramson's Coping with Difficult People, we have identified seven basic types of troublesome and potentially aggressive personalities. We call them "The Unmagnificent Seven." Each of us may, from time to time, exhibit one or more of these traits, but this is not what we are looking for as Aggression Managers. We want to focus on those individuals whose Unmagnificent personalities permeate their being, and who use those traits habitually as tools to control and manipulate others. Some of these Unmagnificent behaviors can become covertly aggressive, while others can lead to outright aggressive behavior. Don't assume that if someone exhibits a particular behavior, that he is an aggressor ready to strike.
         {'\n\n'}Your challenge is to identify these individuals having one or more of the Unmagnificent Personalities, engage, use the Five Universal Approaches, and diffuse their behaviors before they trigger a violent incident.
         {'\n\n'}To better understand and respond with the Critical Aggression Prevention System (CAPS), we highly recommend taking <Text style={styles.link}
@@ -442,7 +442,7 @@ const AggressionStageFiveScreen: React.FC = () => {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Introduction To CAPS</Text>
+        <Text style={styles.headerTitle}>Aggregation Stage Five</Text>
       </View>
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
         {items.map((item, index) => (
@@ -490,7 +490,7 @@ const AggressionStageFiveScreen: React.FC = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -513,6 +513,8 @@ const AggressionStageFiveScreen: React.FC = () => {
   );
 };
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -520,90 +522,84 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
+    width: '100%',
     flexDirection: 'row',
-    alignItems: 'center',
-  },
-  bold:{
-    fontWeight:'bold'
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: wp('5.8%'), // Adjusted font size to be responsive
+    fontWeight: '500',
     color: '#fff',
-    flex: 1,
     textAlign: 'center',
+    marginLeft:wp('13%'),
   },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  backIcon: {
-    width: 25,
-    height: 25,
-    tintColor: '#fff',
   },
   link: {
     color: '#1E90FF',
     textDecorationLine: 'underline',
   },
   info: {
-    marginTop: 20,
-    fontSize: 16,
-    lineHeight: 25,
+    marginTop: hp('2.5%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3.5%'), // Responsive line height
     color: '#666',
     textAlign: 'justify',
-    marginLeft:15
+  },
+  backIcon: {
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
+    tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
   },
   card: {
-    marginTop: 30,
-    marginBottom: 30,
+    marginTop: hp('2%'), // Responsive margin
+    marginBottom: hp('3%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
+    elevation: 0,
+    shadowOpacity: 0,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  titleSub: {
-    fontSize: 14, // or your preferred smaller size
-    color: 'gray', // optional, for styling the subtext differently
-  },
-
   clip: {
-    width: 20,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: wp('5%'), // Responsive height
     tintColor: '#b71c1c',
     resizeMode: 'contain',
-    marginRight:10,
-   
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
   },
   cardTitle: {
     fontWeight: 'bold',
     color: '#333',
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     flex: 1,
   },
   arrow: {
-    width: 15,
-    height: 15,
-    transform: [{ rotate: '90deg' }],
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
+    tintColor: '#b71c1c',
   },
   arrowDown: {
-    width: 15,
-    height: 15,
-    transform: [{ rotate: '270deg' }],
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
+    transform: [{ rotate: '90deg' }],
   },
   cardContent: {
-    marginTop: 10,
-    paddingHorizontal: 15,
-    paddingBottom: 10,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
+    paddingVertical: hp('1.5%'), // Responsive vertical padding
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -614,8 +610,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
   },
   centeredView: {
@@ -624,10 +620,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Responsive margin
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: hp('4%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -637,38 +633,37 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'#fff',
-
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Responsive margin
     color: 'black',
-
+  },
+ modalText: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
   },
   ptext: {
-    fontSize: 16,
-    marginBottom: 20,
-   
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
     textAlign: 'center',
-    
-
+  },
+  titleSub: {
+    fontSize: wp('4.2%'), // Adjusted font size to be responsive
+    color: 'black',
   },
 });
 

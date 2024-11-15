@@ -1127,8 +1127,8 @@ const MyCasePage = () => {
 
   // Handle download click
   const handleDownload = async () => {
-    const hasPermission = await requestStoragePermission(); // Request permission
-    if (!hasPermission) return; // Stop if permission is not granted
+    // const hasPermission = await requestStoragePermission(); // Request permission
+    // if (!hasPermission) return; // Stop if permission is not granted
 
     try {
       const pdfPath = await generatePDF(); // Generate the PDF
@@ -1161,7 +1161,7 @@ const MyCasePage = () => {
             source={require('../assets/img/back.png')}
           />
         </TouchableOpacity>
-        <Text style={{fontSize: 20, color: 'white'}}>My Cases</Text>
+        <Text style={{fontSize: wp('5%'), color: 'white'}}>My Cases</Text>
         <View style={styles.icons}>
           <TouchableOpacity onPress={handleDownload}>
             <Image
@@ -1239,7 +1239,8 @@ const MyCasePage = () => {
                   <Text style={styles.caseDate}>{item.date_time}</Text>
                    <View style={{alignItems: 'flex-end'}}>
                       <Image
-                        style={{width: 25, height: 25}}
+                        style={{ height: hp('3%'), // Adjusted for responsive height
+                          width: wp('4%')}}
                         source={require('../assets/img/next.png')}
                       />
                     </View>
@@ -1346,6 +1347,9 @@ const MyCasePage = () => {
   );
 };
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -1354,7 +1358,7 @@ const styles = StyleSheet.create({
   caseHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+  
     justifyContent: 'space-between',
   },
   loadingContainer: {
@@ -1367,32 +1371,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#a42f2d',
-    paddingHorizontal: 15,
-    paddingVertical: 13,
+    paddingHorizontal: wp('4%'), // Adjusted for responsive padding
+    paddingVertical: hp('2%'), // Adjusted for responsive padding
   },
   icons: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    width: 100,
-    gap: 25,
+    width: wp('25%'), // Adjusted for responsive width
+    gap: wp('5%'), // Adjusted for responsive gap
   },
   footer: {
-    height: 60,
-    backgroundColor: '#B71C1C',
+    height: hp('8%'), // Responsive height
+    backgroundColor: '#b71c1c',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
   },
   footerButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: hp('1%'),
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Width is 6% of the screen width
+    height: wp('6%'), // Height is 6% of the screen width
     tintColor: 'white',
   },
   centeredView: {
@@ -1401,31 +1401,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Adjusted for responsive margin
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: wp('8%'), // Adjusted for responsive padding
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   modalTitles: {
-    fontSize: 20,
+    fontSize: wp('5%'), // Adjusted for responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'black'
+    marginBottom: hp('2%'), // Adjusted for responsive margin
+    color: 'black',
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 15,
-    color:'black'
+    fontSize: wp('4%'), // Adjusted for responsive font size
+    marginBottom: hp('2%'), // Adjusted for responsive margin
+    color: 'black',
   },
   modalText1: {
-    fontSize: 16,
-    marginBottom: 15,
+    fontSize: wp('4%'), // Adjusted for responsive font size
+    marginBottom: hp('2%'), // Adjusted for responsive margin
     fontWeight: 'bold',
   },
   modalButtonContainer: {
@@ -1433,17 +1433,17 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Adjusted for responsive padding
+    marginHorizontal: wp('2%'), // Adjusted for responsive margin
     backgroundColor: '#9D0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted for responsive font size
   },
   ptext: {
-    fontSize: 18,
-    marginBottom: 20,
+    fontSize: wp('4.5%'), // Adjusted for responsive font size
+    marginBottom: hp('3%'), // Adjusted for responsive margin
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -1452,98 +1452,301 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 20,
-    paddingHorizontal: 10,
-    height: 40,
+    paddingHorizontal: wp('2.5%'), // Adjusted for responsive padding
+    height: hp('5%'), // Adjusted for responsive height
     borderColor: '#ddd',
     borderWidth: 1,
   },
   searchInput: {
     flex: 1,
-    height: 40,
-    fontSize: 16,
-    color:'black'
+    height: hp('8%'), // Adjusted for responsive height
+    fontSize: wp('3.5%'), // Adjusted for responsive font size
+    color: 'black',
   },
   searchContainer: {
-    padding: 10,
+    padding: hp('1.8%'), // Adjusted for responsive padding
     backgroundColor: '#c0c0c0',
     justifyContent: 'center',
   },
   back: {
-    width: 25,
-    height: 20,
+    width: wp('6%'), // Adjusted for responsive width
+    height: hp('3%'), // Adjusted for responsive height
     tintColor: 'white',
   },
   iconsdownload: {
-    height: 19,
-    width: 20,
+    height: hp('2.5%'), // Adjusted for responsive height
+    width: wp('5%'), // Adjusted for responsive width
     tintColor: 'white',
   },
   iconsearch: {
-    height: 20,
-    width: 20,
+    height: hp('2.5%'), // Adjusted for responsive height
+    width: wp('5%'), // Adjusted for responsive width
     tintColor: 'white',
+    // marginTop: hp('0.5%'),
   },
   caseCard: {
     flexDirection: 'row',
     backgroundColor: '#ffffff',
-    paddingVertical: 15,
-    paddingHorizontal: 15,
+    paddingVertical: hp('2%'), // Adjusted for responsive padding
+    paddingHorizontal: wp('4%'), // Adjusted for responsive padding
   },
   caseContent: {
     flex: 1,
   },
   caseName: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: wp('5%'), // Adjusted for responsive font size
+    fontWeight: '600',
+    marginBottom: hp('0.5%'),
     color: '#a42f2d',
-    marginLeft: 14,
+    marginLeft: wp('3%'), // Adjusted for responsive margin
   },
   share: {
-    height: 15,
-    width: 15,
-    marginLeft: 5,
+    height: hp('2%'), // Adjusted for responsive height
+    width: wp('4%'), // Adjusted for responsive width
+    marginLeft: wp('2%'), // Adjusted for responsive margin
     tintColor: 'red',
   },
   caseDate: {
-    fontSize: 12,
+    fontSize: wp('3.5%'), // Adjusted for responsive font size
     color: '#555',
-    marginBottom: -15,
-    marginLeft: 40,
+    marginBottom: hp('-2%'), // Adjusted for responsive margin
+    marginLeft: wp('10%'), // Adjusted for responsive margin
   },
   caseId: {
-    fontSize: 12,
+    fontSize: wp('3.5%'), // Adjusted for responsive font size
     color: '#555',
-    marginLeft: 40,
-    marginBottom: 14,
+    marginLeft: wp('10%'), // Adjusted for responsive margin
+    marginBottom: hp('2%'), // Adjusted for responsive margin
   },
   caseDetails: {
-    fontSize: 12,
+    fontSize: wp('3.5%'), // Adjusted for responsive font size
     color: '#555',
-    marginBottom: 14,
-    marginLeft: 40,
+    marginBottom: hp('2%'), // Adjusted for responsive margin
+    marginLeft: wp('10%'), // Adjusted for responsive margin
   },
   separator: {
-    height: 4,
-    // backgroundColor: '#4caf50',
-    marginTop: 8,
-    marginLeft: 40,
-    width: 335,
-    marginBottom: 40,
+    height: hp('0.6%'), // Adjusted for responsive height
+    // marginTop: hp('1%'), // Adjusted for responsive margin
+    marginLeft: wp('10%'), // Adjusted for responsive margin
+    width: wp('80%'), // Adjusted for responsive width
+    // marginBottom: hp('1%'), // Adjusted for responsive margin
   },
   flatList: {
     flex: 1,
   },
   noCasesText: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted for responsive font size
     color: '#666',
-    marginTop: 20,
+    marginTop: hp('3%'), // Adjusted for responsive margin
   },
   pad: {
-    height: 19,
-    width: 15,
-    marginRight: 10,
+    height: hp('3%'), // Adjusted for responsive height
+    width: wp('4%'), // Adjusted for responsive width
+    marginRight: wp('2%'), // Adjusted for responsive margin
   },
 });
 
 export default MyCasePage;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#e5e5e5',
+//   },
+//   caseHeader: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     marginBottom: 8,
+//     justifyContent: 'space-between',
+//   },
+//   loadingContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'space-between',
+//     backgroundColor: '#a42f2d',
+//     paddingHorizontal: 15,
+//     paddingVertical: 13,
+//   },
+//   icons: {
+//     flexDirection: 'row',
+//     justifyContent: 'flex-end',
+//     width: 100,
+//     gap: 25,
+//   },
+//   footer: {
+//     height: 60,
+//     backgroundColor: '#B71C1C',
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//     alignItems: 'center',
+//     position: 'absolute',
+//     bottom: 0,
+//     width: '100%',
+//   },
+//   footerButton: {
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   footerIcon: {
+//     width: 24,
+//     height: 24,
+//     tintColor: 'white',
+//   },
+//   centeredView: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   modalView: {
+//     margin: 20,
+//     backgroundColor: 'white',
+//     borderRadius: 10,
+//     padding: 35,
+//     alignItems: 'center',
+//     shadowColor: '#000',
+//     shadowOffset: {width: 0, height: 2},
+//     shadowOpacity: 0.25,
+//     shadowRadius: 4,
+//     elevation: 5,
+//   },
+//   modalTitles: {
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//     marginBottom: 15,
+//     color:'black'
+//   },
+//   modalText: {
+//     fontSize: 16,
+//     marginBottom: 15,
+//     color:'black'
+//   },
+//   modalText1: {
+//     fontSize: 16,
+//     marginBottom: 15,
+//     fontWeight: 'bold',
+//   },
+//   modalButtonContainer: {
+//     flexDirection: 'row',
+//   },
+//   modalButton: {
+//     borderRadius: 5,
+//     padding: 10,
+//     marginHorizontal: 10,
+//     backgroundColor: '#9D0808',
+//   },
+//   modalButtonText: {
+//     color: 'white',
+//     fontSize: 16,
+//   },
+//   ptext: {
+//     fontSize: 18,
+//     marginBottom: 20,
+//     fontWeight: 'bold',
+//     textAlign: 'center',
+//   },
+//   inputWrapper: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     backgroundColor: '#fff',
+//     borderRadius: 20,
+//     paddingHorizontal: 10,
+//     height: 40,
+//     borderColor: '#ddd',
+//     borderWidth: 1,
+//   },
+//   searchInput: {
+//     flex: 1,
+//     height: 40,
+//     fontSize: 16,
+//     color:'black'
+//   },
+//   searchContainer: {
+//     padding: 10,
+//     backgroundColor: '#c0c0c0',
+//     justifyContent: 'center',
+//   },
+//   back: {
+//     width: 25,
+//     height: 20,
+//     tintColor: 'white',
+//   },
+//   iconsdownload: {
+//     height: 19,
+//     width: 20,
+//     tintColor: 'white',
+//   },
+//   iconsearch: {
+//     height: 20,
+//     width: 20,
+//     tintColor: 'white',
+//   },
+//   caseCard: {
+//     flexDirection: 'row',
+//     backgroundColor: '#ffffff',
+//     paddingVertical: 15,
+//     paddingHorizontal: 15,
+//   },
+//   caseContent: {
+//     flex: 1,
+//   },
+//   caseName: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     color: '#a42f2d',
+//     marginLeft: 14,
+//   },
+//   share: {
+//     height: 15,
+//     width: 15,
+//     marginLeft: 5,
+//     tintColor: 'red',
+//   },
+//   caseDate: {
+//     fontSize: 12,
+//     color: '#555',
+//     marginBottom: -15,
+//     marginLeft: 40,
+//   },
+//   caseId: {
+//     fontSize: 12,
+//     color: '#555',
+//     marginLeft: 40,
+//     marginBottom: 14,
+//   },
+//   caseDetails: {
+//     fontSize: 12,
+//     color: '#555',
+//     marginBottom: 14,
+//     marginLeft: 40,
+//   },
+//   separator: {
+//     height: 4,
+//     // backgroundColor: '#4caf50',
+//     marginTop: 8,
+//     marginLeft: 40,
+//     width: 335,
+//     marginBottom: 40,
+//   },
+//   flatList: {
+//     flex: 1,
+//   },
+//   noCasesText: {
+//     textAlign: 'center',
+//     fontSize: 16,
+//     color: '#666',
+//     marginTop: 20,
+//   },
+//   pad: {
+//     height: 19,
+//     width: 15,
+//     marginRight: 10,
+//   },
+// });
+
+// export default MyCasePage;

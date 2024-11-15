@@ -1102,8 +1102,17 @@ const HomePage = ({ navigation }: any) => {
       console.log("Retrieved user data:", user);  // Debugging line to see what’s in AsyncStorage
       
       if (user) {
-        setUserName(user.firstname);  // Assuming 'first_name' is the correct key
-        setUserEmail(user.email);      // Assuming 'email' is the correct key
+        const user_info = {
+          user_id: user.user_id,
+          token: user.token,
+        };
+
+        const response = await profileProvider.user_info(user_info);
+        const data = response.data;
+
+        // Set user name and email from the fetched data
+        setUserName(data.firstname);  // Load firstname from API
+        setUserEmail(data.email);      // Load email from API
       }
     } catch (err) {
       console.error("Error loading user data:", err);
@@ -1141,12 +1150,12 @@ const HomePage = ({ navigation }: any) => {
                 },
                 {
                   text: 'Continue',
-                  onPress: () => navigation.navigate('SubscriptionScreen'),
+                  onPress: () => navigation.navigate('sub'),
                 },
               ]
             );
           } else {
-            navigation.navigate('SubscriptionScreen');
+            navigation.navigate('sub');
           }
         } else if (data.subscriptionFlag === 1 && user.client_id === "1") {
           await AsyncStorage.setItem('user', null);
@@ -1214,6 +1223,7 @@ const HomePage = ({ navigation }: any) => {
           source={require('../assets/img/menu_icon.png')}
           style={styles.menuIcon}
         />
+          <Text style={styles.headerTextc}> shgs    </Text>
       </TouchableOpacity>
       <Text style={styles.headerText}>CAPS Mobile App</Text>
     </View>
@@ -1440,82 +1450,93 @@ const HomePage = ({ navigation }: any) => {
 // };
 
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f2f2f2',
   },
   header: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#b71c1c',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: wp('2%'), // Responsive padding
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: wp('5%'), // Responsive font size
     fontWeight: 'bold',
     flex: 1,
     textAlign: 'center',
-    marginLeft:50,
+    marginLeft: wp('10%'), // Responsive margin
+  },
+  headerTextc: {
+    color: '#b71c1c',
+    fontSize: wp('5%'), // Responsive font size
+    fontWeight: 'bold',
+   
+   
+    // Responsive margin
   },
   menuIconContainer: {
     position: 'absolute',
-    left: 20,
+    left: wp('5%'), // Responsive position
+    flexDirection:'row'
+    
   },
   menuIcon: {
-    width: 25,
-    height: 25,
+    width: wp('6%'), // Responsive width
+    height: hp('4%'), 
+    
   },
   buttonContainer: {
     flex: 1,
     justifyContent: 'space-evenly',
-    padding: 10,
+    padding: wp('2%'), // Responsive padding
   },
   menuButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    marginVertical: 3,
-    padding: 13,
+    marginVertical: hp('1%'), // Responsive margin
+    padding: wp('3%'), // Responsive padding
     backgroundColor: 'white',
     borderRadius: 8,
     elevation: 2,
-    marginTop:'3%',
-    
+    marginTop: hp('2%'), // Responsive margin
   },
   activeMenuButton: {
     backgroundColor: '#ff0000',
   },
   icon: {
-    width: 80,
-    height: 80,
-    marginRight: 10,
+    width: wp('20%'), // Responsive width
+    height: hp('10%'), // Responsive height
+    marginRight: wp('2%'), // Responsive margin
   },
   buttonText: {
-    fontSize: 20,
+    fontSize: wp('5%'), // Responsive font size
     color: '#333',
     textAlign: 'center',
     flex: 1,
     fontWeight: 'bold',
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#b71c1c',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-   
   },
   footerButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: hp('1%'),
   },
   footerIcon: {
-    width: 22,
-    height: 22,
+    width: wp('6%'), // Width is 6% of the screen width
+    height: wp('6%'), // Height is 6% of the screen width
     tintColor: 'white',
   },
   modalOverlay: {
@@ -1528,9 +1549,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   sidebar: {
-    width: '80%',  // Adjust width based on your design
+    width: wp('80%'), // Responsive width
     backgroundColor: 'white',
-    padding: 20,
+    padding: wp('5%'), // Responsive padding
     elevation: 5,
     position: 'absolute',
     left: 0,
@@ -1538,70 +1559,59 @@ const styles = StyleSheet.create({
     bottom: 0,
     paddingTop: 0,
     paddingLeft: 0,
-    paddingRight: 20,
-    paddingBottom: 20,
+    paddingRight: wp('5%'), // Responsive padding
+    paddingBottom: wp('5%'), // Responsive padding
   },
 
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#b71c1c',
-    padding: 10,
-    marginBottom: 20,
-    width: '107%',  // Make sure the container takes up the full width of the sidebar
+    padding: wp('2%'), // Responsive padding
+    marginBottom: hp('3%'), // Responsive margin
+    width: '107%',  // Keep this as is
     overflow: 'hidden',
-    
   },
 
   profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 10,
+    width: wp('15%'), // Responsive width
+    height: wp('15%'), // Responsive height
+    borderRadius: wp('7.5%'), // Responsive border radius
+    marginRight: wp('2%'), // Responsive margin
   },
 
   profileName: {
-    // fontSize: 20,
-    // fontWeight: 'bold',
-    // color: 'white',
-    // flexWrap: 'wrap',
-    // marginBottom: 5,
-    fontSize: 14,
+    fontSize: wp('4%'), // Responsive font size
     color: 'white',
     flexWrap: 'wrap'
   },
 
   profileEmail: {
-    fontSize: 14,
+    fontSize: wp('4%'), // Responsive font size
     color: 'white',
     flexWrap: 'wrap',
   },
   divider: {
     height: 1,
     backgroundColor: '#ddd',
-    //marginVertical:0,
-    marginBottom:30
-  },
+    marginBottom: hp('3%'), },
 
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    
+    paddingVertical: hp('2%'), // Responsive padding
   },
   menuItemIcon: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
-    marginLeft:10,
-    tintColor:'#b71c1c'
-    
+    width: wp('8%'), // Responsive width
+    height: wp('8%'), // Responsive height
+    marginRight: wp('2%'), // Responsive margin
+    marginLeft: wp('2%'), // Responsive margin
+    tintColor: '#b71c1c'
   },
   menuItemText: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     color: '#333',
-    marginLeft:20
-    
+    marginLeft: wp('2%') // Responsive margin
   },
   centeredView: {
     flex: 1,
@@ -1609,10 +1619,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Responsive margin
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: wp('5%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -1621,28 +1631,28 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitles: {
-    fontSize: 20,
+    fontSize: wp('5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'black'
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black'
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 15,
-    color:'black'
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black'
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: wp('3%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
   },
 });
 

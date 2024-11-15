@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, StatusBar, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, StatusBar, Linking, Modal} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
+
 
 interface Item {
   title: React.ReactNode;
@@ -10,11 +12,14 @@ interface Item {
 
 const AggressionStageOneScreen: React.FC = () => {
  const navigation = useNavigation();
+ const [showFooter, setShowFooter] = useState(true);
+const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  
   const [items, setItems] = useState<Item[]>([
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20,fontWeight: 'bold' }}>Introduction</Text>{"\n"}
+         <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black'}}>Introduction</Text>{"\n"}
           <Text style={styles.titleSub}>Stage One Introduction</Text>
         </Text>
       ),
@@ -33,7 +38,7 @@ const AggressionStageOneScreen: React.FC = () => {
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20,fontWeight: 'bold'}}>Perspective One</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black'}}>Perspective One</Text>{"\n"}
           <Text style={styles.titleSub}>What if you are the aggressor?</Text>
         </Text>
       ),
@@ -47,18 +52,18 @@ const AggressionStageOneScreen: React.FC = () => {
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20,fontWeight: 'bold'}}>Perspective Two</Text>{"\n"}
+         <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black'}}>Perspective Two</Text>{"\n"}
           <Text style={styles.titleSub}>What if you are observing an aggressor?</Text>
         </Text>
       ),
       explanation: (
         <Text style={styles.info}>
-          <Text style={{ fontSize: 14}}>How should you respond if you are observing another or others that are aggressive? </Text>
-          {"\n\n"}<Text style={{ fontSize: 16,fontWeight: 'bold'}}>1. Understanding Autocratic versus Convincing:</Text>
+          <Text style={{ fontSize: wp('4%')}}>How should you respond if you are observing another or others that are aggressive? </Text>
+          {"\n\n"}<Text style={{ fontSize: wp('5%'),fontWeight: 'bold'}}>1. Understanding Autocratic versus Convincing:</Text>
           {"\n"}Persuasion can be either Autocratic or Convincing. Convincing is typically far more effective long term.
-          {"\n\n"}<Text style={{ fontSize: 16,fontWeight: 'bold'}}>2. Away From versus Toward Something:</Text>
+          {"\n\n"}<Text style={{ fontSize: wp('5%'),fontWeight: 'bold'}}>2. Away From versus Toward Something:</Text>
           {"\n"}Most people, depending upon circumstances, are motivated either toward something, in pursuit of a goal or an objective; or away from something in an attempt to avoid risk, fear or making a mistake. Is your emerging aggressor motivated away from something or toward something? Find what that something is and you can push the correct buttons to move your aggressor away from an aggressive path and toward a more constructive resolution
-          {"\n\n"}<Text style={{ fontSize: 16,fontWeight: 'bold'}}>3.Internally versus Externally Thinking:</Text>
+          {"\n\n"}<Text style={{ fontSize: wp('5%'),fontWeight: 'bold'}}>3.Internally versus Externally Thinking:</Text>
           {'\n\n'}Aggressors either respond to your input internally, through a process of looking within themselves and analyzing the input based on their own internal standards; or they will respond to your input externally, through the facts, figures and information delivered by you or others.
       {'\n\n'}An internally motivated individual does not readily respond to demands. Thus, use questions (Socratic Method) to guide this aggressor. You must convince an internally motivated person that the direction you wish him to go is in his best interest.
       {'\n\n'}An externally motivated individual is influenced greatly by your advice and what they perceive as the opinions An externally motivated individual is influenced greatly by your advice and what they perceive as the opinions and wishes of those whom they respect. You may be more autocratic with an externally motivated aggressor. However, remember that being autocratic is like having anchovies on your pizza - a little goes a long way.
@@ -71,7 +76,7 @@ const AggressionStageOneScreen: React.FC = () => {
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20,fontWeight: 'bold' }}>Perspective Three</Text>{"\n"}
+         <Text style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black'}}>Perspective Three</Text>{"\n"}
           <Text style={styles.titleSub}>Illustrates CAPS Trust Tenet</Text>
         </Text>
       ),
@@ -102,6 +107,14 @@ CAPS Axiom: We know that if a person trusts you 100%, they will do whatever you 
   const showAlert = (result: string, msg: string) => {
     Alert.alert(result, msg, [{ text: 'OK' }]);
   };
+  const handleLogout = () => {
+    setLogoutModalVisible(false);
+    Alert.alert('Logged Out', 'You have been logged out.');
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -131,30 +144,57 @@ CAPS Axiom: We know that if a person trusts you 100%, they will do whatever you 
           </View>
         ))}
       </ScrollView>
-      <Footer navigation={navigation} />
+      {showFooter && (
+        <View style={styles.footer}>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('home')}>
+            <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => Linking.openURL('tel:911')}>
+            <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('SharegroupPage')}>
+            <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('EditProfile')}>
+            <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerButton} onPress={() => setLogoutModalVisible(true)}>
+            <Image source={require('../assets/img/logout.png')} style={styles.footerIcon} />
+          </TouchableOpacity>
+        </View>
+      )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={logoutModalVisible}
+        onRequestClose={() => setLogoutModalVisible(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTitles}>Logout</Text>
+            <Text style={styles.modalText}>Are you sure you want to log out?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogout}
+              >
+                <Text style={styles.modalButtonText}>Yes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogoutCancel}
+              >
+                <Text style={styles.modalButtonText}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-const Footer = ({ navigation }) => (
-  <View style={styles.footer}>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Home')}>
-      <Image source={require('../assets/img/home_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Contacts')}>
-      <Image source={require('../assets/img/call_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Notifications')}>
-      <Image source={require('../assets/img/Profile-icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Messages')}>
-      <Image source={require('../assets/img/edit_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate('Settings')}>
-      <Image source={require('../assets/img/logout_icon.png')} style={styles.footerIcon} />
-    </TouchableOpacity>
-  </View>
-);
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   container: {
@@ -163,13 +203,13 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: wp('5.8%'), // Adjusted font size to be responsive
+    fontWeight: '500',
     color: '#fff',
     textAlign: 'center',
   },
@@ -182,59 +222,64 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   info: {
-    fontSize: 16,
-    lineHeight: 22,
+    marginTop: hp('2.5%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3.5%'), // Responsive line height
     color: '#666',
     textAlign: 'justify',
   },
   backIcon: {
-    width: 25,
-    height: 25,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
     tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
   },
   card: {
-    marginVertical: 35,
+    marginTop: hp('2%'), // Responsive margin
+    marginBottom: hp('3%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
     elevation: 0,
     shadowOpacity: 0,
-    
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   clip: {
-    width: 20,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: wp('5%'), // Responsive height
     tintColor: '#b71c1c',
     resizeMode: 'contain',
-    marginHorizontal: 10,
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
+  },
+  cardTitle: {
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: wp('4.5%'), // Responsive font size
+    flex: 1,
   },
   arrow: {
-    width: 15,
-    height: 15,
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
     tintColor: '#b71c1c',
   },
   arrowDown: {
-    width: 15,
-    height: 15,
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
     transform: [{ rotate: '90deg' }],
   },
   cardContent: {
-    marginTop:15,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  titleSub: {
-    fontSize: 14,
-    color: 'gray',
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
+    paddingVertical: hp('1.5%'), // Responsive vertical padding
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -245,9 +290,60 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 22,
-    height: 22,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: wp('5%'), // Responsive margin
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: hp('4%'), // Responsive padding
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 1000,
+  },
+  modalTitles: {
+    fontSize: wp('4.5%'), // Responsive font size
+    fontWeight: 'bold',
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
+  },
+ modalText: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+  },
+  modalButton: {
+    borderRadius: 5,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
+    backgroundColor: '#9d0808',
+  },
+  modalButtonText: {
+    color: 'white',
+    fontSize: wp('4%'), // Responsive font size
+  },
+  ptext: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
+    textAlign: 'center',
+  },
+  titleSub: {
+    fontSize: wp('4.2%'), // Adjusted font size to be responsive
+    color: 'black',
   },
 });
 

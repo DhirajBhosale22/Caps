@@ -350,9 +350,9 @@
 
 // export default AggressionStageSixScreen;
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, StatusBar, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, StatusBar, Linking,Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 interface Item {
   title: string;
   explanation: React.ReactNode;
@@ -366,16 +366,16 @@ const AggressionStageSixScreen: React.FC = () => {
   const [items, setItems] = useState<Item[]>([
     {
       title: (
-        <Text>
-          <Text style={{ fontSize: 20, fontWeight:'bold',color:'black' }}>Introduction</Text>{"\n"}
+       <View>
+          <Text style={{ fontSize: wp('6.3%'), fontWeight:'bold',color:'black' }}>Introduction</Text>
           <Text style={styles.titleSub}>Stage Six Introduction</Text>
-        </Text>
+          </View>
       ),
       explanation: (
         <Text style={styles.info}>
           In Stage Six, the aggressor will demonstrate the potential of his wrath. The aggressor is making every attempt to intimidate his victim into submission. You may witness an aggressor exhibiting attack ideation, or even proclamation: exploring security processes, intelligence gathering and analysis. You may observe co-conspirators discussing ideas for an attack.
           {'\n\n'}
-          <Text style={{fontSize:12, color:'black'}}>If you are unable to diffuse this Emerging Aggressor, he will likely broach into the Emergency (Crisis) Phase and be well on his way through attack operational preparation and execution, the Seventh, Eighth and potentially to the Ninth Stage Cognitive Aggressor, the perpetrator of murder/suicide or terrorist. Note: There is a great deal more to learn about these Aggression Stages.
+          <Text style={{fontSize: wp('3.5%'), color:'black'}}>If you are unable to diffuse this Emerging Aggressor, he will likely broach into the Emergency (Crisis) Phase and be well on his way through attack operational preparation and execution, the Seventh, Eighth and potentially to the Ninth Stage Cognitive Aggressor, the perpetrator of murder/suicide or terrorist. Note: There is a great deal more to learn about these Aggression Stages.
           {'\n'}
           To better understand and respond with the Critical Aggression Prevention System (CAPS), we highly recommend taking <Text style={styles.link} onPress={() => Linking.openURL('https://aggressionmanagement.com/caps_training.php')}>CAPS Training</Text>, either Certified Aggression Managers or Ambassadors' (train-the-trainers) Webinar-based Workshops.</Text>
           {'\n\n'}
@@ -398,10 +398,10 @@ const AggressionStageSixScreen: React.FC = () => {
     },
     {
       title: (
-        <Text>
-          <Text style={{ fontSize: 20, fontWeight:'bold',color:'black' }}>Perspective One</Text>{"\n"}
+        <View>
+          <Text style={{ fontSize: wp('6.3%'), fontWeight:'bold',color:'black' }}>Perspective One</Text>
           <Text style={styles.titleSub}>What if you are the aggressor?</Text>
-        </Text>
+          </View>
       ),
       explanation: (
         <Text style={styles.info}>
@@ -416,10 +416,10 @@ const AggressionStageSixScreen: React.FC = () => {
     },
     {
       title: (
-        <Text>
-          <Text style={{fontSize: 20, fontWeight:'bold',color:'black'  }}>Perspective Two</Text>{"\n"}
+        <View>
+          <Text style={{fontSize: wp('6.3%'), fontWeight:'bold',color:'black'  }}>Perspective Two</Text>
           <Text style={styles.titleSub}>What if you are observing an aggressor?</Text>
-        </Text>
+          </View>
       ),
       explanation: (
         <Text style={styles.info}>
@@ -468,10 +468,10 @@ const AggressionStageSixScreen: React.FC = () => {
     },
     {
       title: (
-        <Text>
-          <Text style={{ fontSize: 20, fontWeight:'bold',color:'black' }}>Perspective Three</Text>{"\n"}
+        <View>
+          <Text style={{ fontSize: wp('6.3%'), fontWeight:'bold',color:'black' }}>Perspective Three</Text>
           <Text style={styles.titleSub}>Illustrates CAPS Trust Tenet</Text>
-        </Text>
+          </View>
       ),
       explanation: (
         <Text style={styles.info}>
@@ -492,7 +492,17 @@ const AggressionStageSixScreen: React.FC = () => {
       i === item ? { ...i, expanded: !i.expanded } : i
     ));
   };
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('user');
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Login'}],
+    });
+  };
 
+  const handleLogoutCancel = () => {
+    setLogoutModalVisible(false);
+  };
   const showAlert = (result: string, msg: string) => {
     Alert.alert(result, msg, [{ text: 'OK' }]);
   };
@@ -503,7 +513,7 @@ const AggressionStageSixScreen: React.FC = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Introduction To CAPS</Text>
+        <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Aggression Stage Six</Text>
       </View>
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
       
@@ -553,7 +563,7 @@ const AggressionStageSixScreen: React.FC = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -596,6 +606,8 @@ const Footer = ({ navigation }) => (
   </View>
 );
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -603,13 +615,13 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: wp('5.8%'), // Adjusted font size to be responsive
+    fontWeight: '500',
     color: '#fff',
     textAlign: 'center',
   },
@@ -618,113 +630,68 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   link: {
-    color: '#1E90FF', // Customize the color of the link
+    color: '#1E90FF',
     textDecorationLine: 'underline',
   },
   info: {
-    marginTop:20,
-    fontSize: 16,
-    lineHeight: 25,
+    marginTop: hp('2.5%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3.5%'), // Responsive line height
     color: '#666',
-    textAlign:'justify',
-    marginLeft:15
+    textAlign: 'justify',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    padding: 10,
-  tintColor: '#fff'
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
+    tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
   },
   card: {
-    marginTop: 30,
-    marginBottom: 30,
+    marginTop: hp('2%'), // Responsive margin
+    marginBottom: hp('3%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
     elevation: 0,
     shadowOpacity: 0,
-    
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-   
-    
   },
   clip: {
-    width: 20,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: wp('5%'), // Responsive height
     tintColor: '#b71c1c',
     resizeMode: 'contain',
-   marginRight:10,
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
   },
   cardTitle: {
     fontWeight: 'bold',
     color: '#333',
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     flex: 1,
   },
   arrow: {
-    width: 15,
-    height: 15,
-    tintColor: '#b71c1c', // Arrow pointing up
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
+    tintColor: '#b71c1c',
   },
   arrowDown: {
-    width: 15,
-    height: 15,
-    marginLeft: 'auto',
-    transform: [{ rotate: '90deg' }], // Arrow pointing down
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
+    transform: [{ rotate: '90deg' }],
   },
   cardContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
+    paddingVertical: hp('1.5%'), // Responsive vertical padding
   },
-
   footer: {
-    padding: 10,
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  footerText: {
-    fontSize: 14,
-    color: 'black',
-    marginBottom: 10,
-    fontWeight: '500',
-    textAlign:'center',
-    marginLeft:10,
-    marginRight:10,
-  },
-  registrationButton: {
-    backgroundColor: '#9d0808', // Customize the background color of the button
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  registrationButtonText: {
-    color: 'white',
-    fontSize: 18,
-  
-  },
-  logoicon: {
-    width: 100,
-    height:100 ,
-    marginHorizontal: 140,
-    backgroundColor: 'white',
-},
-// logoi: {
-//     flex:1,
-//     justifyContent: 'center',
-//     alignItems: 'center',    
-// },
-titleSub: {
-    fontSize: 14, // or your preferred smaller size
-    color: 'gray', // optional, for styling the subtext differently
-  },
-
-  footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -735,12 +702,9 @@ titleSub: {
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
-  },
-  bold: {
-    fontWeight: 'bold'
   },
   centeredView: {
     flex: 1,
@@ -748,10 +712,10 @@ titleSub: {
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Responsive margin
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: hp('4%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -761,38 +725,37 @@ titleSub: {
     zIndex: 1000,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'#fff',
-
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Responsive margin
     color: 'black',
-
+  },
+ modalText: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
   },
   ptext: {
-    fontSize: 16,
-    marginBottom: 20,
-   
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
     textAlign: 'center',
-    
-
+  },
+  titleSub: {
+    fontSize: wp('4.2%'), // Adjusted font size to be responsive
+    color: 'black',
   },
 });
 

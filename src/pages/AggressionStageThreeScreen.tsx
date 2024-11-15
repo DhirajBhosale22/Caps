@@ -275,7 +275,7 @@ const AggressionStageThreeScreen: React.FC = () => {
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold',color:'black' }}>Introduction</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'), fontWeight: 'bold',color:'black' }}>Introduction</Text>{"\n"}
           <Text style={styles.titleSub}>Stage Three Introduction</Text>
         </Text>
       ),
@@ -296,7 +296,7 @@ const AggressionStageThreeScreen: React.FC = () => {
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold',color:'black' }}>Perspective One</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'), fontWeight: 'bold',color:'black' }}>Perspective One</Text>{"\n"}
           <Text style={styles.titleSub}>What if you are the aggressor?</Text>
         </Text>
       ),
@@ -312,7 +312,7 @@ const AggressionStageThreeScreen: React.FC = () => {
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold',color:'black' }}>Perspective Two</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'), fontWeight: 'bold',color:'black' }}>Perspective Two</Text>{"\n"}
           <Text style={styles.titleSub}>What if you are observing an aggressor?</Text>
         </Text>
       ),
@@ -334,19 +334,19 @@ const AggressionStageThreeScreen: React.FC = () => {
     {
       title: (
         <Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold',color:'black' }}>{''}Perspective Three</Text>{"\n"}
+          <Text style={{ fontSize: wp('6.3%'), fontWeight: 'bold',color:'black' }}>{''}Perspective Three</Text>{"\n"}
           <Text style={styles.titleSub}>Illustrates CAPS Trust Tenet</Text>
         </Text>
       ),
       explanation: (
-        <Text style={styles.info}><Text style={{ fontSize: 16, fontWeight: 'bold' }}>Consciously Calculate Your Trust Relationship:</Text>
+        <Text style={styles.info}><Text style={{ fontSize: wp('4.6%'), fontWeight: 'bold' }}>Consciously Calculate Your Trust Relationship:</Text>
           {'\n'}Consciously calculate your trust relationship with this emerging aggressor so as to approach him in an effective and trusting way. If your trust relationship is lacking, then build trust through finding and embellishing things you have in common with this emerging aggressor
           {'\n\n'}Explain to this emerging aggressor, "I need to stretch my legs, let's go for a walk!" You stand up and begin walking out of the room; leaving the problem in the room! While out of the room, you find things in common with this aggression, you build on these shared commonalities, out of which, you will develop rapport and ultimately trust. Remember CAPS Trust Tenet One: If someone trusts you 100%, they will quickly diffuse because they trust you 100%.
           {'\n\n'}To better understand and respond with the Critical Aggression Prevention System (CAPS), we highly recommend taking <Text style={styles.link}
             onPress={() => Linking.openURL('https://aggressionmanagement.com/caps_training.php')}>CAPS Training</Text>, either Certified Aggression Managers or Ambassadors' (train-the-trainers) Webinar-based Workshops.
             {'\n\n'} <Text style={{fontWeight:'bold'}}>Using the Five Universal Approaches Builds Trust:</Text>
             {'\n\n'}Learn all about and utilize the five Universal Approaches forword in Aggression Stage Five.
-          {"\n\n"}<Text style={{ fontSize: 16, fontWeight: 'bold' }}>Leader's Goodwill Built on Trust:</Text>
+          {"\n\n"}<Text style={{ fontSize: wp('4.6%'), fontWeight: 'bold' }}>Leader's Goodwill Built on Trust:</Text>
           {'\n'}As a "leader," you have already engendered trust. Remembering our CAPS Tenet (If someone trusts you 100%, they will do whatever you ask, because they trust you 100%). Use this Leadership engendered trust to convince them away from their aggressive path to a more constructive (assertive) path.
           {'\n\n'}To better understand and respond with the Critical Aggression Prevention System (CAPS), we highly recommend taking <Text style={styles.link}
             onPress={() => Linking.openURL('https://aggressionmanagement.com/caps_training.php')}>CAPS Training</Text>, either Certified Aggression Managers or Ambassadors' (train-the-trainers) Webinar-based Workshops.
@@ -432,7 +432,7 @@ const AggressionStageThreeScreen: React.FC = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -456,6 +456,8 @@ const AggressionStageThreeScreen: React.FC = () => {
 };
 
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -463,13 +465,13 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: wp('5.8%'), // Adjusted font size to be responsive
+    fontWeight: '500',
     color: '#fff',
     textAlign: 'center',
   },
@@ -482,23 +484,24 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   info: {
-    fontSize: 16,
-    lineHeight: 22,
+    marginTop: hp('2.5%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3.5%'), // Responsive line height
     color: '#666',
     textAlign: 'justify',
-    marginLeft:10,
-    
   },
   backIcon: {
-    width: 25,
-    height: 25,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
     tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
   },
   card: {
-    marginVertical: 15,
+    marginTop: hp('2%'), // Responsive margin
+    marginBottom: hp('3%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
     elevation: 0,
@@ -509,32 +512,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   clip: {
-    width: 20,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: wp('5%'), // Responsive height
     tintColor: '#b71c1c',
     resizeMode: 'contain',
-   marginRight:10,
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
+  },
+  cardTitle: {
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: wp('4.5%'), // Responsive font size
+    flex: 1,
   },
   arrow: {
-    width: 15,
-    height: 15,
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
     tintColor: '#b71c1c',
   },
   arrowDown: {
-    width: 15,
-    height: 15,
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
     transform: [{ rotate: '90deg' }],
   },
   cardContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  titleSub: {
-    fontSize: 14,
-    color: 'gray',
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
+    paddingVertical: hp('1.5%'), // Responsive vertical padding
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -545,8 +552,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 22,
-    height: 22,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
   },
   centeredView: {
@@ -555,10 +562,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Responsive margin
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: hp('4%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -568,38 +575,37 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'#fff',
-
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Responsive margin
     color: 'black',
-
+  },
+ modalText: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
   },
   ptext: {
-    fontSize: 16,
-    marginBottom: 20,
-   
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
     textAlign: 'center',
-    
-
+  },
+  titleSub: {
+    fontSize: wp('4.2%'), // Adjusted font size to be responsive
+    color: 'black',
   },
 });
 

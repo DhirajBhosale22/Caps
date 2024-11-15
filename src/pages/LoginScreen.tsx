@@ -776,6 +776,7 @@ const LoginScreen: React.FC = () => {
           <TextInput
             style={styles.input}
             placeholder="Password"
+            
             secureTextEntry={!passwordVisible}
             placeholderTextColor="white"
             value={password}
@@ -805,15 +806,15 @@ const LoginScreen: React.FC = () => {
           onPress={handleLogin}
           disabled={isButtonDisabled} // Disable button if no email or password
         >
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>LOGIN</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-          <Text style={styles.link}>Forgot Password ?</Text>
+          <Text style={styles.link}>Forgot your Password ?</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate('RegistrationForm')}
           style={styles.createAccountButton}>
-          <Text style={styles.createAccountText}>Create an account</Text>
+          <Text style={styles.createAccountText}>CREATE AN ACCOUNT</Text>
         </TouchableOpacity>
       </View>
       <Modal
@@ -847,6 +848,9 @@ const LoginScreen: React.FC = () => {
     </ImageBackground>
   );
 };
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
@@ -855,110 +859,113 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: 'absolute',
-    top: '-20%', // Adjust this value for proper vertical spacing
-    right: 20, // Adjust this value for proper horizontal spacing
+    top: hp('-14%'), // Adjust this value for proper vertical spacing
+    right: wp('5%'), // Adjust this value for proper horizontal spacing
     zIndex: 1,
   },
   enabledButton: {
     backgroundColor: '#9d0808',
   },
   disabledButton: {
-    backgroundColor: 'rgba(255, 0, 0, 0.2)',
+    backgroundColor: 'rgba(255, 0, 0, 0.3)',
   },
   skipButtonText: {
-    fontSize: 18,
+    fontSize: wp('4%'), // Adjusted for responsiveness
     color: 'white',
     fontWeight: '500',
   },
   container: {
-    width: '90%',
+    width: wp('90%'),
     backgroundColor: 'rgba(255, 255, 255, 0)',
     borderRadius: 10,
     alignItems: 'center',
   },
   title: {
     color: 'white',
-    fontSize: 24,
+    fontSize: wp('4.5%'), // Adjusted for responsiveness
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: hp('0.5%'), // Adjusted for responsiveness
     textAlign: 'center',
   },
   iconImage: {
-    width: 19,
-    height: 19,
+    width: wp('5%'), // Adjusted for responsiveness
+    height: hp('2.5%'), // Adjusted for responsiveness
     tintColor: 'white',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '90%',
-    marginTop: 20,
+    width: wp('80%'),
+    marginTop: hp('2%'), // Adjusted for responsiveness
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
+    borderRadius: 3,
+    marginBottom: hp('1%'),
+    paddingHorizontal: wp('2%'), // Adjusted for responsiveness
   },
   input: {
     flex: 1,
-    height: 50,
-    paddingHorizontal: 10,
+    height: hp('7.5%'), // Adjusted for responsiveness
+    paddingHorizontal: wp('2%'), // Adjusted for responsiveness
     backgroundColor: 'rgba(255, 255, 255, 0)',
     color: 'white',
+    fontSize: wp('4.2%'),
   },
   togglePassword: {
     color: '#007BFF',
-    marginLeft: 8,
+    marginLeft: wp('2%'), // Adjusted for responsiveness
   },
   button: {
     backgroundColor: 'rgba(255, 0, 0, 0.2)',
-    padding: 10,
+    padding: hp('2%'), // Adjusted for responsiveness
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 20,
-    width: '45%',
-    marginTop: 15,
+    marginBottom: hp('2%'), // Adjusted for responsiveness
+    width: wp('45%'),
+    marginTop: hp('2%'), // Adjusted for responsiveness
   },
   buttonText: {
     color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Adjusted for responsiveness
     fontWeight: 'bold',
   },
   link: {
     color: 'white',
     textAlign: 'center',
-    marginBottom: 10,
-    fontSize: 16,
+    marginBottom: hp('1%'), // Adjusted for responsiveness
+    fontSize: wp('4%'), // Adjusted for responsiveness
     fontWeight: 'bold',
-    marginTop: 20,
+    marginTop: hp('2%'), // Adjusted for responsiveness
   },
   icon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
+    width: wp('5%'), // Adjusted for responsiveness
+    height: hp('2.5%'), // Adjusted for responsiveness
+    marginRight: wp('4%'), // Adjusted for responsiveness
     tintColor: 'white',
   },
   createAccountButton: {
     borderColor: 'red',
     borderWidth: 1,
     borderRadius: 0,
-    padding: 7,
+    padding: hp('1%'), // Adjusted for responsiveness
     textAlign: 'center',
-    width: '56%',
-    marginTop: 30,
-    marginBottom: 30,
+    width: wp('56%'),
+    marginTop: hp('3%'), // Adjusted for responsiveness
+    marginBottom: hp('3%'), // Adjusted for responsiveness
   },
   createAccountText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: wp('4%'), // Adjusted for responsiveness
     fontWeight: 'bold',
-    padding: 5,
+    padding: hp('1%'), // Adjusted for responsiveness
     textAlign: 'center',
+    
   },
   errorText: {
     color: 'red',
-    fontSize: 14,
-    marginBottom: 10,
-    width: '90%',
+    fontSize: wp(' 4%'), // Adjusted for responsiveness
+    marginBottom: hp('1%'), // Adjusted for responsiveness
+    width: wp('90%'),
     textAlign: 'left',
   },
   modalContainer: {
@@ -968,10 +975,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    width: 300,
+    width: wp('80%'), // Adjusted for responsiveness
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
+    padding: hp('3%'), // Adjusted for responsiveness
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -983,19 +990,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
-    fontSize: 18,
+    fontSize: wp('5%'), // Adjusted for responsiveness
     fontWeight: 'bold',
-    marginBottom: 10,
-    color:'black',
+    marginBottom: hp('1%'), // Adjusted for responsiveness
+    color: 'black',
   },
   modalMessage: {
-    fontSize: 16,
+    fontSize: wp('4.5%'), // Adjusted for responsiveness
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: hp('2%'), // Adjusted for responsiveness
     color: 'black',
   },
   modalButton: {
-    padding: 10,
+    padding: hp('2%'), // Adjusted for responsiveness
     borderRadius: 5,
   },
   errorButton: {
@@ -1006,7 +1013,7 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted for responsiveness
   },
   errorText1: {
     color: 'black',
@@ -1014,5 +1021,3 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
-
-// in above code after come to log in page after and enter correct user details and click on login then it opens fingerprint scanner pop up and if fingerprint matches then it navigated to home for 1 second and again comes to login screen. But i don't want that if finger_flag is 1 and user is on login screen then directly open finger print scanner pop up to navigate home for last used account in that device. I want  if finger_flag is 1 and user is on login screen then directly open finger print scanner pop to navigate home for last used account in that device without entering any details or click on login 

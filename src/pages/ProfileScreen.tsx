@@ -575,7 +575,7 @@ const ProfileScreen: React.FC = () => {
 
       if (response && response.status === 200) {
         const data = response.data;
-        console.log('Received user data:', data);
+        console.log('Received user data:', JSON.stringify(data, null, 2)); // Pretty print the JSON data
         hideLoader();
 
         if (data.subscriptionFlag === 1 && storedUser.client_id === '0') {
@@ -714,15 +714,21 @@ const ProfileScreen: React.FC = () => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate('MyCasePage')}>
-            <Text style={styles.buttonText}>
-              My Cases {'\n'} {userInfo?.myCases || 0}
+            <Text style={styles.buttonText2}>
+              My Cases {'\n'} 
+            </Text>
+            <Text style={styles.buttonText1}>
+             {userInfo?.myCases || 0}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate('Sharedcases')}>
-            <Text style={styles.buttonText}>
-              My Shared {'\n'} {userInfo?.myShared || 0}
+            <Text style={styles.buttonText2}>
+              My Shared {'\n'}
+            </Text>
+            <Text style={styles.buttonText1}>
+             {userInfo?.myShared || 0}
             </Text>
           </TouchableOpacity>
         </View>
@@ -746,6 +752,8 @@ const ProfileScreen: React.FC = () => {
   );
 };
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -754,21 +762,21 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 40 : 20,
-    left: 10,
+    top: Platform.OS === 'ios' ? hp('5%') : hp('2%'),
+    left: wp('2%'),
     zIndex: 3,
   },
   backIcon: {
-    width: 22,
-    height: 22,
+    width: wp('5.5%'), // Adjusted width
+    height: wp('5.5%'), // Adjusted height
     tintColor: 'white',
-    marginTop: 5,
+    marginTop: hp('1%'),
   },
   stickyHeader: {
     backgroundColor: '#9d0808',
     width: '100%',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingHorizontal: wp('5%'), // Adjusted padding
+    paddingVertical: hp('2.5%'), // Adjusted padding
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
@@ -776,17 +784,18 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   stickyHeaderText: {
-    fontSize: 20,
+    fontSize: wp('5.5%'), // Adjusted font size
     color: '#fff',
+    fontWeight:'bold'
   },
   header: {
     width: '100%',
-    height: height * 0.3,
+    height: hp('30%'), // Adjusted height
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: Platform.OS === 'ios' ? 100 : 70,
-    paddingBottom: 100,
-    marginTop: -7,
+    marginTop: Platform.OS === 'ios' ? hp('12%') : hp('9%'), // Adjusted margin
+    paddingBottom: hp('10%'), // Adjusted padding
+    marginTop: hp('-1%'), // Adjusted margin
   },
   backgroundImage: {
     position: 'absolute',
@@ -795,28 +804,28 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   profileImageContainer: {
-    marginTop: 200,
+    marginTop: hp('25%'), // Adjusted margin
     alignItems: 'center',
     justifyContent: 'center',
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: wp('25%'), // Adjusted width
+    height: wp('25%'), // Adjusted height
+    borderRadius: wp('12.5%'), // Adjusted border radius
     borderWidth: 2,
     borderColor: '#fff',
   },
   userInfo: {
     alignItems: 'center',
-    marginTop: 0,
+    marginTop: hp('1%'), // Adjusted margin
   },
   name: {
-    fontSize: 24,
+    fontSize: wp('6%'), // Adjusted font size
     fontWeight: 'bold',
     color: '#505050',
   },
   details: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Adjusted font size
     color: '#666',
   },
   location: {
@@ -824,37 +833,53 @@ const styles = StyleSheet.create({
   },
   body: {
     width: '100%',
-    paddingHorizontal: 10,
-    marginTop: 20,
-    borderTopWidth: 1,
+    paddingHorizontal: wp('3%'), // Adjusted padding
+    marginTop: hp('3%'), // Adjusted margin
+    borderTopWidth: 0.15,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    marginTop: 10,
+    marginTop: hp('2%'), // Adjusted margin
   },
   button: {
     flex: 1,
-    marginHorizontal: 10,
-    padding: 25,
+    marginHorizontal: wp('1.5%'), // Adjusted margin
+    padding: hp('3%'), // Adjusted padding
     backgroundColor: '#9d0808',
     borderRadius: 10,
     alignItems: 'center',
-    marginVertical: 5,
-    maxWidth: '48%',
+    marginVertical: hp('1%'), // Adjusted margin
+    maxWidth: '70%',
+    height: wp('23%'),
   },
   buttonFullWidth: {
     width: '100%',
-    padding: 15,
+    padding: hp('2%'), // Adjusted padding
     backgroundColor: '#9d0808',
     borderRadius: 5,
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: hp('0.5%'), // Adjusted margin
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: wp('4.7%'), // Adjusted font size
+    textAlign:'center',
+    fontWeight:'500'
+  },
+  buttonText2: {
+    color: '#fff',
+    fontSize: wp('5%'), // Adjusted font size
+    textAlign:'center',
+    fontWeight:'700'
+  },
+  buttonText1: {
+    color: '#fff',
+    marginTop: hp('-2%'),
+    fontSize: wp('6%'), // Adjusted font size
+    fontWeight:'bold',
+    textAlign:'center',
   },
 });
 

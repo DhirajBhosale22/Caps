@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 20,
         fontWeight: 'bold',
+        color:'black'
     },
     divider: {
         height: 1,

@@ -1842,23 +1842,27 @@ const ChangePasswordScreen = ({navigation}) => {
   );
 };
 
+
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bolt',
+    fontSize: wp('5.5%'), // Adjusted font size to be responsive
+    fontWeight: 'bold', // Fixed typo from 'bolt' to 'bold'
     color: 'white',
     margin: 'auto',
   },
   scrollViewContent: {
     flexGrow: 1,
-    paddingBottom: 100,
+    paddingBottom: hp('10%'), // Adjusted padding to be responsive
   },
   inputContainer: {
-    marginBottom: 1,
+    marginBottom: hp('1%'), // Adjusted margin to be responsive
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1869,8 +1873,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 3,
     backgroundColor: 'white',
-    height: 60,
-    marginTop: 15,
+    height: hp('7%'), // Adjusted height to be responsive
+    marginTop: hp('1%'), // Adjusted margin to be responsive
     width: '95%',
   },
   enabledButton: {
@@ -1880,57 +1884,58 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(300, 0, 0.1, 0.3)',
   },
   icon: {
-    padding: 10,
+    padding: wp('2.5%'), // Adjusted padding to be responsive
   },
   iconImage: {
-    width: 15,
-    height: 15,
+    width: wp('4%'), // Adjusted width to be responsive
+    height: hp('2.5%'), // Adjusted height to be responsive
     tintColor: '#a42f2d',
   },
   head: {
     flexDirection: 'row',
     backgroundColor: '#a42f2d',
-    paddingVertical: 17,
-    marginBottom: 15,
+    paddingVertical: hp('2%'), // Adjusted padding to be responsive
+    marginBottom: hp('2%'), // Adjusted margin to be responsive
     elevation: 15,
   },
   back: {
-    width: 25,
-    height: 20,
+    width: wp('6%'), // Adjusted width to be responsive
+    height: hp('3%'), // Adjusted height to be responsive
     tintColor: 'white',
-    marginLeft: 15,
+    marginLeft: wp('3%'), // Adjusted margin to be responsive
   },
   input: {
     flex: 1,
-    paddingHorizontal: 10,
-    fontSize: 16,
+    paddingHorizontal: wp('2.5%'), // Adjusted padding to be responsive
+    fontSize: wp('4%'), // Adjusted font size to be responsive
     tintColor: 'black',
     color: 'black',
   },
   errorText: {
     color: 'red',
-    marginTop: 5,
-    fontSize: 12,
+    marginTop: hp('1%'), // Adjusted margin to be responsive
+    fontSize: wp('3.5%'), // Adjusted font size to be responsive
     alignSelf: 'flex-start',
-    marginLeft: 15,
+    marginLeft: wp('3%'), // Adjusted margin to be responsive
   },
-
   submitButton: {
     backgroundColor: '#a42f2d',
-    padding: 15,
+    padding: hp('1.5%'), // Adjusted padding to be responsive
     borderRadius: 7,
     alignItems: 'center',
     width: '60%',
-    marginTop: 15,
+    height: hp('7%'),
+    marginTop: hp('2%'), // Adjusted margin to be responsive
     alignSelf: 'center',
   },
   submitButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: wp('5.2%'), // Adjusted font size to be responsive
     fontWeight: 'bold',
+  
   },
   footer: {
-    height: 60,
+    height: hp('7.5%'), // Adjusted height to be responsive
     backgroundColor: '#B71C1C',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -1939,15 +1944,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: 60,
+    height: hp('7.5%'), // Adjusted height to be responsive
   },
   footerButton: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Adjusted width to be responsive
+    height: hp('3%'), // Adjusted height to be responsive
     tintColor: 'white',
   },
   centeredView: {
@@ -1959,28 +1964,28 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: hp('4%'), // Adjusted padding to be responsive
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   modalTitles: {
-    fontSize: 20,
+    fontSize: wp('5%'), // Adjusted font size to be responsive
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Adjusted margin to be responsive
     color: 'black',
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    fontSize: wp('4%'), // Adjusted font size to be responsive
+    marginBottom: hp('2%'), // Adjusted margin to be responsive
     color: 'black',
   },
   modalText1: {
-    fontSize: 16,
-    marginBottom: 15,
+    fontSize: wp('4%'), // Adjusted font size to be responsive
+    marginBottom: hp('2%'), // Adjusted margin to be responsive
     fontWeight: 'bold',
   },
   modalButtonContainer: {
@@ -1988,17 +1993,17 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Adjusted padding to be responsive
+    marginHorizontal: wp('2%'), // Adjusted margin to be responsive
     backgroundColor: '#9D0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Adjusted font size to be responsive
   },
   ptext: {
-    fontSize: 18,
-    marginBottom: 20,
+    fontSize: wp('4.5%'), // Adjusted font size to be responsive
+    marginBottom: hp('2%'), // Adjusted margin to be responsive
     fontWeight: 'bold',
     textAlign: 'center',
   },

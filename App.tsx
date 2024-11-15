@@ -1,5 +1,5 @@
 // App.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useColorScheme } from 'react-native';
@@ -52,12 +52,13 @@ import FilesPage from './src/pages/FilePage';
 import Apploder from './src/pages/Apploder';
 import ExistingCases from './src/pages/ExistingCases';
 import InternetConnection from './src/pages/InternetConnection';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createStackNavigator();
 
 const App = () => {
   const scheme = useColorScheme(); // Detect the current theme (light or dark)
-
+ 
   return (
 
     <LoaderProvider>

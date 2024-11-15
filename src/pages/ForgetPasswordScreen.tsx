@@ -110,6 +110,9 @@ const ForgotPasswordScreen = () => {
   );
 };
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -119,7 +122,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 10,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
@@ -129,67 +132,66 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: wp('5.5%'), // Responsive font size
     flex: 1,
     textAlign: 'center',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    padding: 10,
+    width: wp('7%'), // Responsive width
+    height: wp('7%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
     tintColor: 'white',
   },
   welcomeText: {
     fontFamily: 'robotoblack',
     color: 'black',
-    fontSize: 18,
-    marginBottom: 5,
-    marginTop: 15,
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('1%'), // Responsive margin
+    marginTop: hp('2%'), // Responsive margin
     textAlign: 'center',
-    marginLeft: 15,
+    marginLeft: wp('4%'), // Responsive margin
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderColor: '#cccccc',
     borderWidth: 2,
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop: 15,
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('4%'), // Responsive margin
+    marginTop: hp('2%'), // Responsive margin
     borderRadius: 4,
-    paddingHorizontal: 10,
-    
-    height: 50,
+    paddingHorizontal: wp('3%'), // Responsive padding
+    height: hp('7.2%'), // Responsive height
     backgroundColor: 'rgba(255, 255, 255, 0.4)',
   },
   inputIcon: {
-    width: 15,
-    height: 15,
-    marginRight: 10,
+    width: wp('4%'), // Responsive width
+    height: wp('4%'), // Responsive height
+    marginRight: wp('2.5%'), // Responsive margin
   },
   input: {
     flex: 1,
-    height: 50,
-    paddingHorizontal: 10,
-    fontSize: 14,
+    height: hp('6.25%'), // Responsive height
+    paddingHorizontal: wp('3%'), // Responsive padding
+    fontSize: wp('3.5%'), // Responsive font size
     color: 'black',
   },
   button: {
     backgroundColor: 'rgba(157, 8, 8, 0.9)',
-    padding: 13,
+    padding: hp('2%'), // Responsive padding
     borderRadius: 7,
     alignItems: 'center',
-    width: '60%',
-    height: 4.5 * 12,
+    width: wp('50%'), // Responsive width
+    height: hp('7.5%'), // Responsive height
     alignSelf: 'center',
-    marginTop:15,
+    marginTop: hp('2%'), // Responsive margin
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: wp('4.3%'), // Responsive font size
   },
   buttonDisabled: {
-    opacity: 0.5, // Blur effect for disabled state
+    opacity: 0.6, // Blur effect for disabled state
   },
   modalContainer: {
     flex: 1,
@@ -198,10 +200,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    width: 300,
+    width: wp('75%'), // Responsive width
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
+    padding: wp('5%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -213,24 +215,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 10,
-    color:'black'
+    marginBottom: hp('1%'), // Responsive margin
+    color: 'black',
   },
-  // errorText: {
-  //   color: 'red',
-  // },
   modalMessage: {
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
     textAlign: 'center',
-    marginBottom: 20,
-    
+    marginBottom: hp('2%'), // Responsive margin
   },
   modalButton: {
-    padding: 10,
-    borderRadius: 5,
-  },
+    padding: wp('2.5%'), // Responsive padding
+    borderRadius: 5 },
   errorButton: {
     backgroundColor: '#9d0808',
   },
@@ -239,19 +236,19 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
   },
   errorText: {
-    fontSize: 12,
- marginLeft:15,
- marginBottom: 20,
-    color:'red'
+    fontSize: wp('3%'), // Responsive font size
+    marginLeft: wp('4%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'red',
   },
   errorText1: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 10,
-    color:'black'
+    marginBottom: hp('1%'), // Responsive margin
+    color: 'black',
   },
 });
 

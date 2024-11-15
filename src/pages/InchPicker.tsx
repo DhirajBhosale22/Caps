@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 20,
         fontWeight: 'bold',
+        color:'black'
     },
     divider: {
         height: 1,
@@ -114,6 +115,7 @@ const styles = StyleSheet.create({
     },
     optionText: {
         fontSize: 18,
+        color:'black'
     },
     footerContainer: {
         flexDirection: 'row',

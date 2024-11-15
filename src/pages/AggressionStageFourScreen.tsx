@@ -401,10 +401,10 @@ const AggressionStageFourScreen: React.FC = () => {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [items, setItems] = useState<Item[]>([
     {
-      title: ( <Text>
-        <Text  style={{ fontSize: 20, fontWeight: 'bold',color:'black' }}>Introduction</Text>{"\n"}
+      title: ( <View>
+        <Text  style={{ fontSize: wp('6.3%'), fontWeight: 'bold',color:'black' }}>Introduction</Text>
         <Text style={styles.titleSub}>Stage Four Introduction</Text>
-      </Text>), explanation: (  <Text style={styles.info}> 
+        </View>), explanation: (  <Text style={styles.info}> 
         {'\n\n'}<Text style={styles.bold}>Cognitive (Intent-driven) Aggression:</Text>At stage four, the Emerging Aggressor typically has a targeted victim in his sights. Yet, this aggressor is not yet prepared to go face-to-face with his victim; that would be too daunting. He will work behind the scenes to undermine the relationship the victim has with his or her own community (Community is defined as those people that the victim likes, loves and respects and with whom the victim wishes to receive like, love and respect in return).
       {'\n\n'} <Text style={styles.info}>We observe what we call, "Planting the seed of distrust:" in every institutions and organizations that we visit. 
       </Text>
@@ -417,10 +417,10 @@ const AggressionStageFourScreen: React.FC = () => {
       onPress={()=>Linking.openURL('https://aggressionmanagement.com/caps_training.php')}>CAPS Training</Text>, either Certified Aggression Managers or Ambassadors' (train-the-trainers) Webinar-based Workshops.
       </Text>), expanded: false
     },
-    {  title: ( <Text>
-      <Text  style={{ fontSize: 20,fontWeight: 'bold',color:'black' }}>Prespective One</Text>{"\n"}
+    {  title: (  <View>
+      <Text  style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black' }}>Prespective One</Text>
       <Text style={styles.titleSub}>What if you are the aggressor?</Text>
-    </Text>), explanation: (  <Text style={styles.info}>{'\n\n'}
+      </View>), explanation: (  <Text style={styles.info}>{'\n\n'}
       How should you respond if you are the aggressor? Here are some suggestions:
     {'\n\n'} <Text style={styles.bold}>Planting the Seed of Distrust with a Victim's Community</Text>
     {'\n'} It is your objective to turn this body of "friends" or community against your victim? If you go to the victim's community and say: "You know Jane. I don't know if I can still trust her. I don't know why; I just don't feel comfortable around her anymore." You have just planted the seed of distrust. This insidious seed will grow like weeds in a garden. By your acknowledgement that you are Planting the Seed of Distrust, this acknowledgement alone, should be enough to move you against this initiative.
@@ -430,10 +430,10 @@ const AggressionStageFourScreen: React.FC = () => {
       onPress={()=>Linking.openURL('https://aggressionmanagement.com/caps_training.php')}>CAPS Training</Text>, either Certified Aggression Managers or Ambassadors' (train-the-trainers) Webinar-based Workshops.
      </Text>), expanded: false },
 
-    {   title: ( <Text>
-      <Text  style={{ fontSize: 20,fontWeight: 'bold',color:'black' }}>Prespective Two</Text>{"\n"}
+    {   title: (  <View>
+      <Text  style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black' }}>Prespective Two</Text>
       <Text style={styles.titleSub}>What if you are observing an aggressor?</Text>
-    </Text>), explanation: (  <Text style={styles.info}>How should you respond if you are observing another or others that are aggressive? Here are some suggestions: To better understand and respond with the Critical Aggression Prevention System (CAPS), we highly recommend taking <Text style={styles.link} 
+      </View>), explanation: (  <Text style={styles.info}>How should you respond if you are observing another or others that are aggressive? Here are some suggestions: To better understand and respond with the Critical Aggression Prevention System (CAPS), we highly recommend taking <Text style={styles.link} 
       onPress={()=>Linking.openURL('https://aggressionmanagement.com/caps_training.php')}>CAPS Training</Text>, either Certified Aggression Managers or Ambassadors' (train-the-trainers) Webinar-based Workshops.
       {/* {'\n\n'}How should you respond if you are observing another or others that are aggressive? Here are some suggestions: To better understand and respond with the Critical Aggression Prevention System (CAPS), we highly recommend taking CAPS Training, either Certified Aggression Managers or Ambassadors' (train-the-trainers) Webinar-based Workshops. */}
       {'\n\n'}<Text style={styles.bold}>Understanding "planting a seed of distrust":</Text>Planting a seed of distrust is outright Cognitive Aggression at the fourth stage in the Escalation Phase; a technique used throughout our world, possibly because people do not know how aggressive it is. It is not instinctual for one human to attack another. Therefore, once people realize that this is overt aggressive behavior, they tend to move away from it. Another method is to combat these partial truths with complete transparency.
@@ -477,10 +477,10 @@ const AggressionStageFourScreen: React.FC = () => {
 
       </Text>), expanded: false },
 
-{   title: ( <Text>
-  <Text  style={{ fontSize: 20,fontWeight: 'bold',color:'black' }}>Prespective Three</Text>{"\n"}
+{   title: (  <View>
+  <Text  style={{ fontSize: wp('6.3%'),fontWeight: 'bold',color:'black' }}>Prespective Three</Text>
   <Text style={styles.titleSub}>Illustrates CAPS Trust Tenet</Text>
-</Text>), explanation: (  <Text style={styles.info}>{'\n\n'}
+  </View>), explanation: (  <Text style={styles.info}>{'\n\n'}
   <Text style={styles.bold}>1. CAPS Trust Tenet</Text>
 {'\n\n'}<Text style={styles.bold}>Explained: </Text>Persuasive Tactics, if conveyed with a genuine and caring tone, instills Trust! Persuasive Tactics are designed to convince an aggressor away from their current aggressive path to a more constructive path without the aggressor realizing they are being persuaded. Aggressors' tend to respond to these Persuasive Tactics by engendering rapport and ultimately trust. If we are to be Aggression Managers, we must be able to use these Persuasive Tactics as effective offense, or defensive, as we recognize and respond appropriately in the heat of an incident of aggression. The following are Persuasion Tactics we have developed over the years. The utilization of these mental short cuts enables us to quickly process and employ these tactics to move an aggressor to a more constructive path.
 {'\n\n'}<Text style={styles.bold}>Persuasive Tactic Described:</Text> We live with the blessings, and the curse, of the Information Internet Age. Our world is awash with information, much of it extraneous. In order for us to function effectively, our minds create short cuts to process the flood of input our minds receive each day. In today's computer & smartphone- conscious times, we could call this "default thinking."
@@ -572,6 +572,7 @@ const AggressionStageFourScreen: React.FC = () => {
     setLogoutModalVisible(false);
   };
 
+  
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
@@ -579,12 +580,10 @@ const AggressionStageFourScreen: React.FC = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Introduction To CAPS</Text>
+        <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Aggregation Stage Four</Text>
       </View>
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollView}>
-      <View style={styles.logoi}>
-        
-      </View>
+    
      
         {items.map((item, index) => (
           <View key={index} style={styles.card}>
@@ -631,7 +630,7 @@ const AggressionStageFourScreen: React.FC = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitles}>Confirm Logout</Text>
+            <Text style={styles.modalTitles}>Logout</Text>
             <Text style={styles.modalText}>Are you sure you want to log out?</Text>
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity
@@ -654,6 +653,7 @@ const AggressionStageFourScreen: React.FC = () => {
   );
 };
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const styles = StyleSheet.create({
   container: {
@@ -662,13 +662,13 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: wp('5.8%'), // Adjusted font size to be responsive
+    fontWeight: '500',
     color: '#fff',
     textAlign: 'center',
   },
@@ -677,118 +677,68 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   link: {
-    color: '#1E90FF', // Customize the color of the link
+    color: '#1E90FF',
     textDecorationLine: 'underline',
   },
   info: {
-    marginTop:20,
-    fontSize: 16,
-    lineHeight: 25,
+    marginTop: hp('2.5%'), // Responsive margin
+    fontSize: wp('4%'), // Responsive font size
+    lineHeight: hp('3.5%'), // Responsive line height
     color: '#666',
-    textAlign:'justify'
-  },
-  bold:{
-    fontWeight:'bold'
-  },
-  italic:{
-    fontStyle:'italic'
+    textAlign: 'justify',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    padding: 10,
-  tintColor: '#fff'
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
+    tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
   },
   card: {
-    marginTop: 30,
-    marginBottom: 30,
+    marginTop: hp('2%'), // Responsive margin
+    marginBottom: hp('3%'), // Responsive margin
     borderRadius: 2,
     backgroundColor: 'transparent',
     elevation: 0,
     shadowOpacity: 0,
-    
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-   
-    
   },
   clip: {
-    width: 20,
-    height: 20,
+    width: wp('5%'), // Responsive width
+    height: wp('5%'), // Responsive height
     tintColor: '#b71c1c',
     resizeMode: 'contain',
-    marginRight:10,
+    marginLeft: wp('4%'), // Responsive margin
+    marginRight: wp('2%'), // Responsive margin
+    marginBottom: hp('2%'), // Responsive margin
   },
   cardTitle: {
     fontWeight: 'bold',
     color: '#333',
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     flex: 1,
   },
   arrow: {
-    width: 15,
-    height: 15,
-    tintColor: '#b71c1c', // Arrow pointing up
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
+    tintColor: '#b71c1c',
   },
   arrowDown: {
-    width: 15,
-    height: 15,
-    marginLeft: 'auto',
-    transform: [{ rotate: '90deg' }], // Arrow pointing down
+    width: wp('3%'), // Adjusted width to be responsive
+    height: hp('2.2%'), // Adjusted height to be responsive
+    transform: [{ rotate: '90deg' }],
   },
   cardContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: wp('4%'), // Responsive horizontal padding
+    paddingVertical: hp('1.5%'), // Responsive vertical padding
   },
-
   footer: {
-    padding: 10,
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  footerText: {
-    fontSize: 14,
-    color: 'black',
-    marginBottom: 10,
-    fontWeight: '500',
-    textAlign:'center',
-    marginLeft:10,
-    marginRight:10,
-  },
-  registrationButton: {
-    backgroundColor: '#9d0808', // Customize the background color of the button
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  registrationButtonText: {
-    color: 'white',
-    fontSize: 18,
-  
-  },
-  logoicon: {
-    width: 100,
-    height:100 ,
-    marginHorizontal: 140,
-    backgroundColor: 'white',
-},
-// logoi: {
-//     flex:1,
-//     justifyContent: 'center',
-//     alignItems: 'center',    
-// },
-titleSub: {
-    fontSize: 14, // or your preferred smaller size
-    color: 'gray', // optional, for styling the subtext differently
-  },
-
-  footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#9d0808',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -799,8 +749,8 @@ titleSub: {
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
   },
   centeredView: {
@@ -809,10 +759,10 @@ titleSub: {
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Responsive margin
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: hp('4%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -822,38 +772,37 @@ titleSub: {
     zIndex: 1000,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'#fff',
-
-  },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Responsive margin
     color: 'black',
-
+  },
+ modalText: {
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
+    color: 'black',
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: hp('2%'), // Responsive padding
+    marginHorizontal: wp('2%'), // Responsive margin
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4%'), // Responsive font size
   },
   ptext: {
-    fontSize: 16,
-    marginBottom: 20,
-   
+    fontSize: wp('4%'), // Responsive font size
+    marginBottom: hp('3%'), // Responsive margin
     textAlign: 'center',
-    
-
+  },
+  titleSub: {
+    fontSize: wp('4.2%'), // Adjusted font size to be responsive
+    color: 'black',
   },
 });
 
