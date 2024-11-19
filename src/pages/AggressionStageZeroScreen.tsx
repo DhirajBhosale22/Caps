@@ -54,7 +54,7 @@ const [logoutModalVisible, setLogoutModalVisible] = useState(false);
       <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
       <View style={styles.header}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Image source={require('../assets/img/back.png')} style={styles.backIcon} />
+          <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Aggression Stage Zero</Text>
       </View>
@@ -171,8 +171,8 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   backIcon: {
-    width: wp('6%'), // Responsive width
-    height: wp('6%'), // Responsive height
+    width: wp('7%'), // Responsive width
+    height: wp('7%'), // Responsive height
     padding: hp('1%'), // Responsive padding
     tintColor: '#fff',
     

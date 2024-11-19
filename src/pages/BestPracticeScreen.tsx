@@ -774,8 +774,8 @@ const styles = StyleSheet.create({
     left: wp('3%'), // Responsive left position
   },
   backIcon: {
-    width: wp('6%'), // Responsive width
-    height: hp('3%'), // Responsive height
+    width: wp('7%'), // Responsive width
+    height: hp('4%'), // Responsive height
     tintColor: 'white',
   },
   headerText: {
@@ -838,7 +838,7 @@ const styles = StyleSheet.create({
   },
   footerIcon: {
     width: wp('6%'), // Responsive width
-    height: hp('3%'), // Responsive height
+    height: hp('4%'), // Responsive height
     tintColor: 'white',
   },
   icon: {

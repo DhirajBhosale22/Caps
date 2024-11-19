@@ -1061,6 +1061,7 @@ const HomePage = ({ navigation }: any) => {
   const [activeButton, setActiveButton] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [userName, setUserName] = useState('');
+  const [profile_picture, setProfileImage] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const slideAnim = useRef(new Animated.Value(-300)).current;
   const [loading, setLoading] = useState(true);
@@ -1113,6 +1114,7 @@ const HomePage = ({ navigation }: any) => {
         // Set user name and email from the fetched data
         setUserName(data.firstname);  // Load firstname from API
         setUserEmail(data.email);      // Load email from API
+        setProfileImage(data.image_path || 'https://safetnet.site/Aggression_management/profile_images/default_profile.png')
       }
     } catch (err) {
       console.error("Error loading user data:", err);
@@ -1377,7 +1379,7 @@ const HomePage = ({ navigation }: any) => {
           <TouchableOpacity style={styles.overlayTouchable} onPress={closeModal} />
           <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
             <View style={styles.profileContainer}>
-              <Image    source={{ uri: 'https://safetnet.site/Aggression_management/profile_images/default_profile.png' }} style={styles.profileImage} />
+            <Image source={{ uri: profile_picture }} style={styles.profileImage} />
               <View>
                 <Text style={styles.profileName}>{userName}</Text>
                 <Text style={styles.profileEmail}>{userEmail}</Text>
@@ -1577,7 +1579,9 @@ const styles = StyleSheet.create({
     width: wp('15%'), // Responsive width
     height: wp('15%'), // Responsive height
     borderRadius: wp('7.5%'), // Responsive border radius
-    marginRight: wp('2%'), // Responsive margin
+    marginRight: wp('2%'),
+    borderColor: '#fff',
+    borderWidth: 1, // Responsive margin
   },
 
   profileName: {

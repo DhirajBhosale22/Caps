@@ -1723,7 +1723,7 @@ const RegistrationForm = ({ navigation }) => {
       <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={require('../assets/img/backnew.png')} style={styles.backIcon} resizeMode="cover" />
+          <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} resizeMode="cover" />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Welcome</Text>
       </View>
@@ -2057,8 +2057,8 @@ const styles = StyleSheet.create({
     marginRight: wp('1%'), // Adjusted margin
   },
   backIcon: {
-    width: wp('5.5%'), // Adjusted size
-    height: wp('5.5%'), // Adjusted size
+    width: wp('7%'), // Adjusted size
+    height: wp('7%'), // Adjusted size
     tintColor: 'white',
   },
   headerTitle: {

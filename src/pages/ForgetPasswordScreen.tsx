@@ -54,7 +54,7 @@ const ForgotPasswordScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={require('../assets/img/pointer.png')} style={styles.backIcon} />
+          <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Welcome</Text>
       </View>
@@ -149,7 +149,8 @@ const styles = StyleSheet.create({
     marginBottom: hp('1%'), // Responsive margin
     marginTop: hp('2%'), // Responsive margin
     textAlign: 'center',
-    marginLeft: wp('4%'), // Responsive margin
+    marginLeft: wp('1%'), // Responsive margin
+    marginRight: wp('1%'), // Responsive margin
   },
   inputContainer: {
     flexDirection: 'row',

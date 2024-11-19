@@ -172,8 +172,8 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   backIcon: {
-    width: wp('6%'), // responsive width
-    height: hp('3%'), // responsive height
+    width: wp('7%'), // responsive width
+    height: hp('4%'), // responsive height
     padding: hp('1%'), // responsive padding
     tintColor: '#fff',
   },

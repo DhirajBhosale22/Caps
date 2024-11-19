@@ -270,13 +270,7 @@ const EditProfileScreen = () => {
       setValue('subscriptionEndDate', userDataResponse.subscriptionEnd_date);
   
       // Retrieve the profile picture path from AsyncStorage
-      const storedImagePath = await AsyncStorage.getItem('profile_picture');
-      const defaultImageUrl = 'https://safetnet.site/Aggression_management/profile_images/default_profile.png';
-      
-      // Use the stored image if it exists, otherwise fallback to the API response
-      setProfileImage(storedImagePath || userDataResponse.profile_picture || defaultImageUrl);
-      setValue('profile_picture', storedImagePath || userDataResponse.profile_picture || defaultImageUrl);
-  
+       setProfileImage(userDataResponse.image_path || 'https://safetnet.site/Aggression_management/profile_images/default_profile.png'); // Set default image URL if not provided
       if (userDataResponse.country) {
         const country = countries.find(c => c.name === userDataResponse.country);
         if (country) {
@@ -328,7 +322,7 @@ const EditProfileScreen = () => {
   };
 
   const handleImagePick = async () => {
-    launchImageLibrary({ mediaType: 'photo' }, async (response) => {
+    launchImageLibrary({ mediaType: 'photo', includeBase64: true }, async (response) => {
       if (response.didCancel) {
         console.log('User  cancelled image picker');
       } else if (response.error) {
@@ -337,12 +331,12 @@ const EditProfileScreen = () => {
         const selectedImage = response.assets[0];
         console.log('Selected image details:', selectedImage);
         
-        // Update the profile image and set profile_picture to the selected image URI
-        setProfileImage(selectedImage.uri); // Locally set the image URI
-        setValue('profile_picture', selectedImage.uri); // Update the form value with the new image URI
+        // Update the profile image and set profile_picture to the selected image Base64
+        setProfileImage(`data:${selectedImage.type};base64,${selectedImage.base64}`); // Convert to Base64
+        setValue('profile_picture', `data:${selectedImage.type};base64,${selectedImage.base64}`); // Update the form value with the new image Base64
   
         // Optionally save the selected image path to AsyncStorage if needed
-        await AsyncStorage.setItem('profile_picture', selectedImage.uri);
+        await AsyncStorage.setItem('profile_picture', `data:${selectedImage.type};base64,${selectedImage.base64}`);
       }
     });
   };
@@ -359,18 +353,20 @@ const EditProfileScreen = () => {
       }
   
       const updatedData = {
-        ...data,
-        country: selectedCountry?.id ?? userInformation.country,
-        state: selectedState?.id ?? userInformation.state,
+        user_id, // Include user_id
+        token, // Include token
         firstname: data.fname,
         surname: data.lname,
+        title: data.title,
         organization: data.Organization,
+        state: selectedState?.id ?? userInformation.state,
+        country: selectedCountry?.id ?? userInformation.country,
         profession: data.Profession,
-        profile_picture: profileImage, // Use the updated image URI here
+        profile_image: profileImage, // Use the Base64 image here
       };
       console.log('Sending updated data to the server:', updatedData);
   
-      await profileProvider.edit_info({ user_id, token, ...updatedData });
+      await profileProvider.edit_info(updatedData);
       setSaveModalVisible(true);
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -409,7 +405,7 @@ const EditProfileScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={(backAction)}>
-            <Image source={require('../assets/img/backnew.png')} style={styles.backIcon} resizeMode="cover" />
+            <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} resizeMode="cover" />
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Edit Profile</Text>
         </View>
@@ -801,8 +797,8 @@ const styles = StyleSheet.create({
     marginRight: wp('0.5%'), // Adjust margin based on screen width
   },
   backIcon: {
-    width: wp('5.5%'), // Adjust size based on screen width
-    height: wp('5.5%'), // Adjust size based on screen width
+    width: wp('7%'), // Adjust size based on screen width
+    height: wp('7%'), // Adjust size based on screen width
     tintColor: 'white'
   },
   blur: {

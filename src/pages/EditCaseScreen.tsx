@@ -562,7 +562,7 @@ const EditCaseScreen = ({ navigation, route }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             style={styles.pIcon1}
-            source={require('../assets/img/back.png')}
+            source={require('../assets/img/backarrow.png')}
           />
         </TouchableOpacity>
         <Text style={styles.headText}>Edit Case</Text>
@@ -872,10 +872,10 @@ const styles = StyleSheet.create({
   },
   pIcon1: {
     tintColor: 'white',
-    height: 19,
-    width: 22,
+    height: 25,
+    width: 25,
     marginTop: 2,
-    marginLeft: 10,
+    marginLeft: 2,
     marginRight: 10,
 
 

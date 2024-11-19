@@ -454,7 +454,7 @@ Procedure (SOPs) for a suicide bomber attack, you should always follow those SOP
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={require('../assets/img/backnew.png')} style={styles.backIcon} />
+          <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
           {/* <Text style={styles.headerTitle}>Back</Text> */}
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Emergency Procedures</Text>
@@ -526,8 +526,8 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   backIcon: {
-    width: wp('6%'), // Responsive width
-    height: wp('6%'), // Responsive height
+    width: wp('7%'), // Responsive width
+    height: wp('7%'), // Responsive height
     padding: hp('1%'), // Responsive padding
     tintColor: 'white',
   },

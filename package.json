@@ -41,11 +41,11 @@
     "react-native-geocoding": "^0.5.0",
     "react-native-gesture-handler": "^2.17.1",
     "react-native-html-to-pdf": "^0.12.0",
+    "react-native-image-crop-picker": "^0.41.5",
     "react-native-image-picker": "^7.1.2",
     "react-native-inappbrowser-reborn": "^3.7.0",
     "react-native-maps": "^1.18.0",
     "react-native-modal": "^13.0.1",
-
     "react-native-paper": "^5.12.5",
     "react-native-permissions": "^4.1.5",
     "react-native-picker-select": "^9.1.3",

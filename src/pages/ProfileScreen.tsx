@@ -604,7 +604,7 @@ const ProfileScreen: React.FC = () => {
             surname: data.surname,
             profession: data.profession,
             organization: data.organization,
-            profile_image: data.profile_image,
+            profile_image: data.image_path,
             country: data.country,
             state: data.state,
             myCases: data.my_cases_count,
@@ -670,7 +670,7 @@ const ProfileScreen: React.FC = () => {
         style={styles.backButton}>
         <Image
           style={styles.backIcon}
-          source={require('../assets/img/backnew.png')}
+          source={require('../assets/img/backarrow.png')}
         />
       </TouchableOpacity>
       <View style={styles.stickyHeader}>
@@ -767,8 +767,8 @@ const styles = StyleSheet.create({
     zIndex: 3,
   },
   backIcon: {
-    width: wp('5.5%'), // Adjusted width
-    height: wp('5.5%'), // Adjusted height
+    width: wp('7%'), // Adjusted width
+    height: wp('7%'), // Adjusted height
     tintColor: 'white',
     marginTop: hp('1%'),
   },

@@ -1105,7 +1105,7 @@ const confirmOptOut = async () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           {/* <Ionicons name="back.png" size={1} color='black'/>  */}
          
-              <Image source={require('../assets/img/back.png')} style={styles.icon1} />
+              <Image source={require('../assets/img/backarrow.png')} style={styles.icon1} />
           
         </TouchableOpacity>
         <Text style={styles.headerText}>Setting</Text>
@@ -1297,9 +1297,9 @@ const styles = StyleSheet.create({
     tintColor: 'brown',
   },
   icon1: {
-    width: wp('6%'), // Responsive width
-    height: wp('6%'), // Responsive height
-    marginRight: wp('2%'), // Responsive margin
+    width: wp('7%'), // Responsive width
+    height: wp('7%'), // Responsive height
+    marginRight: wp('1%'), // Responsive margin
     tintColor: 'white',
   },
   backIcon: {

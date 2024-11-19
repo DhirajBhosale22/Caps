@@ -1596,7 +1596,7 @@ const ChangePasswordScreen = ({navigation}) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             style={styles.back}
-            source={require('../assets/img/back.png')}
+            source={require('../assets/img/backarrow.png')}
           />
         </TouchableOpacity>
         <Text style={styles.title}>Change Password</Text>
@@ -1899,8 +1899,8 @@ const styles = StyleSheet.create({
     elevation: 15,
   },
   back: {
-    width: wp('6%'), // Adjusted width to be responsive
-    height: hp('3%'), // Adjusted height to be responsive
+    width: wp('7%'), // Adjusted width to be responsive
+    height: hp('4%'), // Adjusted height to be responsive
     tintColor: 'white',
     marginLeft: wp('3%'), // Adjusted margin to be responsive
   },
@@ -1935,7 +1935,7 @@ const styles = StyleSheet.create({
   
   },
   footer: {
-    height: hp('7.5%'), // Adjusted height to be responsive
+    height: hp('8%'), // Adjusted height to be responsive
     backgroundColor: '#B71C1C',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -1952,7 +1952,7 @@ const styles = StyleSheet.create({
   },
   footerIcon: {
     width: wp('6%'), // Adjusted width to be responsive
-    height: hp('3%'), // Adjusted height to be responsive
+    height: hp('4%'), // Adjusted height to be responsive
     tintColor: 'white',
   },
   centeredView: {

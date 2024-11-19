@@ -491,8 +491,8 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   backIcon: {
-    width: wp('6%'), // Responsive width
-    height: wp('6%'), // Responsive height
+    width: wp('7%'), // Responsive width
+    height: wp('7%'), // Responsive height
     padding: hp('1%'), // Responsive padding
     tintColor: '#fff',
   },

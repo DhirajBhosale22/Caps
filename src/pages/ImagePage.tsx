@@ -354,7 +354,7 @@ const ImagePage: React.FC = () => {
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={require('../assets/img/backnew.png')} style={styles.backIcon} />
+          <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Images</Text>
       </View>
@@ -472,6 +472,9 @@ const ImagePage: React.FC = () => {
   );
 };
 
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -483,11 +486,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white', // Ensure background remains white
   },
   selectedImage: {
-    width: 100,
-    height: 100,
+    width: wp('25%'), // Adjusted to be responsive
+    height: wp('25%'), // Adjusted to be responsive
     borderRadius: 10,
-    marginLeft:20,
-    // Additional styling if needed
+    marginLeft: wp('5%'), // Adjusted to be responsive
   },
   loaderContainer: {
     position: 'absolute',
@@ -498,37 +500,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.7)', // Semi-transparent background
     borderRadius: 10,
-    padding: 20,
+    padding: wp('5%'), // Adjusted to be responsive
   },
   loader: {
     backgroundColor: '#9d0808', // Loader color
-    padding: 20,
+    padding: wp('5%'), // Adjusted to be responsive
     borderRadius: 10,
   },
   loaderText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: hp('2.5%'), // Adjusted to be responsive
     fontWeight: 'bold',
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: wp('4%'), // Adjusted to be responsive
     width: '100%',
     flexDirection: 'row',
   },
   uploadButton: {
     backgroundColor: '#9d0808',
-    padding: 10,
+    padding: wp('3%'), // Adjusted to be responsive
     borderRadius: 5,
-    marginBottom: 60,
+    marginBottom: hp('8%'), // Adjusted to be responsive
     alignItems: 'center',
   },
   uploadButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: hp('2%'), // Adjusted to be responsive
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: hp('3%'), // Adjusted to be responsive
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
@@ -538,9 +540,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    padding: 10,
+    width: wp('7%'), // Adjusted to be responsive
+    height: wp('7%'), // Adjusted to be responsive
+    padding: wp('2%'), // Adjusted to be responsive
     tintColor: '#fff',
   },
   content: {
@@ -554,25 +556,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   uploadIcon: {
-    width: 100,
-    height: 100,
+    width: wp('25%'), // Adjusted to be responsive
+    height: wp('25%'), // Adjusted to be responsive
     tintColor: '#9d0808', // Customize color if needed
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Adjusted to be responsive
     backgroundColor: '#B71C1C',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-
   },
   footerButton: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Adjusted to be responsive
+    height: wp('6%'), // Adjusted to be responsive
     tintColor: 'white',
   },
   centeredView: {
@@ -581,10 +582,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    margin: 20,
+    margin: wp('5%'), // Adjusted to be responsive
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 35,
+    padding: wp('8%'), // Adjusted to be responsive
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -593,27 +594,27 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: hp('2.5%'), // Adjusted to be responsive
     fontWeight: 'bold',
-    marginBottom: 15,
-    color:'black'
+    marginBottom: hp('2%'), // Adjusted to be responsive
+    color: 'black',
   },
   modalText: {
-    fontSize:  16,
-    marginBottom: 15,
+    fontSize: hp('2%'), // Adjusted to be responsive
+    marginBottom: hp('2%'), // Adjusted to be responsive
   },
   modalButtonContainer: {
     flexDirection: 'row',
   },
   modalButton: {
     borderRadius: 5,
-    padding: 10,
-    marginHorizontal: 10,
+    padding: wp('3%'), // Adjusted to be responsive
+    marginHorizontal: wp('2%'), // Adjusted to be responsive
     backgroundColor: '#9d0808',
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: hp('2%'), // Adjusted to be responsive
   },
 
   // Upload Modal Styles
@@ -628,27 +629,27 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 20,
+    paddingVertical: hp('2%'), // Adjusted to be responsive
+    paddingHorizontal: wp('5%'), // Adjusted to be responsive
     alignItems: 'center',
   },
   uploadModalButton: {
     width: '100%',
-    paddingVertical: 15,
+    paddingVertical: hp('3%'), // Adjusted to be responsive
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
   uploadModalButtonText: {
-    fontSize: 18,
+    fontSize: hp('2.5%'), // Adjusted to be responsive
     color: '#9d0808',
   },
   uploadText: {
-    marginTop: 8, // Adjust spacing between the image and the text
-    fontSize: 20,
+    marginTop: hp('1%'), // Adjusted to be responsive
+    fontSize: hp('2.5%'), // Adjusted to be responsive
     color: '#9d0808', // Same color as the icon for consistency
     textAlign: 'center',
-    fontWeight: 'bold', 
+    fontWeight: 'bold',
   },
   modalOverlay: {
     flex: 1,
@@ -658,3 +659,189 @@ const styles = StyleSheet.create({
 });
 
 export default ImagePage;
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: 'white',
+//     flexDirection: 'column',
+//   },
+//   scrollViewContainer: {
+//     flexGrow: 1,
+//     backgroundColor: 'white', // Ensure background remains white
+//   },
+//   selectedImage: {
+//     width: 100,
+//     height: 100,
+//     borderRadius: 10,
+//     marginLeft:20,
+//     // Additional styling if needed
+//   },
+//   loaderContainer: {
+//     position: 'absolute',
+//     top: '50%',
+//     left: '40%',
+//     transform: [{ translateX: -50 }, { translateY: -50 }],
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.7)', // Semi-transparent background
+//     borderRadius: 10,
+//     padding: 20,
+//   },
+//   loader: {
+//     backgroundColor: '#9d0808', // Loader color
+//     padding: 20,
+//     borderRadius: 10,
+//   },
+//   loaderText: {
+//     color: 'white',
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//   },
+//   header: {
+//     backgroundColor: '#9d0808',
+//     padding: 15,
+//     width: '100%',
+//     flexDirection: 'row',
+//   },
+//   uploadButton: {
+//     backgroundColor: '#9d0808',
+//     padding: 10,
+//     borderRadius: 5,
+//     marginBottom: 60,
+//     alignItems: 'center',
+//   },
+//   uploadButtonText: {
+//     color: 'white',
+//     fontSize: 16,
+//   },
+//   headerTitle: {
+//     fontSize: 22,
+//     fontWeight: 'bold',
+//     color: '#fff',
+//     textAlign: 'center',
+//   },
+//   backButton: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+//   backIcon: {
+//     width: 25,
+//     height: 25,
+//     padding: 10,
+//     tintColor: '#fff',
+//   },
+//   content: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   uploadSection: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   uploadIcon: {
+//     width: 100,
+//     height: 100,
+//     tintColor: '#9d0808', // Customize color if needed
+//   },
+//   footer: {
+//     height: 60,
+//     backgroundColor: '#B71C1C',
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//     alignItems: 'center',
+
+//   },
+//   footerButton: {
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   footerIcon: {
+//     width: 24,
+//     height: 24,
+//     tintColor: 'white',
+//   },
+//   centeredView: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   modalView: {
+//     margin: 20,
+//     backgroundColor: 'white',
+//     borderRadius: 10,
+//     padding: 35,
+//     alignItems: 'center',
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.25,
+//     shadowRadius: 4,
+//     elevation: 5,
+//   },
+//   modalTitles: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     marginBottom: 15,
+//     color:'black'
+//   },
+//   modalText: {
+//     fontSize:  16,
+//     marginBottom: 15,
+//   },
+//   modalButtonContainer: {
+//     flexDirection: 'row',
+//   },
+//   modalButton: {
+//     borderRadius: 5,
+//     padding: 10,
+//     marginHorizontal: 10,
+//     backgroundColor: '#9d0808',
+//   },
+//   modalButtonText: {
+//     color: 'white',
+//     fontSize: 16,
+//   },
+
+//   // Upload Modal Styles
+//   uploadModalContainer: {
+//     flex: 1,
+//     justifyContent: 'flex-end',
+//     alignItems: 'center',
+//     backgroundColor: 'rgba(0,0,0,0.5)',
+//   },
+//   uploadModalView: {
+//     width: '100%',
+//     backgroundColor: 'white',
+//     borderTopLeftRadius: 10,
+//     borderTopRightRadius: 10,
+//     paddingVertical: 20,
+//     paddingHorizontal: 20,
+//     alignItems: 'center',
+//   },
+//   uploadModalButton: {
+//     width: '100%',
+//     paddingVertical: 15,
+//     alignItems: 'center',
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ddd',
+//   },
+//   uploadModalButtonText: {
+//     fontSize: 18,
+//     color: '#9d0808',
+//   },
+//   uploadText: {
+//     marginTop: 8, // Adjust spacing between the image and the text
+//     fontSize: 20,
+//     color: '#9d0808', // Same color as the icon for consistency
+//     textAlign: 'center',
+//     fontWeight: 'bold', 
+//   },
+//   modalOverlay: {
+//     flex: 1,
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//     justifyContent: 'flex-start',
+//   },
+// });
+
+// export default ImagePage;

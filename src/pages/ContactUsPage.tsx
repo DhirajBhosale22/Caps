@@ -1976,11 +1976,11 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    left: wp('2%'), // Left margin is 2% of the screen width
+    left: wp('2.5%'), // Left margin is 2% of the screen width
   },
   backIcon: {
-    width: wp('6%'), // Width is 6% of the screen width
-    height: wp('6%'), // Height is 6% of the screen width
+    width: wp('7%'), // Width is 6% of the screen width
+    height: wp('7%'), // Height is 6% of the screen width
     tintColor: 'white',
   },
   headerText: {

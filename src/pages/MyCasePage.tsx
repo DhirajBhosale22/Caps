@@ -1158,7 +1158,7 @@ const MyCasePage = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             style={styles.back}
-            source={require('../assets/img/back.png')}
+            source={require('../assets/img/backarrow.png')}
           />
         </TouchableOpacity>
         <Text style={{fontSize: wp('5%'), color: 'white'}}>My Cases</Text>

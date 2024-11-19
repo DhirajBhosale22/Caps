@@ -538,7 +538,7 @@ const ExistingCases = ({ navigation }) => {
                 onPress={() => navigation.goBack()}
             >
                 <Image
-                    source={require('../assets/img/back-arrow.png')}
+                    source={require('../assets/img/backarrow.png')}
                     style={styles.menuIcon}
                 />
             </TouchableOpacity>
@@ -704,7 +704,7 @@ const styles = StyleSheet.create({
         left: wp('2%'), // Responsive left position
     },
     menuIcon: {
-        width: wp('8%'), // Responsive width
+        width: wp('7%'), // Responsive width
         height: hp('4%'), // Responsive height
     },
     buttonContainer: {

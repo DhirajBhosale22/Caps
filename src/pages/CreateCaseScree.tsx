@@ -2188,8 +2188,8 @@ const styles = StyleSheet.create({
     left: wp('2%'), // Adjusted for responsiveness
   },
   backIcon: {
-    width: wp('6%'), // Adjusted for responsiveness
-    height: wp('6%'), // Adjusted for responsiveness
+    width: wp('7%'), // Adjusted for responsiveness
+    height: wp('7%'), // Adjusted for responsiveness
     tintColor: 'white',
   },
   headerText: {

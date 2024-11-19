@@ -352,8 +352,8 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   backIcon: {
-    width: 25,
-    height: 18,
+    width: 27,
+    height: 22,
     padding: 12,
     tintColor: '#fff',
   },

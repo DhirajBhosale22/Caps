@@ -186,7 +186,7 @@ const SharecontactPage = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={navigateToAggressionMeter} style={styles.goBackButton}>
-          <Image source={require('../assets/img/backnew.png')} style={styles.goBackImage} />
+          <Image source={require('../assets/img/backarrow.png')} style={styles.goBackImage} />
         </TouchableOpacity>
         <Text style={styles.title}>Share Contact</Text>
       </View>
@@ -396,8 +396,8 @@ const styles = StyleSheet.create({
     left: 10,
   },
   goBackImage: {
-    width: 20,
-    height: 20,
+    width: 27,
+    height: 27,
     tintColor: 'white',
   },
   title: {

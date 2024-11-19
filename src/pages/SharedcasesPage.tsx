@@ -86,7 +86,7 @@ const Sharedcases = () => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             style={styles.back}
-            source={require('../assets/img/back.png')}
+            source={require('../assets/img/backarrow.png')}
           />
         </TouchableOpacity>
         <Text style={{fontSize: 20, color: 'white'}}>Shared Case</Text>
@@ -197,8 +197,8 @@ const styles = StyleSheet.create({
     gap: 25,
   },
   back: {
-    width: 25,
-    height: 20,
+    width: 27,
+    height: 22,
     tintColor: 'white',
   },
   headerTitle: {

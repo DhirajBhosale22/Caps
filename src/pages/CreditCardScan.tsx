@@ -93,7 +93,7 @@ const CreditCardScan = ({ navigation, route }) => {
       <StatusBar barStyle="light-content" backgroundColor="#9d0808" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={require('../assets/img/pointer.png')} style={styles.backIcon} />
+          <Image source={require('../assets/img/backarrow.png')} style={styles.backIcon} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Credit Card</Text>
       </View>

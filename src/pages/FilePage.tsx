@@ -79,7 +79,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet, StatusBar, Modal, Alert, Linking } from 'react-native';
 
 import next from '../assets/img/next.png';
-import backnew from '../assets/img/backnew.png';
+import backarrow from '../assets/img/backarrow.png';
 
 interface FileType {
   title: string;
@@ -163,7 +163,7 @@ const getPageByType = (type: 'image' | 'video' | 'audio' | 'document') => {
 
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={backnew} style={styles.backIcon} />
+          <Image source={backarrow} style={styles.backIcon} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { flex: 1, textAlign: 'center' }]}>Files</Text>
       </View>
@@ -231,6 +231,10 @@ const getPageByType = (type: 'image' | 'video' | 'audio' | 'document') => {
   );
 };
 
+
+
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -238,12 +242,12 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#9d0808',
-    padding: 15,
+    padding: hp('2%'), // Responsive padding
     width: '100%',
     flexDirection: 'row',
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: wp('5.5%'), // Responsive font size
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
@@ -253,44 +257,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backIcon: {
-    width: 25,
-    height: 25,
-    padding: 10,
+    width: wp('7%'), // Responsive width
+    height: wp('7%'), // Responsive height
+    padding: hp('1%'), // Responsive padding
     tintColor: '#fff',
   },
   scrollView: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp('4%'), // Responsive padding
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: hp('1.5%'), // Responsive padding
     backgroundColor: '#fff',
-    marginVertical: 5,
+    marginVertical: hp('1%'), // Responsive margin
     borderRadius: 5,
     elevation: 2,
   },
   clip: {
-    width: 25,
-    height: 25,
-    marginRight: 15,
+    width: wp('6.5%'), // Responsive width
+    height: wp('6.5%'), // Responsive height
+    marginRight: wp('4%'), // Responsive margin
     tintColor:'#9d0808',
-    marginLeft:10,
+    marginLeft: wp('2%'), // Responsive margin
   },
   cardTitle: {
     fontWeight: 'bold',
-    // color: '#333',
-    fontSize: 16,
+    fontSize: wp('4.5%'), // Responsive font size
     flex: 1,
     color: '#9d0808',
   },
   titleSub: {
-    fontSize: 14,
+    fontSize: wp('4%'), // Responsive font size
     color: '#666',
-    marginTop: 4,
+    marginTop: hp('0.5%'), // Responsive margin
   },
   footer: {
-    height: 60,
+    height: hp('8%'), // Responsive height
     backgroundColor: '#B71C1C',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -301,8 +304,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerIcon: {
-    width: 24,
-    height: 24,
+    width: wp('6%'), // Responsive width
+    height: wp('6%'), // Responsive height
     tintColor: 'white',
   },
   centeredView: {
@@ -315,7 +318,7 @@ const styles = StyleSheet.create({
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
+    padding: hp('2.5%'), // Responsive padding
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -327,17 +330,15 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitles: {
-    fontSize: 18,
+    fontSize: wp('5%'), // Responsive font size
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: hp('2%'), // Responsive margin
     color: 'black',
-
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 15,
+    fontSize: wp('4.5%'), // Responsive font size
+    marginBottom: hp('2%'), // Responsive margin
     color: 'grey',
-
   },
   modalButtonContainer: {
     flexDirection: 'row',
@@ -345,23 +346,158 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   modalButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: wp('5%'), // Responsive padding
+    paddingVertical: hp('2%'), // Responsive padding
     borderRadius: 5,
     backgroundColor: '#9d0808',
-    marginHorizontal: 10,
+    marginHorizontal: wp('2%'), // Responsive margin
   },
   modalButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: wp('4.5%'), // Responsive font size
     fontWeight: 'bold',
   },
   rightIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
+    width: wp('5%'), // Responsive width
+    height: wp ('5%'), // Responsive height
+    marginRight: wp('2%'), // Responsive margin
     tintColor:'#9d0808'
   },
 });
 
 export default FilesPage;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#f5f5f5',
+//   },
+//   header: {
+//     backgroundColor: '#9d0808',
+//     padding: 15,
+//     width: '100%',
+//     flexDirection: 'row',
+//   },
+//   headerTitle: {
+//     fontSize: 22,
+//     fontWeight: 'bold',
+//     color: '#fff',
+//     textAlign: 'center',
+//   },
+//   backButton: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+//   backIcon: {
+//     width: 25,
+//     height: 25,
+//     padding: 10,
+//     tintColor: '#fff',
+//   },
+//   scrollView: {
+//     paddingHorizontal: 16,
+//   },
+//   cardHeader: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     paddingVertical: 10,
+//     backgroundColor: '#fff',
+//     marginVertical: 5,
+//     borderRadius: 5,
+//     elevation: 2,
+//   },
+//   clip: {
+//     width: 25,
+//     height: 25,
+//     marginRight: 15,
+//     tintColor:'#9d0808',
+//     marginLeft:10,
+//   },
+//   cardTitle: {
+//     fontWeight: 'bold',
+//     // color: '#333',
+//     fontSize: 16,
+//     flex: 1,
+//     color: '#9d0808',
+//   },
+//   titleSub: {
+//     fontSize: 14,
+//     color: '#666',
+//     marginTop: 4,
+//   },
+//   footer: {
+//     height: 60,
+//     backgroundColor: '#B71C1C',
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//     alignItems: 'center',
+//   },
+//   footerButton: {
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   footerIcon: {
+//     width: 24,
+//     height: 24,
+//     tintColor: 'white',
+//   },
+//   centeredView: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     backgroundColor: 'rgba(0,0,0,0.5)',
+//   },
+//   modalView: {
+//     width: '80%',
+//     backgroundColor: 'white',
+//     borderRadius: 10,
+//     padding: 20,
+//     alignItems: 'center',
+//     shadowColor: '#000',
+//     shadowOffset: {
+//       width: 0,
+//       height: 2,
+//     },
+//     shadowOpacity: 0.25,
+//     shadowRadius: 4,
+//     elevation: 5,
+//   },
+//   modalTitles: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     marginBottom: 15,
+//     color: 'black',
+
+//   },
+//   modalText: {
+//     fontSize: 16,
+//     marginBottom: 15,
+//     color: 'grey',
+
+//   },
+//   modalButtonContainer: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//     width: '100%',
+//   },
+//   modalButton: {
+//     paddingHorizontal: 20,
+//     paddingVertical: 10,
+//     borderRadius: 5,
+//     backgroundColor: '#9d0808',
+//     marginHorizontal: 10,
+//   },
+//   modalButtonText: {
+//     color: 'white',
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//   },
+//   rightIcon: {
+//     width: 20,
+//     height: 20,
+//     marginRight: 10,
+//     tintColor:'#9d0808'
+//   },
+// });
+
+// export default FilesPage;

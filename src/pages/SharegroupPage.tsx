@@ -1494,7 +1494,7 @@ const renderContactSelectionModal = () => (
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             style={styles.back}
-            source={require('../assets/img/back.png')}
+            source={require('../assets/img/backarrow.png')}
           />
         </TouchableOpacity>
         <Text style={styles.hedtext}> My Groups</Text>
@@ -1853,9 +1853,9 @@ const styles = StyleSheet.create({
   },
   back: {
     width: wp('6%'),
-    height: hp('2.5%'),
+    height: hp('4%'),
     tintColor: 'white',
-    marginLeft: wp('2.5%'),
+    marginLeft: wp('1%'),
   },
   add1: {
     width: wp('6%'),

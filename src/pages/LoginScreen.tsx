@@ -570,6 +570,7 @@ import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 const {width, height} = Dimensions.get('window');
 
 const LoginScreen: React.FC = () => {
+  const route = useRoute();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -584,6 +585,14 @@ const LoginScreen: React.FC = () => {
   const navigation = useNavigation();
   const user = new User(new Api(), {}, {});
   const {showLoader, hideLoader} = useLoader();
+  useEffect(() => {
+    // Check for modal parameters from navigation
+    if (route.params?.modalVisible) {
+      setModalVisible(true);
+      setModalMessage(route.params.modalMessage || 'An unexpected error occurred.');
+      setModalType(route.params.modalType || 'error');
+    }
+  }, [route.params]);
 
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -806,7 +815,7 @@ const LoginScreen: React.FC = () => {
           onPress={handleLogin}
           disabled={isButtonDisabled} // Disable button if no email or password
         >
-          <Text style={styles.buttonText}>LOGIN</Text>
+           <Text style={isButtonDisabled ? styles.buttonTextDisabled : styles.buttonTextEnabled}>LOGIN</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
           <Text style={styles.link}>Forgot your Password ?</Text>
@@ -925,7 +934,18 @@ const styles = StyleSheet.create({
     marginTop: hp('2%'), // Adjusted for responsiveness
   },
   buttonText: {
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: 'white',
+    fontSize: wp('4.5%'), // Adjusted for responsiveness
+    fontWeight: 'bold',
+  },
+  buttonTextEnabled: {
+    color: 'white',
+    fontSize: wp('4.5%'), // Adjusted for responsiveness
+    fontWeight: 'bold',
+  },
+  
+  buttonTextDisabled: {
+    color: 'rgba(255, 255, 255, 0.6)', // Lighter color to indicate disabled state
     fontSize: wp('4.5%'), // Adjusted for responsiveness
     fontWeight: 'bold',
   },

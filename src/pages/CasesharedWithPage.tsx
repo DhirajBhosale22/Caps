@@ -97,8 +97,8 @@ const CasesharedWith = ({ route, navigation }) => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image 
-            source={require('../assets/img/backnew.png')} 
-            style={{ width: 22, height: 22, tintColor:'white' }}
+            source={require('../assets/img/backarrow.png')} 
+            style={{ width: 27, height: 25, tintColor:'white' }}
           />
         </TouchableOpacity>
         <Text style={styles.title}>Case Shared With</Text>
